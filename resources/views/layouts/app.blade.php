@@ -1,297 +1,199 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'TUMESA') }}</title>
+    <title>{{ config('app.name', 'TuMesa') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300,400,500,600,700&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Styles -->
+    <style>
+        .navbar-custom {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0.8rem 0;
+        }
         
-        <style>
-            * {
-                box-sizing: border-box;
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #2563eb !important;
+        }
+        
+        .navbar-nav .nav-link {
+            color: #64748b !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #2563eb !important;
+        }
+        
+        .btn-login {
+            color: #64748b;
+            border: none;
+            background: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            color: #2563eb;
+        }
+        
+        .btn-register {
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-register:hover {
+            background-color: #0f172a;
+            color: white;
+        }
+        
+        .logo-icon {
+            height: 32px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 991.98px) {
+            .navbar-nav {
+                text-align: center;
+                margin-top: 1rem;
             }
             
-            body {
-                font-family: 'Inter', sans-serif;
-                margin: 0;
-                padding: 0;
+            .auth-buttons {
+                justify-content: center !important;
+                margin-top: 1rem;
             }
-            
-            /* Animaciones */
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            
-            .nav-link {
-                position: relative;
-                transition: all 0.3s ease;
-            }
-            
-            .nav-link::after {
-                content: '';
-                position: absolute;
-                width: 0;
-                height: 2px;
-                bottom: -4px;
-                left: 50%;
-                background-color: #3b82f6;
-                transition: all 0.3s ease;
-                transform: translateX(-50%);
-            }
-            
-            .nav-link:hover::after {
-                width: 100%;
-            }
-            
-            /* Dropdown animation */
-            .dropdown-menu {
-                animation: fadeIn 0.2s ease-out;
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Navigation Bar -->
-        <nav style="background-color: #ffffff; 
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
-                    position: sticky; 
-                    top: 0; 
-                    z-index: 1000;
-                    border-bottom: 1px solid #f3f4f6;">
-            <div style="max-width: 1280px; 
-                        margin: 0 auto; 
-                        padding: 0 24px;">
-                <div style="display: flex; 
-                            justify-content: space-between; 
-                            align-items: center; 
-                            height: 70px;">
-                    
-                    <!-- Logo -->
-                    <div style="display: flex; align-items: center;">
-                        <a href="{{ route('dashboard') }}" 
-                           style="display: flex; 
-                                  align-items: center; 
-                                  text-decoration: none; 
-                                  gap: 8px;">
-                            <img src="{{ asset('img/logo-tumesa.png') }}" 
-                                 alt="TUMESA" 
-                                 style="height: 40px; 
-                                        width: 40px; 
-                                        object-fit: contain;">
-                            <span style="font-size: 20px; 
-                                         font-weight: 600; 
-                                         color: #111827;">TuMesa</span>
-                        </a>
-                    </div>
-                    
-                    <!-- Center Navigation Links -->
-                    <div style="display: flex; 
-                                align-items: center; 
-                                gap: 40px;">
-                        <a href="#" 
-                           class="nav-link"
-                           style="color: #4b5563; 
-                                  text-decoration: none; 
-                                  font-size: 15px; 
-                                  font-weight: 500; 
-                                  padding: 8px 0;"
-                           onmouseover="this.style.color='#3b82f6';"
-                           onmouseout="this.style.color='#4b5563';">
-                            Experiencias
-                        </a>
-                        <a href="#" 
-                           class="nav-link"
-                           style="color: #4b5563; 
-                                  text-decoration: none; 
-                                  font-size: 15px; 
-                                  font-weight: 500; 
-                                  padding: 8px 0;"
-                           onmouseover="this.style.color='#3b82f6';"
-                           onmouseout="this.style.color='#4b5563';">
-                            Ser Chef Anfitrión
-                        </a>
-                        <a href="#" 
-                           class="nav-link"
-                           style="color: #4b5563; 
-                                  text-decoration: none; 
-                                  font-size: 15px; 
-                                  font-weight: 500; 
-                                  padding: 8px 0;"
-                           onmouseover="this.style.color='#3b82f6';"
-                           onmouseout="this.style.color='#4b5563';">
-                            Cómo Funciona
-                        </a>
-                    </div>
-                    
-                    <!-- Right Side - Auth Links -->
-                    <div style="display: flex; 
-                                align-items: center; 
-                                gap: 16px;">
-                        @guest
-                            <a href="{{ route('login') }}" 
-                               style="color: #4b5563; 
-                                      text-decoration: none; 
-                                      font-size: 15px; 
-                                      font-weight: 500; 
-                                      padding: 8px 16px; 
-                                      transition: all 0.3s ease;"
-                               onmouseover="this.style.color='#3b82f6';"
-                               onmouseout="this.style.color='#4b5563';">
-                                Iniciar Sesión
-                            </a>
-                            <a href="{{ route('register') }}" 
-                               style="background-color: #111827; 
-                                      color: white; 
-                                      text-decoration: none; 
-                                      font-size: 15px; 
-                                      font-weight: 500; 
-                                      padding: 10px 24px; 
-                                      border-radius: 8px; 
-                                      transition: all 0.3s ease;"
-                               onmouseover="this.style.backgroundColor='#1f2937'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)';"
-                               onmouseout="this.style.backgroundColor='#111827'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                                Registrarse
-                            </a>
-                        @else
-                            <!-- User Dropdown -->
-                            <div style="position: relative;">
-                                <button onclick="toggleDropdown()" 
-                                        style="display: flex; 
-                                               align-items: center; 
-                                               gap: 8px; 
-                                               background: none; 
-                                               border: none; 
-                                               cursor: pointer; 
-                                               padding: 8px 12px; 
-                                               border-radius: 8px; 
-                                               transition: all 0.3s ease;"
-                                        onmouseover="this.style.backgroundColor='#f3f4f6';"
-                                        onmouseout="this.style.backgroundColor='transparent';">
-                                    <span style="color: #374151; 
-                                                 font-size: 15px; 
-                                                 font-weight: 500;">
-                                        {{ Auth::user()->name }}
-                                    </span>
-                                    <svg style="width: 16px; height: 16px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
+        }
+    </style>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-light">
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <!-- Brand -->
+                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+                    <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" class="logo-icon">
+                    TuMesa
+                </a>
+
+                <!-- Mobile toggle button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navigation items -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Center navigation links -->
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('experiencias') ?? '#' }}">Experiencias</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('ser-chef') ?? '#' }}">Ser Chef Anfitrión</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('como-funciona') ?? '#' }}">Cómo Funciona</a>
+                        </li>
+                    </ul>
+
+                    <!-- Right side authentication buttons -->
+                    <div class="d-flex auth-buttons">
+                        @auth
+                            <!-- User is logged in -->
+                            <div class="dropdown">
+                                <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user me-1"></i>
+                                    {{ Auth::user()->name }}
                                 </button>
-                                
-                                <!-- Dropdown Menu -->
-                                <div id="userDropdown" 
-                                     class="dropdown-menu"
-                                     style="display: none; 
-                                            position: absolute; 
-                                            right: 0; 
-                                            top: 100%; 
-                                            margin-top: 8px; 
-                                            background: white; 
-                                            border-radius: 12px; 
-                                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
-                                            min-width: 200px; 
-                                            overflow: hidden;">
-                                    <a href="{{ route('profile.edit') }}" 
-                                       style="display: block; 
-                                              padding: 12px 20px; 
-                                              color: #374151; 
-                                              text-decoration: none; 
-                                              font-size: 14px; 
-                                              transition: all 0.2s ease;"
-                                       onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.color='#3b82f6';"
-                                       onmouseout="this.style.backgroundColor='transparent'; this.style.color='#374151';">
-                                        Mi Perfil
-                                    </a>
-                                    <a href="#" 
-                                       style="display: block; 
-                                              padding: 12px 20px; 
-                                              color: #374151; 
-                                              text-decoration: none; 
-                                              font-size: 14px; 
-                                              transition: all 0.2s ease;"
-                                       onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.color='#3b82f6';"
-                                       onmouseout="this.style.backgroundColor='transparent'; this.style.color='#374151';">
-                                        Mis Reservas
-                                    </a>
-                                    <div style="border-top: 1px solid #e5e7eb; margin: 8px 0;"></div>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" 
-                                                style="display: block; 
-                                                       width: 100%; 
-                                                       text-align: left; 
-                                                       padding: 12px 20px; 
-                                                       color: #dc2626; 
-                                                       background: none; 
-                                                       border: none; 
-                                                       font-size: 14px; 
-                                                       cursor: pointer; 
-                                                       transition: all 0.2s ease;"
-                                                onmouseover="this.style.backgroundColor='#fee2e2';"
-                                                onmouseout="this.style.backgroundColor='transparent';">
-                                            Cerrar Sesión
-                                        </button>
-                                    </form>
-                                </div>
+                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="{{ route('profile') ?? '#' }}">
+                                        <i class="fas fa-user me-2"></i>Mi Perfil
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ route('reservas') ?? '#' }}">
+                                        <i class="fas fa-calendar me-2"></i>Mis Reservas
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
-                        @endguest
+                        @else
+                            <!-- User is not logged in -->
+                            <a href="{{ route('login') }}" class="btn btn-login">Iniciar Sesión</a>
+                            <a href="{{ route('register') }}" class="btn btn-register">Registrarse</a>
+                        @endauth
                     </div>
                 </div>
             </div>
         </nav>
 
-        <!-- Page Heading -->
-        @isset($header)
-            <header style="background-color: #ffffff; 
-                           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-                <div style="max-width: 1280px; 
-                            margin: 0 auto; 
-                            padding: 24px;">
-                    {{ $header }}
-                </div>
-            </header>
-        @endisset
-
-        <!-- Page Content -->
-        <main style="background-color: #f9fafb; 
-                     min-height: calc(100vh - 70px);">
-            <div style="max-width: 1280px; 
-                        margin: 0 auto; 
-                        padding: 24px;">
-                {{ $slot }}
-            </div>
+        <!-- Main content -->
+        <main style="margin-top: 80px;">
+            @yield('content')
         </main>
 
-        <script>
-            // Toggle dropdown menu
-            function toggleDropdown() {
-                const dropdown = document.getElementById('userDropdown');
-                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-            }
+        <!-- Footer (optional) -->
+        <footer class="bg-dark text-light py-4 mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" style="height: 24px; margin-right: 0.5rem;">
+                            <h5 class="mb-0">TuMesa</h5>
+                        </div>
+                        <p class="mb-0">Conectando comensales con experiencias gastronómicas únicas.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="social-links">
+                            <a href="#" class="text-light me-3"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="text-light"><i class="fab fa-twitter"></i></a>
+                        </div>
+                        <p class="mb-0 mt-2">&copy; {{ date('Y') }} TuMesa. Todos los derechos reservados.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
-                const dropdown = document.getElementById('userDropdown');
-                const button = event.target.closest('button');
-                
-                if (!button || !button.getAttribute('onclick') || !button.getAttribute('onclick').includes('toggleDropdown')) {
-                    dropdown.style.display = 'none';
-                }
-            });
-        </script>
-    </body>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    @stack('scripts')
+</body>
 </html>
