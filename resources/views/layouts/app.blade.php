@@ -23,12 +23,14 @@
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 0.8rem 0;
+            z-index: 1050;
         }
         
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
             color: #2563eb !important;
+            text-decoration: none;
         }
         
         .navbar-nav .nav-link {
@@ -36,10 +38,16 @@
             font-weight: 500;
             margin: 0 0.5rem;
             transition: color 0.3s ease;
+            text-decoration: none;
         }
         
         .navbar-nav .nav-link:hover {
             color: #2563eb !important;
+        }
+        
+        .navbar-nav .nav-link.active {
+            color: #2563eb !important;
+            font-weight: 600;
         }
         
         .btn-login {
@@ -50,6 +58,7 @@
             padding: 0.5rem 1rem;
             margin-right: 0.5rem;
             transition: color 0.3s ease;
+            text-decoration: none;
         }
         
         .btn-login:hover {
@@ -64,6 +73,7 @@
             border-radius: 0.5rem;
             font-weight: 500;
             transition: background-color 0.3s ease;
+            text-decoration: none;
         }
         
         .btn-register:hover {
@@ -77,7 +87,47 @@
             margin-right: 0.5rem;
         }
         
+        /* Navbar toggler styles */
+        .navbar-toggler {
+            border: none;
+            padding: 0.25rem 0.5rem;
+            background: none;
+            cursor: pointer;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+            outline: none;
+        }
+        
+        .navbar-toggler-icon {
+            display: block;
+            width: 1.5em;
+            height: 1.5em;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100%;
+        }
+        
+        /* IMPORTANTE: Mostrar siempre el menú en pantallas grandes */
+        @media (min-width: 992px) {
+            .navbar-collapse {
+                display: flex !important;
+                visibility: visible !important;
+            }
+        }
+        
+        /* Mobile styles */
         @media (max-width: 991.98px) {
+            .navbar-collapse {
+                display: none;
+            }
+            
+            .navbar-collapse.show {
+                display: block !important;
+            }
+            
             .navbar-nav {
                 text-align: center;
                 margin-top: 1rem;
@@ -86,7 +136,30 @@
             .auth-buttons {
                 justify-content: center !important;
                 margin-top: 1rem;
+                flex-direction: column;
+                align-items: center;
             }
+            
+            .navbar-collapse {
+                border-top: 1px solid #e9ecef;
+                margin-top: 1rem;
+                padding-top: 1rem;
+            }
+            
+            .btn-login,
+            .btn-register {
+                width: 200px;
+                margin: 0.25rem 0;
+                text-align: center;
+                display: block;
+            }
+        }
+        
+        /* Dropdown styles */
+        .dropdown-menu {
+            z-index: 1060;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
     </style>
 
@@ -114,13 +187,16 @@
                     <!-- Center navigation links -->
                     <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('experiencias') ?? '#' }}">Experiencias</a>
+                            <a class="nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}" 
+                               href="{{ route('experiencias') ?? '#' }}">Experiencias</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('ser-chef') ?? '#' }}">Ser Chef Anfitrión</a>
+                            <a class="nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}" 
+                               href="{{ route('ser-chef') ?? '#' }}">Ser Chef Anfitrión</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('como-funciona') ?? '#' }}">Cómo Funciona</a>
+                            <a class="nav-link {{ request()->routeIs('como-funciona') ? 'active' : '' }}" 
+                               href="{{ route('como-funciona') ?? '#' }}">Cómo Funciona</a>
                         </li>
                     </ul>
 
@@ -167,13 +243,14 @@
             @yield('content')
         </main>
 
-        <!-- Footer (optional) -->
+        <!-- Footer -->
         <footer class="bg-dark text-light py-4 mt-5">
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="d-flex align-items-center mb-2">
-                            <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" style="height: 24px; margin-right: 0.5rem;">
+                            <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" 
+                                 style="height: 24px; margin-right: 0.5rem;">
                             <h5 class="mb-0">TuMesa</h5>
                         </div>
                         <p class="mb-0">Conectando comensales con experiencias gastronómicas únicas.</p>
@@ -191,7 +268,7 @@
         </footer>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap JS Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     @stack('scripts')
