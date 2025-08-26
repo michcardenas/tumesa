@@ -22,6 +22,9 @@ Route::prefix('cenas')->name('cenas.')->group(function () {
     Route::get('/', [HomeController::class, 'search'])->name('index');
     Route::get('/{cena}', [HomeController::class, 'showCena'])->name('show'); // Para usuarios finales
 });
+Route::get('/pago-exito', fn() => '✅ Pago exitoso')->name('pago.exito');
+Route::get('/pago-error', fn() => '❌ Pago fallido')->name('pago.error');
+Route::get('/pago-pendiente', fn() => '🕓 Pago pendiente')->name('pago.pendiente');
 
 
 //pagos
