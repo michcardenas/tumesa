@@ -4,20 +4,29 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PageController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Chef\ChefController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PagoController;
+
 
 /*
 |--------------------------------------------------------------------------
 | Página Principal
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    // Si está autenticado, redirigir al dashboard
-    if (auth()->check()) {
-        return redirect()->route('dashboard');
-    }
-    // Si no, mostrar welcome
-    return view('welcome');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+
+//detalle cena
+Route::prefix('cenas')->name('cenas.')->group(function () {
+    Route::get('/', [HomeController::class, 'search'])->name('index');
+    Route::get('/{cena}', [HomeController::class, 'showCena'])->name('show'); // Para usuarios finales
+});
+
+
+//pagos
+
+Route::post('/reservar', [PagoController::class, 'reservar'])->name('reservar');
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +51,8 @@ Route::get('/como-funciona', function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
+
+
     // Dashboard principal
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -61,8 +72,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/mis-reservas', function () {
         return view('reservas.index');
     })->name('reservas');
+
+
+
 });
 
+
+//Chef
+Route::middleware(['auth'])->prefix('chef')->name('chef.')->group(function () {
+    Route::get('/dashboard', [ChefController::class, 'dashboard'])->name('dashboard');
+        Route::post('/dinners', [ChefController::class, 'storeDinner'])->name('dinners.store');
+          Route::get('/dinners/{cena}', [ChefController::class, 'showDinner'])->name('dinners.show');
+    Route::get('/dinners/{cena}/edit', [ChefController::class, 'editDinner'])->name('dinners.edit');
+
+    
+  
+});
 /*
 |--------------------------------------------------------------------------
 | Rutas de Administrador

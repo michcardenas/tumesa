@@ -65,77 +65,137 @@
         </div>
     </section>
 
-    <!-- Experiencias Destacadas -->
-    <section id="experiencias" class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="section-title">Experiencias Destacadas</h2>
-                <p class="section-subtitle">Las experiencias mejor valoradas por nuestros comensales</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4">
-                    <div class="experience-card">
+  <!-- Experiencias Destacadas -->
+<section id="experiencias" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Experiencias Destacadas</h2>
+            <p class="section-subtitle">Las experiencias mejor valoradas por nuestros comensales</p>
+        </div>
+        
+        @if($cenas_destacadas->count() > 0)
+        <div class="row g-4">
+            @foreach($cenas_destacadas->take(6) as $cena)
+            <div class="col-md-6 col-lg-4">
+                <div class="experience-card">
+                    @if($cena['cover_image_url'])
+                        <img src="{{ $cena['cover_image_url'] }}" 
+                             alt="{{ $cena['title'] }}" 
+                             class="experience-image"
+                             loading="lazy">
+                    @else
                         <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
-                             alt="Cena italiana auténtica" class="experience-image">
-                        <div class="experience-content">
-                            <div class="experience-rating">
-                                <i class="fas fa-star"></i>
-                                <span>4.9</span>
-                            </div>
-                            <h5>Cena Italiana Auténtica</h5>
-                            <p class="experience-chef">Chef Marco Rossi</p>
-                            <p class="experience-description">Una velada íntima con auténtica pasta casera y vinos italianos seleccionados en un ambiente acogedor.</p>
-                            <div class="experience-footer">
-                                <span class="experience-price">$45,000/persona</span>
-                                <a href="#" class="btn btn-dark btn-sm">Reservar</a>
-                            </div>
+                             alt="{{ $cena['title'] }}" 
+                             class="experience-image"
+                             loading="lazy">
+                    @endif
+                    
+                    <div class="experience-content">
+                        <!-- <div class="experience-rating">
+                            <i class="fas fa-star"></i>
+                            <span>{{ number_format(4.5 + (rand(3,9) / 10), 1) }}</span>
+                        </div> -->
+                        
+                        <h5>{{ $cena['title'] }}</h5>
+                        <p class="experience-chef">{{ $cena['chef_name'] }}</p>
+                        <p class="experience-description">{{ $cena['menu_preview'] }}</p>
+                        
+                        <div class="experience-meta mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                {{ $cena['formatted_date'] }}
+                            </small>
+                            <small class="text-muted ms-3">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ Str::limit($cena['location'], 20) }}
+                            </small>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="experience-card">
-                        <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
-                             alt="Taller de sushi tradicional" class="experience-image">
-                        <div class="experience-content">
-                            <div class="experience-rating">
-                                <i class="fas fa-star"></i>
-                                <span>4.8</span>
-                            </div>
-                            <h5>Cocinando Sushi Tradicional</h5>
-                            <p class="experience-chef">Chef Yuki Tanaka</p>
-                            <p class="experience-description">Aprende a preparar sushi como un verdadero maestro japonés en esta experiencia interactiva única.</p>
-                            <div class="experience-footer">
-                                <span class="experience-price">$65,000/persona</span>
-                                <a href="#" class="btn btn-dark btn-sm">Reservar</a>
-                            </div>
+                        
+                        <div class="experience-availability mb-2">
+                            @if($cena['available_spots'] > 0)
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    {{ $cena['available_spots'] }} espacios disponibles
+                                </span>
+                            @else
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-hourglass-half me-1"></i>
+                                    Lista de espera
+                                </span>
+                            @endif
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="experience-card">
-                        <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
-                             alt="Asado y tapas" class="experience-image">
-                        <div class="experience-content">
-                            <div class="experience-rating">
-                                <i class="fas fa-star"></i>
-                                <span>4.7</span>
-                            </div>
-                            <h5>Asado y Tapas</h5>
-                            <p class="experience-chef">Chef Carlos Mendoza</p>
-                            <p class="experience-description">El arte del asado argentino con cortes premium y una selección de tapas tradicionales.</p>
-                            <div class="experience-footer">
-                                <span class="experience-price">$55,000/persona</span>
-                                <a href="#" class="btn btn-dark btn-sm">Reservar</a>
-                            </div>
+                        
+                        <div class="experience-footer">
+                            <span class="experience-price">{{ $cena['formatted_price'] }}/persona</span>
+                            @if($cena['available_spots'] > 0)
+                                <a href="{{ route('cenas.show', $cena['id']) }}" class="btn btn-dark btn-sm">
+                                    Reservar
+                                </a>
+                            @else
+                                <a href="{{ route('cenas.show', $cena['id']) }}" class="btn btn-outline-dark btn-sm">
+                                    Ver Detalles
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="text-center mt-4">
-                <a href="{{ route('experiencias') ?? '#' }}" class="btn btn-link">Ver Todas las Experiencias</a>
+            @endforeach
+        </div>
+        @else
+        <!-- Estado vacío cuando no hay cenas -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="empty-state py-5">
+                    <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Próximamente nuevas experiencias</h4>
+                    <p class="text-muted">Nuestros chefs están preparando increíbles experiencias culinarias para ti.</p>
+                    <a href="{{ route('ser-chef') ?? '#' }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus me-2"></i>Únete como Chef
+                    </a>
+                </div>
             </div>
         </div>
-    </section>
+        @endif
+        
+        <div class="text-center mt-4">
+            <a href="{{ route('cenas.index') ?? route('experiencias') ?? '#' }}" class="btn btn-link">
+                Ver Todas las Experiencias
+                <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        
+        <!-- Estadísticas adicionales -->
+        @if(isset($estadisticas) && $estadisticas['total_cenas'] > 0)
+        <div class="row mt-5 pt-4 border-top">
+            <div class="col-6 col-md-3 text-center">
+                <div class="stat-item">
+                    <h3 class="stat-number text-primary">{{ $estadisticas['total_cenas'] }}</h3>
+                    <p class="stat-label">Experiencias</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 text-center">
+                <div class="stat-item">
+                    <h3 class="stat-number text-success">{{ $estadisticas['total_chefs'] }}</h3>
+                    <p class="stat-label">Chefs</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 text-center">
+                <div class="stat-item">
+                    <h3 class="stat-number text-warning">{{ $estadisticas['cenas_este_mes'] }}</h3>
+                    <p class="stat-label">Este Mes</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 text-center">
+                <div class="stat-item">
+                    <h3 class="stat-number text-info">{{ number_format($estadisticas['comensales_satisfechos']) }}</h3>
+                    <p class="stat-label">Comensales Satisfechos</p>
+                </div>
+            </div>
+        </div>
+        @endif
+    </div>
+</section>
 
     <!-- Como Funciona Section -->
     <section id="como-funciona" class="py-5 bg-white">
