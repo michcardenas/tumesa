@@ -9,18 +9,16 @@ use MercadoPago\Client\Preference\PreferenceClient;
 
 class PagoController extends Controller
 {
-    public function reservar(Request $request)
-    {
-        // Redirigir si no está autenticado
-        if (!Auth::check()) {
-            return redirect()->route('register');
-        }
+   public function reservar(Request $request)
+{
+    if (!auth()->check()) {
+        return redirect()->route('register');
+    }
 
-        // Configurar el access token
-        MercadoPagoConfig::setAccessToken("TEST-7710589893885438-080817-3174e23bf25e4fa03ab7383053c5b49c-90445855");
+    try {
+        \MercadoPago\MercadoPagoConfig::setAccessToken("TEST-7710589893885438-080817-3174e23bf25e4fa03ab7383053c5b49c-90445855");
 
-        // Crear preferencia con el nuevo SDK
-        $client = new PreferenceClient();
+        $client = new \MercadoPago\Client\Preference\PreferenceClient();
 
         $preference = $client->create([
             "items" => [
@@ -39,7 +37,14 @@ class PagoController extends Controller
             "auto_return" => "approved"
         ]);
 
-        // Redirigir al checkout
         return redirect()->away($preference->init_point);
+    } catch (\MercadoPago\Exceptions\MPApiException $e) {
+        // 👇 Mostrar el detalle del error para debug
+        dd([
+            'status' => $e->getHttpStatusCode(),
+            'message' => $e->getApiResponse()->getContent()
+        ]);
     }
+}
+
 }
