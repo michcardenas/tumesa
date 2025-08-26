@@ -39,12 +39,14 @@ class PagoController extends Controller
 
         return redirect()->away($preference->init_point);
     } catch (\MercadoPago\Exceptions\MPApiException $e) {
-        // 👇 Mostrar el detalle del error para debug
-        dd([
-            'status' => $e->getHttpStatusCode(),
-            'message' => $e->getApiResponse()->getContent()
-        ]);
-    }
+    dd([
+        'error' => true,
+        'exception_class' => get_class($e),
+        'message' => $e->getMessage(),
+        'body' => method_exists($e, 'getApiResponse') ? $e->getApiResponse()->getContent() : null
+    ]);
+}
+
 }
 
 }
