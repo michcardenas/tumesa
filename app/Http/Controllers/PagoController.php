@@ -26,7 +26,7 @@ class PagoController extends Controller
                     "title" => "Reserva de servicio",
                     "quantity" => 1,
                     "unit_price" => 50000,
-                    "currency_id" => "COP"
+                    "currency_id" => "ARS"
                 ]
             ],
             "back_urls" => [
