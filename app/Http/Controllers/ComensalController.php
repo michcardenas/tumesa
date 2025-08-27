@@ -145,6 +145,9 @@ public function checkout(Cena $cena): View|RedirectResponse
         return view('comensal.checkout', compact('cena', 'user'));
     }
 
+/**
+ * Process dinner reservation and redirect to payment gateway.
+ */
 public function procesarReserva(Request $request): RedirectResponse
 {
     $user = Auth::user();
@@ -162,8 +165,8 @@ public function procesarReserva(Request $request): RedirectResponse
         'restricciones_alimentarias' => 'nullable|string|max:1000',
         'solicitudes_especiales' => 'nullable|string|max:1000', 
         'comentarios_especiales' => 'nullable|string|max:1000',
-        'acepta_terminos' => 'required|accepted',
-        'acepta_politica_cancelacion' => 'required|accepted'
+        'acepta_terminos' => 'required',
+        'acepta_politica_cancelacion' => 'required'
     ]);
 
     try {
@@ -185,6 +188,10 @@ public function procesarReserva(Request $request): RedirectResponse
         $precioPorPersona = $cena->price;
         $precioTotal = $precioPorPersona * $validatedData['cantidad_comensales'];
 
+        // CORRECCIÓN: Convertir checkboxes a booleanos
+        $aceptaTerminos = $request->has('acepta_terminos') && $request->acepta_terminos == 'on';
+        $aceptaPolitica = $request->has('acepta_politica_cancelacion') && $request->acepta_politica_cancelacion == 'on';
+
         // Crear la reserva en la base de datos
         $reserva = Reserva::create([
             'cena_id' => $cena->id,
@@ -200,8 +207,8 @@ public function procesarReserva(Request $request): RedirectResponse
             'restricciones_alimentarias' => $validatedData['restricciones_alimentarias'],
             'solicitudes_especiales' => $validatedData['solicitudes_especiales'],
             'comentarios_especiales' => $validatedData['comentarios_especiales'],
-            'acepta_terminos' => $validatedData['acepta_terminos'],
-            'acepta_politica_cancelacion' => $validatedData['acepta_politica_cancelacion'],
+            'acepta_terminos' => $aceptaTerminos,  // CORREGIDO
+            'acepta_politica_cancelacion' => $aceptaPolitica,  // CORREGIDO
             'fecha_reserva' => now()
         ]);
 
@@ -238,7 +245,7 @@ public function procesarReserva(Request $request): RedirectResponse
             "external_reference" => $reserva->codigo_reserva,
             "back_urls" => [
                 "success" => route('pago.exito', $reserva->codigo_reserva),
-                "failure" => route('pago.error', $reserva->codigo_reserva),
+                "failure" => route('pago.error', $reserva->codigo_reserva), 
                 "pending" => route('pago.pendiente', $reserva->codigo_reserva)
             ],
             "auto_return" => "approved",
