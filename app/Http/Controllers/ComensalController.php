@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use MercadoPago\MercadoPagoConfig;
+use MercadoPago\Client\Preference\PreferenceClient;
+
 
 class ComensalController extends Controller
 {
@@ -148,6 +151,9 @@ public function checkout(Cena $cena): View|RedirectResponse
 /**
  * Process dinner reservation and redirect to payment gateway.
  */
+/**
+ * Process dinner reservation and redirect to payment gateway.
+ */
 public function procesarReserva(Request $request): RedirectResponse
 {
     $user = Auth::user();
@@ -188,7 +194,7 @@ public function procesarReserva(Request $request): RedirectResponse
         $precioPorPersona = $cena->price;
         $precioTotal = $precioPorPersona * $validatedData['cantidad_comensales'];
 
-        // CORRECCIÓN: Convertir checkboxes a booleanos
+        // Convertir checkboxes a booleanos
         $aceptaTerminos = $request->has('acepta_terminos') && $request->acepta_terminos == 'on';
         $aceptaPolitica = $request->has('acepta_politica_cancelacion') && $request->acepta_politica_cancelacion == 'on';
 
@@ -207,8 +213,8 @@ public function procesarReserva(Request $request): RedirectResponse
             'restricciones_alimentarias' => $validatedData['restricciones_alimentarias'],
             'solicitudes_especiales' => $validatedData['solicitudes_especiales'],
             'comentarios_especiales' => $validatedData['comentarios_especiales'],
-            'acepta_terminos' => $aceptaTerminos,  // CORREGIDO
-            'acepta_politica_cancelacion' => $aceptaPolitica,  // CORREGIDO
+            'acepta_terminos' => $aceptaTerminos,
+            'acepta_politica_cancelacion' => $aceptaPolitica,
             'fecha_reserva' => now()
         ]);
 
@@ -223,7 +229,7 @@ public function procesarReserva(Request $request): RedirectResponse
         
         $client = new \MercadoPago\Client\Preference\PreferenceClient();
         
-        // Crear preferencia de pago
+        // CORRECCIÓN: Usar ARS como en tu ejemplo que funciona
         $preference = $client->create([
             "items" => [
                 [
@@ -232,15 +238,12 @@ public function procesarReserva(Request $request): RedirectResponse
                     "description" => "Chef: " . $cena->chef->name . " | " . $validatedData['cantidad_comensales'] . " comensales",
                     "quantity" => 1,
                     "unit_price" => floatval($precioTotal),
-                    "currency_id" => "COP"
+                    "currency_id" => "ARS"  // CAMBIADO DE COP A ARS
                 ]
             ],
             "payer" => [
                 "name" => $validatedData['nombre_contacto'],
-                "email" => $validatedData['email_contacto'],
-                "phone" => [
-                    "number" => $validatedData['telefono_contacto']
-                ]
+                "email" => $validatedData['email_contacto']
             ],
             "external_reference" => $reserva->codigo_reserva,
             "back_urls" => [
@@ -248,8 +251,7 @@ public function procesarReserva(Request $request): RedirectResponse
                 "failure" => route('pago.error', $reserva->codigo_reserva), 
                 "pending" => route('pago.pendiente', $reserva->codigo_reserva)
             ],
-            "auto_return" => "approved",
-            "statement_descriptor" => "TuMesa - Reserva Cena"
+            "auto_return" => "approved"
         ]);
 
         // Actualizar reserva con ID de preferencia
