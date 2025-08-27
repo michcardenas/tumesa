@@ -33,6 +33,13 @@ Route::post('/reservar', [PagoController::class, 'reservar'])->name('reservar');
 Route::get('/pago-exito/{codigoReserva}', [App\Http\Controllers\PagoController::class, 'pagoExito'])->name('pago.exito');
 Route::get('/pago-error/{codigoReserva}', [App\Http\Controllers\PagoController::class, 'pagoError'])->name('pago.error');
 Route::get('/pago-pendiente/{codigoReserva}', [App\Http\Controllers\PagoController::class, 'pagoPendiente'])->name('pago.pendiente');
+// Rutas para Chef
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/chef/dashboard', [App\Http\Controllers\Chef\ChefController::class, 'dashboard'])->name('chef.dashboard');
+    Route::post('/chef/dinners', [App\Http\Controllers\Chef\ChefController::class, 'storeDinner'])->name('chef.dinners.store');
+    Route::get('/chef/dinners/{cena}/edit', [App\Http\Controllers\Chef\ChefController::class, 'editDinner'])->name('chef.dinners.edit');
+    Route::get('/chef/dinners/{cena}', [App\Http\Controllers\Chef\ChefController::class, 'showDinner'])->name('chef.dinners.show');
+});
 
 //comensal 
 Route::middleware(['auth', 'verified'])->group(function () {

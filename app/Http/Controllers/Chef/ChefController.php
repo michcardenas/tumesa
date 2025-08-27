@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cena;
 
+
 class ChefController extends Controller
 {
    
@@ -219,7 +220,48 @@ class ChefController extends Controller
         ], 500);
     }
 }
+public function editDinner(Cena $cena)
+{
+    $user = Auth::user();
+    
+    Log::info('=== ACCESO A EDITAR CENA ===');
+    Log::info('Chef editando cena:', [
+        'chef_id' => $user->id,
+        'cena_id' => $cena->id,
+        'cena_titulo' => $cena->title
+    ]);
 
+    // Verificar que la cena pertenece al chef autenticado
+    if ($cena->user_id !== $user->id) {
+        Log::warning('Chef intenta editar cena que no le pertenece:', [
+            'chef_id' => $user->id,
+            'cena_owner_id' => $cena->user_id,
+            'cena_id' => $cena->id
+        ]);
+        
+        return redirect()->route('chef.dashboard')
+            ->with('error', 'No tienes permisos para editar esta cena.');
+    }
+
+    // Verificar que la cena no tenga reservas confirmadas
+    $reservasConfirmadas = Reserva::where('cena_id', $cena->id)
+        ->whereIn('estado', ['confirmada', 'pagada'])
+        ->count();
+
+    if ($reservasConfirmadas > 0) {
+        Log::warning('Intento de editar cena con reservas confirmadas:', [
+            'cena_id' => $cena->id,
+            'reservas_confirmadas' => $reservasConfirmadas
+        ]);
+        
+        return redirect()->route('chef.dashboard')
+            ->with('error', 'No puedes editar una cena que ya tiene reservas confirmadas.');
+    }
+
+    Log::info('Mostrando formulario de edición para cena: ' . $cena->id);
+
+    return view('chef.edit-dinner', compact('cena', 'user'));
+}
 public function showDinner(Cena $cena)
 {
     // Verificar que la cena pertenezca al chef autenticado
