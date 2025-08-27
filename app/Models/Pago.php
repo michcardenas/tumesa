@@ -151,4 +151,14 @@ class Pago extends Model
             $this->update(['datos_completos' => $datos]);
         }
     }
+    // En el modelo Reserva, agregar esta relación:
+public function pagos()
+{
+    return $this->hasMany(Pago::class);
+}
+
+public function pagoAprobado()
+{
+    return $this->hasOne(Pago::class)->where('status', 'approved');
+}
 }
