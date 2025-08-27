@@ -15,17 +15,17 @@ class HomeController extends Controller
     public function index()
     {
         // Si está autenticado, redirigir al dashboard correspondiente
-        if (auth()->check()) {
-            $user = auth()->user();
+        // if (auth()->check()) {
+        //     $user = auth()->user();
             
-            // Redirigir según el rol del usuario (solo Spatie)
-            if (method_exists($user, 'hasRole') && ($user->hasRole('chef') || $user->hasRole('chef_anfitrion'))) {
-                return redirect()->route('chef.dashboard');
-            }
+        //     // Redirigir según el rol del usuario (solo Spatie)
+        //     if (method_exists($user, 'hasRole') && ($user->hasRole('chef') || $user->hasRole('chef_anfitrion'))) {
+        //         return redirect()->route('chef.dashboard');
+        //     }
             
-            // Para otros usuarios, redirigir a un dashboard general
-            return redirect()->route('dashboard');
-        }
+        //     // Para otros usuarios, redirigir a un dashboard general
+        //     return redirect()->route('dashboard');
+        // }
 
         // Si no está autenticado, mostrar página de bienvenida con datos
         $data = $this->getWelcomeData();
