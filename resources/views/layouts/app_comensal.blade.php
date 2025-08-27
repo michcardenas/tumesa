@@ -463,12 +463,7 @@
                                         Historial
                                     </a>
                                 </li>
-                                <li class="menu-item">
-                                    <a href="#" class="menu-link" onclick="showSection('favoritos')">
-                                        <i class="fas fa-heart"></i>
-                                        Chefs Favoritos
-                                    </a>
-                                </li>
+                               
                                 <li class="menu-item">
                                     <a href="#" class="menu-link" onclick="showSection('perfil')">
                                         <i class="fas fa-user-edit"></i>
