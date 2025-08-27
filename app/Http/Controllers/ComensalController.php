@@ -18,7 +18,7 @@ class ComensalController extends Controller
     /**
      * Display the comensal dashboard.
      */
-  public function dashboard(): View
+public function dashboard(): View 
 {
     $user = Auth::user();
     
@@ -44,12 +44,11 @@ class ComensalController extends Controller
         ->active()
         ->published() 
         ->upcoming()
-        ->where('guests_current', '>', 0) // Que tengan al menos una reserva
-        ->orderBy('guests_current', 'desc') // Las más populares primero
+        ->where('guests_current', '>', 0)
+        ->orderBy('guests_current', 'desc')
         ->limit(2)
         ->get();
 
-    // Si no hay cenas populares, traer las más recientes
     if ($cenasRecomendadas->isEmpty()) {
         $cenasRecomendadas = Cena::with('chef')
             ->active()
@@ -60,10 +59,33 @@ class ComensalController extends Controller
             ->get();
     }
 
-    Log::info('Cenas disponibles encontradas: ' . $cenasDisponibles->count());
-    Log::info('Cenas recomendadas encontradas: ' . $cenasRecomendadas->count());
+    // NUEVO: Traer reservas del usuario
+    $proximasReservas = Reserva::with(['cena', 'cena.chef'])
+        ->where('user_id', $user->id)
+        ->whereIn('estado', ['pendiente', 'confirmada', 'pagada'])
+        ->whereHas('cena', function($query) {
+            $query->where('datetime', '>', now());
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-    return view('comensal.dashboard', compact('user', 'cenasDisponibles', 'cenasRecomendadas'));
+    // NUEVO: Calcular estadísticas reales
+    $stats = [
+        'reservas_activas' => $proximasReservas->count(),
+        'cenas_disfrutadas' => Reserva::where('user_id', $user->id)
+            ->where('estado', 'completada')
+            ->count(),
+        'chefs_favoritos' => 0, // Implementar después con tabla de favoritos
+        'gastado_mes' => Reserva::where('user_id', $user->id)
+            ->where('estado_pago', 'pagado')
+            ->whereMonth('created_at', now()->month)
+            ->sum('precio_total')
+    ];
+
+    Log::info('Estadísticas calculadas:', $stats);
+    Log::info('Próximas reservas encontradas: ' . $proximasReservas->count());
+
+    return view('comensal.dashboard', compact('user', 'cenasDisponibles', 'cenasRecomendadas', 'proximasReservas', 'stats'));
 }
 
 public function checkout(Cena $cena): View|RedirectResponse

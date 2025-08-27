@@ -11,215 +11,138 @@
         </div>
     </div>
 
-    <!-- Contenido Principal -->
-    <div class="comensal-content">
-        <!-- Dashboard Principal -->
-        <div id="dashboard-section" class="content-section active">
-                        <!-- Estadísticas Rápidas -->
-                        <div class="row mb-4">
-                            <div class="col-md-3">
-                                <div class="stat-card">
-                                    <div class="stat-icon bg-primary">
-                                        <i class="fas fa-calendar-check"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>3</h4>
-                                        <p>Cenas Reservadas</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-card">
-                                    <div class="stat-icon bg-success">
-                                        <i class="fas fa-utensils"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>12</h4>
-                                        <p>Cenas Disfrutadas</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-card">
-                                    <div class="stat-icon bg-warning">
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>8</h4>
-                                        <p>Chefs Favoritos</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-card">
-                                    <div class="stat-icon bg-danger">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>$850</h4>
-                                        <p>Gastado Este Mes</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Estadísticas Reales -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon bg-primary">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+                <h4>{{ $stats['reservas_activas'] }}</h4>
+                <p>Cenas Reservadas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon bg-success">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <div class="stat-info">
+                <h4>{{ $stats['cenas_disfrutadas'] }}</h4>
+                <p>Cenas Disfrutadas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon bg-warning">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-info">
+                <h4>{{ $stats['chefs_favoritos'] }}</h4>
+                <p>Chefs Favoritos</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon bg-danger">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stat-info">
+                <h4>${{ number_format($stats['gastado_mes'], 0, ',', '.') }}</h4>
+                <p>Gastado Este Mes</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-                        <!-- Próximas Reservas -->
-                        <div class="section-header">
-                            <h2>Tus Próximas Cenas</h2>
-                            <a href="#" class="btn btn-primary" onclick="showSection('cenas-disponibles')">
-                                <i class="fas fa-search"></i> Buscar Más Cenas
-                            </a>
-                        </div>
+<!-- Próximas Reservas Reales -->
+<div class="section-header">
+    <h2>Tus Próximas Cenas</h2>
+    <a href="#" class="btn btn-primary" onclick="showSection('cenas-disponibles')">
+        <i class="fas fa-search"></i> Buscar Más Cenas
+    </a>
+</div>
 
-                        <div class="table-container">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Chef</th>
-                                        <th>Título</th>
-                                        <th>Ubicación</th>
-                                        <th>Precio</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- Datos de ejemplo - reemplaza con datos reales --}}
-                                    <tr>
-                                        <td>
-                                            <strong>Sáb, 28 Ago</strong><br>
-                                            <small class="text-muted">7:00 PM</small>
-                                        </td>
-                                        <td>
-                                            <div class="chef-info">
-                                                <strong>María González</strong><br>
-                                                <small class="text-muted">⭐ 4.9 (127 reseñas)</small>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <strong>Noche Italiana Tradicional</strong><br>
-                                            <small class="text-muted">Pasta casera y tiramisu</small>
-                                        </td>
-                                        <td>
-                                            <small>Zona Rosa, Bogotá</small>
-                                        </td>
-                                        <td>
-                                            <strong>$45.000</strong>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-success">Confirmada</span>
-                                        </td>
-                                        <td>
-                                            <div class="action-buttons">
-                                                <button class="btn btn-sm btn-outline-primary" title="Ver detalles">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" title="Cancelar reserva">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Dom, 30 Ago</strong><br>
-                                            <small class="text-muted">1:00 PM</small>
-                                        </td>
-                                        <td>
-                                            <div class="chef-info">
-                                                <strong>Carlos Mendoza</strong><br>
-                                                <small class="text-muted">⭐ 4.8 (89 reseñas)</small>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <strong>Brunch Gourmet</strong><br>
-                                            <small class="text-muted">Huevos benedict y mimosas</small>
-                                        </td>
-                                        <td>
-                                            <small>Chapinero, Bogotá</small>
-                                        </td>
-                                        <td>
-                                            <strong>$38.000</strong>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-warning">Pendiente de Pago</span>
-                                        </td>
-                                        <td>
-                                            <div class="action-buttons">
-                                                <button class="btn btn-sm btn-outline-primary" title="Ver detalles">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-success" title="Pagar ahora">
-                                                    <i class="fas fa-credit-card"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Cenas Recomendadas -->
-                        <div class="section-header mt-4">
-                            <h2>Cenas Recomendadas Para Ti</h2>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="recommended-dinner-card">
-                                    <div class="dinner-image">
-                                        <img src="https://via.placeholder.com/400x200?text=Cena+Francesa" alt="Cena Francesa">
-                                        <div class="price-tag">$52.000</div>
-                                    </div>
-                                    <div class="dinner-content">
-                                        <div class="dinner-header">
-                                            <h5>Cena Francesa Clásica</h5>
-                                            <div class="chef-rating">
-                                                <small>Chef: Ana Morales</small>
-                                                <span class="rating">⭐ 4.9</span>
-                                            </div>
-                                        </div>
-                                        <p class="dinner-description">Coq au vin, ratatouille y crème brûlée en un ambiente romántico.</p>
-                                        <div class="dinner-details">
-                                            <span><i class="fas fa-calendar"></i> Vie, 2 Sep</span>
-                                            <span><i class="fas fa-clock"></i> 8:00 PM</span>
-                                            <span><i class="fas fa-users"></i> 6/8 lugares</span>
-                                        </div>
-                                        <button class="btn btn-primary btn-sm w-100 mt-2">
-                                            <i class="fas fa-calendar-plus"></i> Reservar Ahora
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="recommended-dinner-card">
-                                    <div class="dinner-image">
-                                        <img src="https://via.placeholder.com/400x200?text=Cena+Asiática" alt="Cena Asiática">
-                                        <div class="price-tag">$48.000</div>
-                                    </div>
-                                    <div class="dinner-content">
-                                        <div class="dinner-header">
-                                            <h5>Fusión Asiática Moderna</h5>
-                                            <div class="chef-rating">
-                                                <small>Chef: Koji Tanaka</small>
-                                                <span class="rating">⭐ 4.7</span>
-                                            </div>
-                                        </div>
-                                        <p class="dinner-description">Ramen artesanal, sushi premium y postres japoneses únicos.</p>
-                                        <div class="dinner-details">
-                                            <span><i class="fas fa-calendar"></i> Sáb, 3 Sep</span>
-                                            <span><i class="fas fa-clock"></i> 7:30 PM</span>
-                                            <span><i class="fas fa-users"></i> 4/10 lugares</span>
-                                        </div>
-                                        <button class="btn btn-primary btn-sm w-100 mt-2">
-                                            <i class="fas fa-calendar-plus"></i> Reservar Ahora
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<div class="table-container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Chef</th>
+                <th>Título</th>
+                <th>Ubicación</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($proximasReservas as $reserva)
+            <tr>
+                <td>
+                    <strong>{{ $reserva->cena->datetime->format('D, j M') }}</strong><br>
+                    <small class="text-muted">{{ $reserva->cena->datetime->format('g:i A') }}</small>
+                </td>
+                <td>
+                    <div class="chef-info">
+                        <strong>{{ $reserva->cena->chef->name }}</strong><br>
+                        <small class="text-muted">⭐ 4.8 (89 reseñas)</small>
                     </div>
+                </td>
+                <td>
+                    <strong>{{ $reserva->cena->title }}</strong><br>
+                    <small class="text-muted">{{ Str::limit($reserva->cena->menu, 40) }}</small>
+                </td>
+                <td>
+                    <small>{{ Str::limit($reserva->cena->location, 25) }}</small>
+                </td>
+                <td>
+                    <strong>{{ $reserva->precio_total_formateado }}</strong>
+                    @if($reserva->cantidad_comensales > 1)
+                        <br><small class="text-muted">{{ $reserva->cantidad_comensales }} comensales</small>
+                    @endif
+                </td>
+                <td>
+                    <span class="badge {{ $reserva->estado_badge['class'] }}">
+                        {{ $reserva->estado_badge['texto'] }}
+                    </span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-sm btn-outline-primary" title="Ver detalles" onclick="verDetallesReserva({{ $reserva->id }})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        @if($reserva->puede_cancelar)
+                            <button class="btn btn-sm btn-outline-danger" title="Cancelar reserva" onclick="cancelarReserva({{ $reserva->id }})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        @endif
+                        @if($reserva->estado_pago === 'pendiente')
+                            <button class="btn btn-sm btn-outline-success" title="Completar pago" onclick="completarPago({{ $reserva->id }})">
+                                <i class="fas fa-credit-card"></i>
+                            </button>
+                        @endif
+                    </div>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <i class="fas fa-calendar-times fa-2x mb-3 text-muted"></i>
+                    <br>
+                    <strong>No tienes reservas próximas</strong>
+                    <br>
+                    <small class="text-muted">Explora las cenas disponibles y haz tu primera reserva</small>
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 
                     <!-- Sección Cenas Disponibles -->
              <!-- Sección Cenas Disponibles -->
