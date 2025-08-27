@@ -109,14 +109,14 @@ class AuthenticatedSessionController extends Controller
                 }
                 
             case 'comensal':
-                Log::info('🍽️ Caso COMENSAL detectado - Redirigiendo a dashboard normal');
+                Log::info('🍽️ Caso COMENSAL detectado - Redirigiendo a comensal.dashboard');
                 
                 try {
-                    $comensalRoute = route('dashboard');
+                    $comensalRoute = route('comensal.dashboard'); // Cambiar esta línea
                     Log::info('Ruta comensal generada: ' . $comensalRoute);
                     return redirect()->intended($comensalRoute);
                 } catch (\Exception $e) {
-                    Log::error('Error generando ruta dashboard: ' . $e->getMessage());
+                    Log::error('Error generando ruta comensal.dashboard: ' . $e->getMessage());
                     return redirect('/dashboard')->with('error', 'Error de redirección comensal');
                 }
                 

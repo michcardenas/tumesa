@@ -31,6 +31,15 @@ Route::get('/pago-pendiente', fn() => '🕓 Pago pendiente')->name('pago.pendien
 
 Route::post('/reservar', [PagoController::class, 'reservar'])->name('reservar');
 
+
+//comensal 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/comensal/dashboard', [App\Http\Controllers\ComensalController::class, 'dashboard'])->name('comensal.dashboard');
+    Route::get('/comensal/checkout/{cena}', [App\Http\Controllers\ComensalController::class, 'checkout'])->name('comensal.checkout');
+    Route::post('/comensal/procesar-reserva', [App\Http\Controllers\ComensalController::class, 'procesarReserva'])->name('comensal.procesar-reserva');
+
+
+});
 /*
 |--------------------------------------------------------------------------
 | Rutas Públicas (sin autenticación)
