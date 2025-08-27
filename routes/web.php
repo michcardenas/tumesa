@@ -30,7 +30,9 @@ Route::get('/pago-pendiente', fn() => '🕓 Pago pendiente')->name('pago.pendien
 //pagos
 
 Route::post('/reservar', [PagoController::class, 'reservar'])->name('reservar');
-
+Route::get('/pago-exito/{codigoReserva}', [App\Http\Controllers\PagoController::class, 'pagoExito'])->name('pago.exito');
+Route::get('/pago-error/{codigoReserva}', [App\Http\Controllers\PagoController::class, 'pagoError'])->name('pago.error');
+Route::get('/pago-pendiente/{codigoReserva}', [App\Http\Controllers\PagoController::class, 'pagoPendiente'])->name('pago.pendiente');
 
 //comensal 
 Route::middleware(['auth', 'verified'])->group(function () {
