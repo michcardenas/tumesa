@@ -1,6 +1,10 @@
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('¡Bienvenido! Para completar tu registro con Google, por favor selecciona tu tipo de cuenta y acepta nuestros términos.') }}
+        @if(isset($googleUserData['is_existing_user']) && $googleUserData['is_existing_user'])
+            {{ __('¡Bienvenido de nuevo! Para completar tu perfil, por favor selecciona tu tipo de cuenta.') }}
+        @else
+            {{ __('¡Bienvenido! Para completar tu registro con Google, por favor selecciona tu tipo de cuenta y acepta nuestros términos.') }}
+        @endif
     </div>
 
     <!-- Información del usuario de Google -->
@@ -98,7 +102,11 @@
             </a>
 
             <x-primary-button class="ml-3">
-                {{ __('Completar Registro') }}
+                @if(isset($googleUserData['is_existing_user']) && $googleUserData['is_existing_user'])
+                    {{ __('Actualizar Perfil') }}
+                @else
+                    {{ __('Completar Registro') }}
+                @endif
             </x-primary-button>
         </div>
     </form>

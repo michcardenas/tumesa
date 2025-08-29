@@ -131,9 +131,35 @@ public function handleGoogleCallback(Request $request): RedirectResponse
                 'provider' => 'google',
             ]);
             
-            Log::info('Usuario existente logueado via Google:', [
+            // ✅ VERIFICAR SI EL USUARIO EXISTENTE TIENE ROL
+            if (empty($user->role) || $user->role === null) {
+                Log::info('🔄 Usuario existente SIN ROL - Enviando a completar registro:', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'current_role' => $user->role ?? 'null',
+                ]);
+                
+                // Guardar datos en sesión incluyendo el user_id para actualizar en lugar de crear
+                session([
+                    'google_user_data' => [
+                        'user_id' => $user->id,  // 🆕 ID del usuario existente
+                        'name' => $googleUser->getName(),
+                        'email' => $googleUser->getEmail(),
+                        'google_id' => $googleUser->getId(),
+                        'avatar' => $googleUser->getAvatar(),
+                        'is_existing_user' => true, // 🆕 Bandera para saber que existe
+                    ]
+                ]);
+
+                // Redirigir al formulario de completar registro
+                return redirect()->route('auth.google.complete-registration');
+            }
+            
+            // Usuario existente CON ROL - login normal
+            Log::info('Usuario existente CON ROL logueado via Google:', [
                 'user_id' => $user->id,
                 'email' => $user->email,
+                'role' => $user->role,
             ]);
 
             // Hacer login
@@ -152,6 +178,7 @@ public function handleGoogleCallback(Request $request): RedirectResponse
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
+                    'is_existing_user' => false, // 🆕 Bandera para saber que es nuevo
                 ]
             ]);
 
@@ -211,18 +238,55 @@ public function storeGoogleCompleteRegistration(Request $request): RedirectRespo
     ]);
 
     try {
-        // Crear el usuario con los datos de Google + datos del formulario
-        $user = User::create([
-            'name' => $googleUserData['name'],
-            'email' => $googleUserData['email'],
-            'google_id' => $googleUserData['google_id'],
-            'avatar' => $googleUserData['avatar'],
-            'provider' => 'google',
-            'role' => $request->role,
-            'email_verified_at' => now(), // Google ya verificó el email
-        ]);
+        // 🔄 VERIFICAR SI ES USUARIO EXISTENTE O NUEVO
+        if (isset($googleUserData['is_existing_user']) && $googleUserData['is_existing_user'] === true) {
+            // ✅ USUARIO EXISTENTE - ACTUALIZAR ROL
+            $user = User::find($googleUserData['user_id']);
+            
+            if (!$user) {
+                Log::error('Usuario existente no encontrado con ID: ' . $googleUserData['user_id']);
+                return redirect('/login')->withErrors(['error' => 'Error en el sistema. Por favor, intenta de nuevo.']);
+            }
 
-        // 🚀 ASIGNAR ROL DE SPATIE
+            // Actualizar rol del usuario existente
+            $user->update([
+                'role' => $request->role,
+                'google_id' => $googleUserData['google_id'], // Por si no lo tenía
+                'avatar' => $googleUserData['avatar'],       // Actualizar avatar
+                'provider' => 'google',                      // Actualizar provider
+            ]);
+
+            Log::info('✅ Usuario existente actualizado con rol:', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'new_role' => $request->role,
+                'action' => 'role_update',
+            ]);
+            
+        } else {
+            // 🆕 USUARIO NUEVO - CREAR USUARIO
+            $user = User::create([
+                'name' => $googleUserData['name'],
+                'email' => $googleUserData['email'],
+                'google_id' => $googleUserData['google_id'],
+                'avatar' => $googleUserData['avatar'],
+                'provider' => 'google',
+                'role' => $request->role,
+                'email_verified_at' => now(), // Google ya verificó el email
+            ]);
+
+            // Disparar evento de usuario registrado solo para usuarios nuevos
+            event(new Registered($user));
+
+            Log::info('✅ Usuario nuevo creado desde Google:', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role' => $request->role,
+                'action' => 'user_creation',
+            ]);
+        }
+
+        // 🚀 ASIGNAR ROL DE SPATIE (para ambos casos)
         try {
             $spatieRoleMap = [
                 'comensal' => 'comensal',
@@ -230,9 +294,11 @@ public function storeGoogleCompleteRegistration(Request $request): RedirectRespo
             ];
 
             $spatieRole = $spatieRoleMap[$request->role] ?? 'comensal';
-            $user->assignRole($spatieRole);
             
-            Log::info('✅ Usuario de Google completado con roles:', [
+            // Limpiar roles anteriores y asignar el nuevo
+            $user->syncRoles([$spatieRole]);
+            
+            Log::info('✅ Rol de Spatie asignado:', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'role_campo' => $user->role,
@@ -241,11 +307,8 @@ public function storeGoogleCompleteRegistration(Request $request): RedirectRespo
             ]);
             
         } catch (\Exception $e) {
-            Log::error('No se pudo asignar rol de Spatie al usuario de Google: ' . $e->getMessage());
+            Log::error('No se pudo asignar rol de Spatie: ' . $e->getMessage());
         }
-
-        // Disparar evento de usuario registrado
-        event(new Registered($user));
 
         // Limpiar datos de Google de la sesión
         session()->forget('google_user_data');
@@ -253,18 +316,19 @@ public function storeGoogleCompleteRegistration(Request $request): RedirectRespo
         // Hacer login
         Auth::login($user);
 
-        Log::info('=== REDIRECCIÓN POST-REGISTRO COMPLETO GOOGLE ===');
-        Log::info('Usuario creado y logueado:', [
+        Log::info('=== REDIRECCIÓN POST-REGISTRO/ACTUALIZACIÓN GOOGLE ===');
+        Log::info('Usuario logueado:', [
             'user_id' => $user->id,
             'role' => $user->role,
             'provider' => 'google',
+            'action_type' => isset($googleUserData['is_existing_user']) && $googleUserData['is_existing_user'] ? 'role_update' : 'new_user',
         ]);
 
         // Redireccionar según el rol
         return $this->redirectUserByRole($user);
         
     } catch (\Exception $e) {
-        Log::error('Error al crear usuario desde Google: ' . $e->getMessage());
+        Log::error('Error al procesar usuario desde Google: ' . $e->getMessage());
         return redirect()->back()->withErrors(['error' => 'Error al completar el registro. Por favor, intenta de nuevo.']);
     }
 }
