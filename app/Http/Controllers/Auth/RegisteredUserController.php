@@ -349,16 +349,31 @@ private function redirectUserByRole(User $user): RedirectResponse
     switch ($user->role) {
         case 'admin':
             Log::info('🔧 Redirigiendo usuario admin');
-            return redirect()->intended(route('admin.dashboard'));
+            try {
+                return redirect()->intended(route('admin.dashboard'));
+            } catch (\Exception $e) {
+                Log::error('Ruta admin.dashboard no existe: ' . $e->getMessage());
+                return redirect('/dashboard')->with('error', 'Dashboard de admin no disponible');
+            }
             
         case 'chef_anfitrion':
             Log::info('👨‍🍳 Redirigiendo usuario chef_anfitrion');
-            return redirect()->intended(route('chef.dashboard'));
+            try {
+                return redirect()->intended(route('chef.dashboard'));
+            } catch (\Exception $e) {
+                Log::error('Ruta chef.dashboard no existe: ' . $e->getMessage());
+                return redirect('/dashboard')->with('success', 'Perfil actualizado correctamente. Dashboard de chef en desarrollo.');
+            }
             
         case 'comensal':
         default:
             Log::info('🍽️ Redirigiendo usuario comensal (o default)');
-            return redirect()->intended(route('dashboard'));
+            try {
+                return redirect()->intended(route('comensal.dashboard'));
+            } catch (\Exception $e) {
+                Log::error('Ruta comensal.dashboard no existe: ' . $e->getMessage());
+                return redirect('/dashboard')->with('success', 'Perfil actualizado correctamente. Dashboard de comensal en desarrollo.');
+            }
     }
 }
 }
