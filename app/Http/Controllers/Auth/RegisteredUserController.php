@@ -106,6 +106,7 @@ class RegisteredUserController extends Controller
             return redirect()->intended(route('dashboard'));
     }
 }
+
 public function redirectToGoogle(): RedirectResponse
 {
     return Socialite::driver('google')->redirect();
@@ -134,44 +135,137 @@ public function handleGoogleCallback(Request $request): RedirectResponse
                 'user_id' => $user->id,
                 'email' => $user->email,
             ]);
+
+            // Hacer login
+            Auth::login($user);
+
+            // Redireccionar según el rol
+            return $this->redirectUserByRole($user);
         } else {
-            // Crear nuevo usuario desde Google
-            $user = User::create([
+            // 🚀 USUARIO NUEVO - GUARDAR DATOS EN SESIÓN Y REDIRIGIR A FORMULARIO
+            Log::info('🆕 Nuevo usuario de Google - Guardando datos en sesión para completar registro');
+            
+            // Guardar datos de Google en la sesión
+            session([
+                'google_user_data' => [
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
+                    'avatar' => $googleUser->getAvatar(),
+                ]
+            ]);
+
+            Log::info('Datos de Google guardados en sesión:', [
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId(),
-                'avatar' => $googleUser->getAvatar(),
-                'provider' => 'google',
-                'role' => 'comensal', // Rol por defecto para usuarios de Google
-                'email_verified_at' => now(), // Google ya verificó el email
             ]);
 
-            // 🚀 ASIGNAR ROL POR DEFECTO DE SPATIE
-            try {
-                $user->assignRole('comensal'); // Rol por defecto
-                
-                Log::info('Nuevo usuario creado via Google:', [
-                    'user_id' => $user->id,
-                    'email' => $user->email,
-                    'role' => 'comensal',
-                ]);
-            } catch (\Exception $e) {
-                Log::error('No se pudo asignar rol de Spatie al usuario de Google: ' . $e->getMessage());
-            }
-
-            // Disparar evento de usuario registrado
-            event(new Registered($user));
+            // Redirigir al formulario de registro adicional
+            return redirect()->route('auth.google.complete-registration');
         }
-
-        // Hacer login
-        Auth::login($user);
-
-        // Redireccionar según el rol usando el método helper
-        return $this->redirectUserByRole($user);
         
     } catch (Exception $e) {
         Log::error('Error en Google OAuth: ' . $e->getMessage());
         return redirect('/login')->withErrors(['error' => 'Error al autenticar con Google. Por favor, intenta de nuevo.']);
+    }
+}
+
+/**
+ * 🆕 Mostrar formulario para completar registro de usuario de Google
+ */
+public function showGoogleCompleteRegistration(): View
+{
+    // Verificar que hay datos de Google en sesión
+    $googleUserData = session('google_user_data');
+    
+    if (!$googleUserData) {
+        Log::warning('Intento de acceso a completar registro sin datos de Google en sesión');
+        return redirect('/login')->withErrors(['error' => 'Sesión expirada. Por favor, inicia sesión de nuevo.']);
+    }
+
+    Log::info('🖥️ Mostrando formulario de completar registro para usuario de Google:', [
+        'email' => $googleUserData['email']
+    ]);
+
+    return view('auth.google-complete-registration', compact('googleUserData'));
+}
+
+/**
+ * 🆕 Procesar formulario de registro adicional de Google
+ */
+public function storeGoogleCompleteRegistration(Request $request): RedirectResponse
+{
+    // Verificar que hay datos de Google en sesión
+    $googleUserData = session('google_user_data');
+    
+    if (!$googleUserData) {
+        Log::warning('Intento de completar registro sin datos de Google en sesión');
+        return redirect('/login')->withErrors(['error' => 'Sesión expirada. Por favor, inicia sesión de nuevo.']);
+    }
+
+    // Validar el formulario
+    $request->validate([
+        'role' => ['required', 'string', 'in:comensal,chef_anfitrion'],
+        'terms' => ['required', 'accepted'],
+    ]);
+
+    try {
+        // Crear el usuario con los datos de Google + datos del formulario
+        $user = User::create([
+            'name' => $googleUserData['name'],
+            'email' => $googleUserData['email'],
+            'google_id' => $googleUserData['google_id'],
+            'avatar' => $googleUserData['avatar'],
+            'provider' => 'google',
+            'role' => $request->role,
+            'email_verified_at' => now(), // Google ya verificó el email
+        ]);
+
+        // 🚀 ASIGNAR ROL DE SPATIE
+        try {
+            $spatieRoleMap = [
+                'comensal' => 'comensal',
+                'chef_anfitrion' => 'chef',
+            ];
+
+            $spatieRole = $spatieRoleMap[$request->role] ?? 'comensal';
+            $user->assignRole($spatieRole);
+            
+            Log::info('✅ Usuario de Google completado con roles:', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role_campo' => $user->role,
+                'spatie_role' => $spatieRole,
+                'provider' => 'google',
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('No se pudo asignar rol de Spatie al usuario de Google: ' . $e->getMessage());
+        }
+
+        // Disparar evento de usuario registrado
+        event(new Registered($user));
+
+        // Limpiar datos de Google de la sesión
+        session()->forget('google_user_data');
+
+        // Hacer login
+        Auth::login($user);
+
+        Log::info('=== REDIRECCIÓN POST-REGISTRO COMPLETO GOOGLE ===');
+        Log::info('Usuario creado y logueado:', [
+            'user_id' => $user->id,
+            'role' => $user->role,
+            'provider' => 'google',
+        ]);
+
+        // Redireccionar según el rol
+        return $this->redirectUserByRole($user);
+        
+    } catch (\Exception $e) {
+        Log::error('Error al crear usuario desde Google: ' . $e->getMessage());
+        return redirect()->back()->withErrors(['error' => 'Error al completar el registro. Por favor, intenta de nuevo.']);
     }
 }
 
@@ -181,7 +275,7 @@ public function handleGoogleCallback(Request $request): RedirectResponse
 private function redirectUserByRole(User $user): RedirectResponse
 {
     // 📝 Log de redirección
-    Log::info('=== REDIRECCIÓN POST-LOGIN GOOGLE ===');
+    Log::info('=== REDIRECCIÓN POST-LOGIN ===');
     Log::info('Usuario logueado:', [
         'user_id' => $user->id,
         'role' => $user->role,
@@ -190,16 +284,16 @@ private function redirectUserByRole(User $user): RedirectResponse
 
     switch ($user->role) {
         case 'admin':
-            Log::info('🔧 Redirigiendo usuario admin (Google)');
+            Log::info('🔧 Redirigiendo usuario admin');
             return redirect()->intended(route('admin.dashboard'));
             
         case 'chef_anfitrion':
-            Log::info('👨‍🍳 Redirigiendo usuario chef_anfitrion (Google)');
+            Log::info('👨‍🍳 Redirigiendo usuario chef_anfitrion');
             return redirect()->intended(route('chef.dashboard'));
             
         case 'comensal':
         default:
-            Log::info('🍽️ Redirigiendo usuario comensal (Google o default)');
+            Log::info('🍽️ Redirigiendo usuario comensal (o default)');
             return redirect()->intended(route('dashboard'));
     }
 }

@@ -16,7 +16,14 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 |--------------------------------------------------------------------------
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/auth/google/complete-registration', [RegisteredUserController::class, 'showGoogleCompleteRegistration'])
+    ->name('auth.google.complete-registration')
+    ->middleware('guest');
 
+// Ruta para procesar el formulario de completar registro de Google  
+Route::post('/auth/google/complete-registration', [RegisteredUserController::class, 'storeGoogleCompleteRegistration'])
+    ->name('auth.google.complete-registration.store')
+    ->middleware('guest');
 Route::get('/debug-google', function() {
     return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
