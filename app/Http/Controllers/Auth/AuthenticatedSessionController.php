@@ -23,118 +23,125 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+public function store(LoginRequest $request): RedirectResponse
+{
+    $request->authenticate();
 
-        $request->session()->regenerate();
+    $request->session()->regenerate();
 
-        // 🚀 REDIRECCIÓN POR ROL CON LOGS
-        $user = Auth::user();
-        
-        // 🔍 LOG: Información del usuario autenticado
-        Log::info('=== INICIO DE REDIRECCIÓN POST-LOGIN ===');
-        Log::info('Usuario autenticado:', [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'role_campo' => $user->role,
-            'created_at' => $user->created_at,
-        ]);
+    // 🚀 REDIRECCIÓN POR ROL CON LOGS
+    $user = Auth::user();
+    
+    // 🔍 LOG: Información del usuario autenticado
+    Log::info('=== INICIO DE REDIRECCIÓN POST-LOGIN ===');
+    Log::info('Usuario autenticado:', [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'role_campo' => $user->role,
+        'provider' => $user->provider ?? 'manual', // 📝 NUEVO: Log del provider
+        'google_id' => $user->google_id ? 'Presente' : 'No presente', // 📝 NUEVO: Log si tiene Google ID
+        'created_at' => $user->created_at,
+    ]);
 
-        // 🔍 LOG: Obtener roles de Spatie
-        $spatieRoles = [];
-        $efectiveRole = null;
+    // 🔍 LOG: Obtener roles de Spatie
+    $spatieRoles = [];
+    $efectiveRole = null;
 
-        try {
-            if (method_exists($user, 'getRoleNames')) {
-                $spatieRoles = $user->getRoleNames()->toArray();
-                Log::info('Roles de Spatie:', $spatieRoles);
-                
-                // 🎯 DETERMINAR ROL EFECTIVO
-                // Prioridad: campo role de users > roles de Spatie
-                if (!empty($user->role)) {
-                    $efectiveRole = $user->role;
-                    Log::info('Usando rol del campo users.role: ' . $efectiveRole);
-                } else {
-                    // Mapear roles de Spatie a roles del sistema
-                    if (in_array('admin', $spatieRoles)) {
-                        $efectiveRole = 'admin';
-                    } elseif (in_array('chef', $spatieRoles) || in_array('chef_anfitrion', $spatieRoles)) {
-                        $efectiveRole = 'chef_anfitrion';
-                    } elseif (in_array('comensal', $spatieRoles) || in_array('cliente', $spatieRoles)) {
-                        $efectiveRole = 'comensal';
-                    } else {
-                        $efectiveRole = 'comensal'; // default
-                    }
-                    Log::info('Rol determinado desde Spatie: ' . $efectiveRole);
-                }
+    try {
+        if (method_exists($user, 'getRoleNames')) {
+            $spatieRoles = $user->getRoleNames()->toArray();
+            Log::info('Roles de Spatie:', $spatieRoles);
+            
+            // 🎯 DETERMINAR ROL EFECTIVO
+            // Prioridad: campo role de users > roles de Spatie
+            if (!empty($user->role)) {
+                $efectiveRole = $user->role;
+                Log::info('Usando rol del campo users.role: ' . $efectiveRole);
             } else {
-                Log::warning('Método getRoleNames no existe - usando campo role de users');
-                $efectiveRole = $user->role ?? 'comensal';
+                // Mapear roles de Spatie a roles del sistema
+                if (in_array('admin', $spatieRoles)) {
+                    $efectiveRole = 'admin';
+                } elseif (in_array('chef', $spatieRoles) || in_array('chef_anfitrion', $spatieRoles)) {
+                    $efectiveRole = 'chef_anfitrion';
+                } elseif (in_array('comensal', $spatieRoles) || in_array('cliente', $spatieRoles)) {
+                    $efectiveRole = 'comensal';
+                } else {
+                    $efectiveRole = 'comensal'; // default
+                }
+                Log::info('Rol determinado desde Spatie: ' . $efectiveRole);
             }
-        } catch (\Exception $e) {
-            Log::error('Error obteniendo roles de Spatie: ' . $e->getMessage());
+        } else {
+            Log::warning('Método getRoleNames no existe - usando campo role de users');
             $efectiveRole = $user->role ?? 'comensal';
         }
-
-        // 🔍 LOG: Switch case debugging
-        Log::info('Rol efectivo para redirección: "' . $efectiveRole . '"');
-        
-        switch ($efectiveRole) {
-            case 'admin':
-                Log::info('🔧 Caso ADMIN detectado - Redirigiendo a admin.dashboard');
-                
-                try {
-                    $adminRoute = route('admin.dashboard');
-                    Log::info('Ruta admin generada: ' . $adminRoute);
-                    return redirect()->intended($adminRoute);
-                } catch (\Exception $e) {
-                    Log::error('Error generando ruta admin.dashboard: ' . $e->getMessage());
-                    return redirect('/dashboard')->with('error', 'Error de redirección admin');
-                }
-                
-            case 'chef_anfitrion':
-                Log::info('👨‍🍳 Caso CHEF_ANFITRION detectado - Redirigiendo a chef.dashboard');
-                
-                try {
-                    $chefRoute = route('chef.dashboard');
-                    Log::info('Ruta chef generada: ' . $chefRoute);
-                    Log::info('✅ REDIRIGIENDO CHEF EXITOSAMENTE a: ' . $chefRoute);
-                    return redirect()->intended($chefRoute);
-                } catch (\Exception $e) {
-                    Log::error('Error generando ruta chef.dashboard: ' . $e->getMessage());
-                    Log::error('Stack trace: ' . $e->getTraceAsString());
-                    return redirect('/dashboard')->with('error', 'Error de redirección chef - verifica que existe la ruta chef.dashboard');
-                }
-                
-            case 'comensal':
-                Log::info('🍽️ Caso COMENSAL detectado - Redirigiendo a comensal.dashboard');
-                
-                try {
-                    $comensalRoute = route('comensal.dashboard'); // Cambiar esta línea
-                    Log::info('Ruta comensal generada: ' . $comensalRoute);
-                    return redirect()->intended($comensalRoute);
-                } catch (\Exception $e) {
-                    Log::error('Error generando ruta comensal.dashboard: ' . $e->getMessage());
-                    return redirect('/dashboard')->with('error', 'Error de redirección comensal');
-                }
-                
-            default:
-                Log::warning('⚠️ ROL NO RECONOCIDO: "' . $efectiveRole . '" - Usando default (comensal)');
-                Log::info('Roles Spatie detectados: ' . implode(', ', $spatieRoles));
-                Log::info('Roles disponibles esperados: admin, chef_anfitrion, comensal');
-                
-                try {
-                    $defaultRoute = route('dashboard');
-                    Log::info('Ruta default generada: ' . $defaultRoute);
-                    return redirect()->intended($defaultRoute);
-                } catch (\Exception $e) {
-                    Log::error('Error generando ruta default: ' . $e->getMessage());
-                    return redirect('/dashboard')->with('error', 'Error de redirección default');
-                }
-        }
+    } catch (\Exception $e) {
+        Log::error('Error obteniendo roles de Spatie: ' . $e->getMessage());
+        $efectiveRole = $user->role ?? 'comensal';
     }
+
+    // 🔍 LOG: Switch case debugging
+    Log::info('Rol efectivo para redirección: "' . $efectiveRole . '"');
+    
+    // 📝 NUEVO: Log adicional para usuarios de Google
+    if ($user->provider === 'google') {
+        Log::info('🔵 Usuario autenticado via Google OAuth');
+    }
+    
+    switch ($efectiveRole) {
+        case 'admin':
+            Log::info('🔧 Caso ADMIN detectado - Redirigiendo a admin.dashboard');
+            
+            try {
+                $adminRoute = route('admin.dashboard');
+                Log::info('Ruta admin generada: ' . $adminRoute);
+                return redirect()->intended($adminRoute);
+            } catch (\Exception $e) {
+                Log::error('Error generando ruta admin.dashboard: ' . $e->getMessage());
+                return redirect('/dashboard')->with('error', 'Error de redirección admin');
+            }
+            
+        case 'chef_anfitrion':
+            Log::info('👨‍🍳 Caso CHEF_ANFITRION detectado - Redirigiendo a chef.dashboard');
+            
+            try {
+                $chefRoute = route('chef.dashboard');
+                Log::info('Ruta chef generada: ' . $chefRoute);
+                Log::info('✅ REDIRIGIENDO CHEF EXITOSAMENTE a: ' . $chefRoute);
+                return redirect()->intended($chefRoute);
+            } catch (\Exception $e) {
+                Log::error('Error generando ruta chef.dashboard: ' . $e->getMessage());
+                Log::error('Stack trace: ' . $e->getTraceAsString());
+                return redirect('/dashboard')->with('error', 'Error de redirección chef - verifica que existe la ruta chef.dashboard');
+            }
+            
+        case 'comensal':
+            Log::info('🍽️ Caso COMENSAL detectado - Redirigiendo a comensal.dashboard');
+            
+            try {
+                $comensalRoute = route('comensal.dashboard'); // Cambiar esta línea
+                Log::info('Ruta comensal generada: ' . $comensalRoute);
+                return redirect()->intended($comensalRoute);
+            } catch (\Exception $e) {
+                Log::error('Error generando ruta comensal.dashboard: ' . $e->getMessage());
+                return redirect('/dashboard')->with('error', 'Error de redirección comensal');
+            }
+            
+        default:
+            Log::warning('⚠️ ROL NO RECONOCIDO: "' . $efectiveRole . '" - Usando default (comensal)');
+            Log::info('Roles Spatie detectados: ' . implode(', ', $spatieRoles));
+            Log::info('Roles disponibles esperados: admin, chef_anfitrion, comensal');
+            
+            try {
+                $defaultRoute = route('dashboard');
+                Log::info('Ruta default generada: ' . $defaultRoute);
+                return redirect()->intended($defaultRoute);
+            } catch (\Exception $e) {
+                Log::error('Error generando ruta default: ' . $e->getMessage());
+                return redirect('/dashboard')->with('error', 'Error de redirección default');
+            }
+    }
+}
 
     /**
      * Destroy an authenticated session.

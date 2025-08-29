@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Chef\ChefController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PagoController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
 
 /*
@@ -16,7 +17,15 @@ use App\Http\Controllers\PagoController;
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-
+Route::get('/debug-google', function() {
+    return [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect_uri' => env('GOOGLE_REDIRECT_URI'),
+        'redirect_url' => env('GOOGLE_REDIRECT_URL'),
+        'config' => config('services.google')
+    ];
+});
 //detalle cena
 Route::prefix('cenas')->name('cenas.')->group(function () {
     Route::get('/', [HomeController::class, 'search'])->name('index');
@@ -49,6 +58,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 });
+
+Route::get('/auth/google', [RegisteredUserController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [RegisteredUserController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('/register', [RegisteredUserController::class, 'store']);
+
 /*
 |--------------------------------------------------------------------------
 | Rutas Públicas (sin autenticación)
