@@ -286,6 +286,7 @@ public function storeGoogleCompleteRegistration(Request $request): RedirectRespo
                 'avatar' => $googleUserData['avatar'] ?? null,
                 'provider' => 'google',
                 'role' => $request->role,
+                'password' => Hash::make(Str::random(32)), // Contraseña aleatoria para usuarios de Google
                 'email_verified_at' => now(),
             ]);
 
