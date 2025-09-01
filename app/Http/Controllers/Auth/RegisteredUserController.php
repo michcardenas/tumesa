@@ -380,7 +380,7 @@ private function redirectUserByRole(User $user): RedirectResponse
         case 'comensal':
         default:
             try {
-                return redirect()->route('dashboard');
+                return redirect()->route('comensal.dashboard');
             } catch (\Exception $e) {
                 Log::error('Ruta dashboard no existe');
                 return redirect('/home')->with('success', 'Perfil actualizado correctamente');
