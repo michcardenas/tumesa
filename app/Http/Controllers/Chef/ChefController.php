@@ -451,43 +451,72 @@ public function showDinner(Cena $cena)
         abort(403, 'No tienes permisos para ver esta cena.');
     }
 
+    // Cargar la relación del chef
+    $cena->load('user');
+
     // Calcular información adicional
     $cenaData = [
+        // Información básica de la cena
         'id' => $cena->id,
         'title' => $cena->title,
-        'datetime' => $cena->datetime,
-        'formatted_date' => $cena->datetime->format('l, j \d\e F \d\e Y'),
-        'formatted_time' => $cena->datetime->format('H:i'),
-        'formatted_datetime' => $cena->datetime->format('d/m/Y H:i'),
-        'guests_max' => $cena->guests_max,
-        'guests_current' => $cena->guests_current,
-        'available_spots' => $cena->available_spots,
-        'is_full' => $cena->is_full,
-        'price' => $cena->price,
-        'formatted_price' => $cena->formatted_price,
-        'total_revenue_potential' => $cena->price * $cena->guests_max,
-        'current_revenue' => $cena->price * $cena->guests_current,
         'menu' => $cena->menu,
         'location' => $cena->location,
         'latitude' => $cena->latitude,
         'longitude' => $cena->longitude,
+        
+        // Fecha y tiempo
+        'datetime' => $cena->datetime,
+        'formatted_date' => $cena->datetime->format('l, j \d\e F \d\e Y'),
+        'formatted_time' => $cena->datetime->format('H:i'),
+        'formatted_datetime' => $cena->datetime->format('d/m/Y H:i'),
+        'days_until' => now()->diffInDays($cena->datetime, false),
+        'is_past' => $cena->datetime->isPast(),
+        
+        // Información de invitados
+        'guests_max' => $cena->guests_max,
+        'guests_current' => $cena->guests_current,
+        'available_spots' => $cena->available_spots,
+        'is_full' => $cena->is_full,
+        'occupancy_percentage' => $cena->guests_max > 0 ? round(($cena->guests_current / $cena->guests_max) * 100, 1) : 0,
+        
+        // Información financiera
+        'price' => $cena->price,
+        'formatted_price' => $cena->formatted_price,
+        'total_revenue_potential' => $cena->price * $cena->guests_max,
+        'current_revenue' => $cena->price * $cena->guests_current,
+        'formatted_total_revenue' => '$' . number_format($cena->price * $cena->guests_max, 0, ',', '.'),
+        'formatted_current_revenue' => '$' . number_format($cena->price * $cena->guests_current, 0, ',', '.'),
+        
+        // Estado y permisos
         'status' => $cena->status,
         'status_label' => $this->getStatusLabel($cena->status),
         'status_color' => $this->getStatusColor($cena->status),
         'is_active' => $cena->is_active,
+        'can_edit' => !$cena->datetime->isPast() && $cena->status !== 'cancelled',
+        'can_cancel' => !$cena->datetime->isPast() && $cena->status === 'published',
+        'can_publish' => $cena->status === 'draft',
+        
+        // Imágenes
         'cover_image_url' => $cena->cover_image_url,
-        'gallery_image_urls' => $cena->gallery_image_urls,
+        'gallery_image_urls' => $cena->gallery_image_urls ?? collect(),
+        
+        // Información del chef
+        'chef_name' => $cena->user->name,
+        'chef_email' => $cena->user->email,
+        'chef_avatar' => $cena->user->avatar_url,
+        'chef_especialidad' => $cena->user->especialidad,
+        'chef_experiencia' => $cena->user->experiencia_anos,
+        
+        // Fechas de auditoría
         'created_at' => $cena->created_at,
         'updated_at' => $cena->updated_at,
-        'days_until' => now()->diffInDays($cena->datetime, false),
-        'is_past' => $cena->datetime->isPast(),
-        'can_edit' => !$cena->datetime->isPast() && $cena->status !== 'cancelled'
+        'created_ago' => $cena->created_at->diffForHumans(),
+        'updated_ago' => $cena->updated_at->diffForHumans(),
     ];
 
     return view('chef.dinners.show', compact('cenaData', 'cena'));
 }
 
-// Métodos auxiliares para el estado
 private function getStatusLabel($status)
 {
     return match($status) {
@@ -495,7 +524,7 @@ private function getStatusLabel($status)
         'published' => 'Publicada',
         'cancelled' => 'Cancelada',
         'completed' => 'Completada',
-        default => ucfirst($status)
+        default => 'Desconocido',
     };
 }
 
@@ -506,9 +535,14 @@ private function getStatusColor($status)
         'published' => 'success',
         'cancelled' => 'danger',
         'completed' => 'primary',
-        default => 'secondary'
+        default => 'secondary',
     };
 }
+
+// Métodos auxiliares para el estado
+
+
+
     public function create()
     {
         //
