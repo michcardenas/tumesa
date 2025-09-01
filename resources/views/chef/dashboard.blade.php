@@ -556,26 +556,52 @@
     text-decoration: underline;
 }
 
-/* Preview de imágenes */
-.image-preview-container {
-    margin-top: 1rem;
-}
-
-.image-preview-wrapper {
-    position: relative;
-    display: inline-block;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.cover-preview-img {
-    width: 100%;
-    max-width: 400px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 12px;
-}
+     .image-preview-container {
+            position: relative;
+            margin-top: 1rem;
+        }
+        
+        .image-preview-wrapper {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+        
+        .cover-preview-img {
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .image-overlay {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-preview-wrapper:hover .image-overlay {
+            opacity: 1;
+        }
+        
+        .remove-image-btn, .change-image-btn {
+            padding: 0.5rem;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .image-info {
+            margin-top: 0.5rem;
+            text-align: center;
+        }
 
 .image-overlay {
     position: absolute;
@@ -878,8 +904,8 @@ function initMap() {
             throw new Error('Google Maps no está cargado');
         }
 
-        // Ubicación por defecto (Bogotá, Colombia)
-        const defaultLocation = { lat: 4.711, lng: -74.0721 };
+        // Ubicación por defecto (Buenos Aires, Argentina)
+        const defaultLocation = { lat: -34.6037, lng: -58.3816 };
         
         // Crear mapa
         map = new google.maps.Map(document.getElementById('map'), {
