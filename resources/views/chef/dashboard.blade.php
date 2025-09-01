@@ -621,7 +621,10 @@
 .image-preview-wrapper:hover .image-overlay {
     opacity: 1;
 }
-
+img, svg {
+    max-width: 11rem;
+    height: auto;
+}
 .gallery-preview-container {
     margin-top: 1rem;
     display: grid;
@@ -1468,7 +1471,6 @@ function createDinner() {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error al crear la cena. Inténtalo de nuevo.');
     })
     .finally(() => {
         // Restaurar botón
