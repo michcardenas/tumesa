@@ -451,8 +451,8 @@ public function showDinner(Cena $cena)
         abort(403, 'No tienes permisos para ver esta cena.');
     }
 
-    // Cargar la relación del chef y las reservas
-    $cena->load(['user', 'reservas.user']);
+    // Cargar la relación del chef
+    $cena->load('user');
 
     // Calcular información adicional
     $cenaData = [
@@ -507,8 +507,11 @@ public function showDinner(Cena $cena)
         'updated_ago' => $cena->updated_at->diffForHumans(),
     ];
 
-    // Obtener y procesar las reservas
-    $reservas = $cena->reservas()->with('user')->orderBy('created_at', 'desc')->get();
+    // Obtener reservas directamente de la tabla
+    $reservas = \App\Models\Reserva::where('cena_id', $cena->id)
+        ->with('user')
+        ->orderBy('created_at', 'desc')
+        ->get();
     
     $reservasData = [
         'total_reservas' => $reservas->count(),
@@ -547,7 +550,6 @@ private function getStatusColor($status)
         default => 'secondary',
     };
 }
-
 // Métodos auxiliares para el estado
 
     public function create()
