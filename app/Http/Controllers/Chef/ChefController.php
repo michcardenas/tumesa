@@ -451,8 +451,8 @@ public function showDinner(Cena $cena)
         abort(403, 'No tienes permisos para ver esta cena.');
     }
 
-    // Cargar la relación del chef
-    $cena->load('user');
+    // Cargar la relación del chef y las reservas
+    $cena->load(['user', 'reservas.user']);
 
     // Calcular información adicional
     $cenaData = [
@@ -500,13 +500,6 @@ public function showDinner(Cena $cena)
         'cover_image_url' => $cena->cover_image_url,
         'gallery_image_urls' => $cena->gallery_image_urls ?? collect(),
         
-        // Información del chef
-        'chef_name' => $cena->user->name,
-        'chef_email' => $cena->user->email,
-        'chef_avatar' => $cena->user->avatar_url,
-        'chef_especialidad' => $cena->user->especialidad,
-        'chef_experiencia' => $cena->user->experiencia_anos,
-        
         // Fechas de auditoría
         'created_at' => $cena->created_at,
         'updated_at' => $cena->updated_at,
@@ -514,7 +507,23 @@ public function showDinner(Cena $cena)
         'updated_ago' => $cena->updated_at->diffForHumans(),
     ];
 
-    return view('chef.dinners.show', compact('cenaData', 'cena'));
+    // Obtener y procesar las reservas
+    $reservas = $cena->reservas()->with('user')->orderBy('created_at', 'desc')->get();
+    
+    $reservasData = [
+        'total_reservas' => $reservas->count(),
+        'reservas_confirmadas' => $reservas->where('estado', 'confirmada')->count(),
+        'reservas_pagadas' => $reservas->where('estado_pago', 'pagado')->count(),
+        'reservas_pendientes' => $reservas->where('estado', 'pendiente')->count(),
+        'reservas_canceladas' => $reservas->where('estado', 'cancelada')->count(),
+        'total_comensales_reservados' => $reservas->whereIn('estado', ['pendiente', 'confirmada', 'pagada', 'completada'])->sum('cantidad_comensales'),
+        'ingresos_confirmados' => $reservas->where('estado_pago', 'pagado')->sum('precio_total'),
+        'ingresos_potenciales' => $reservas->whereIn('estado', ['pendiente', 'confirmada'])->sum('precio_total'),
+        'promedio_comensales_por_reserva' => $reservas->count() > 0 ? round($reservas->avg('cantidad_comensales'), 1) : 0,
+        'lista_reservas' => $reservas
+    ];
+
+    return view('chef.dinners.show', compact('cenaData', 'cena', 'reservasData'));
 }
 
 private function getStatusLabel($status)
@@ -540,8 +549,6 @@ private function getStatusColor($status)
 }
 
 // Métodos auxiliares para el estado
-
-
 
     public function create()
     {
