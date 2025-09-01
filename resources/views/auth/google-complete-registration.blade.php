@@ -222,37 +222,40 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            const submitButton = form.querySelector('button[type="submit"]');
-            const originalButtonText = submitButton.textContent;
-            
-            // Manejar envío del formulario
-            form.addEventListener('submit', function(e) {
-                submitButton.textContent = 'Procesando...';
-                submitButton.disabled = true;
-                submitButton.style.opacity = '0.7';
-                
-                // Restaurar si hay error
-                setTimeout(() => {
-                    if (submitButton.disabled) {
-                        submitButton.textContent = originalButtonText;
-                        submitButton.disabled = false;
-                        submitButton.style.opacity = '1';
-                    }
-                }, 5000);
-            });
-
-            // Mejorar la accesibilidad con teclado
-            document.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.addEventListener('keydown', function(e) {
-                    if (e.key === ' ') {
-                        e.preventDefault();
-                        this.checked = true;
-                        this.dispatchEvent(new Event('change'));
-                    }
-                });
-            });
+      document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+    
+    // Manejar envío del formulario con debug
+    form.addEventListener('submit', function(e) {
+        console.log('Formulario enviándose...');
+        
+        // Verificar que un rol está seleccionado
+        const roleSelected = document.querySelector('input[name="role"]:checked');
+        const termsAccepted = document.querySelector('input[name="terms"]:checked');
+        
+        if (!roleSelected) {
+            e.preventDefault();
+            alert('Por favor selecciona un rol');
+            return;
+        }
+        
+        if (!termsAccepted) {
+            e.preventDefault();
+            alert('Debes aceptar los términos y condiciones');
+            return;
+        }
+        
+        console.log('Datos del formulario:', {
+            role: roleSelected.value,
+            terms: termsAccepted.value
         });
+        
+        submitButton.textContent = 'Procesando...';
+        submitButton.disabled = true;
+        submitButton.style.opacity = '0.7';
+    });
+});
     </script>
 </x-guest-layout>
