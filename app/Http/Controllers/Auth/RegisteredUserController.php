@@ -223,24 +223,39 @@ public function showGoogleCompleteRegistration(): View
  */
 public function storeGoogleCompleteRegistration(Request $request): RedirectResponse
 {
+    // Debug: Log de inicio
+    Log::info('=== PROCESANDO FORMULARIO GOOGLE ===');
+    Log::info('Request data:', $request->all());
+    
     // Verificar que hay datos de Google en sesión
     $googleUserData = session('google_user_data');
     
     if (!$googleUserData) {
-        Log::warning('Intento de completar registro sin datos de Google en sesión');
+        Log::warning('No hay datos de Google en sesión');
         return redirect('/login')->withErrors(['error' => 'Sesión expirada. Por favor, inicia sesión de nuevo.']);
     }
 
+    Log::info('Datos de Google en sesión:', $googleUserData);
+
     // Validar el formulario
-    $request->validate([
-        'role' => ['required', 'string', 'in:comensal,chef_anfitrion'],
-        'terms' => ['required', 'accepted'],
-    ]);
+    try {
+        $request->validate([
+            'role' => ['required', 'string', 'in:comensal,chef_anfitrion'],
+            'terms' => ['required', 'accepted'],
+        ]);
+        
+        Log::info('Validación pasó correctamente');
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        Log::error('Error de validación:', $e->errors());
+        return redirect()->back()
+            ->withErrors($e->errors())
+            ->withInput();
+    }
 
     try {
-        // 🔄 VERIFICAR SI ES USUARIO EXISTENTE O NUEVO
+        // Verificar si es usuario existente o nuevo
         if (isset($googleUserData['is_existing_user']) && $googleUserData['is_existing_user'] === true) {
-            // ✅ USUARIO EXISTENTE - ACTUALIZAR ROL
+            // USUARIO EXISTENTE - ACTUALIZAR ROL
             $user = User::find($googleUserData['user_id']);
             
             if (!$user) {
@@ -251,63 +266,60 @@ public function storeGoogleCompleteRegistration(Request $request): RedirectRespo
             // Actualizar rol del usuario existente
             $user->update([
                 'role' => $request->role,
-                'google_id' => $googleUserData['google_id'], // Por si no lo tenía
-                'avatar' => $googleUserData['avatar'],       // Actualizar avatar
-                'provider' => 'google',                      // Actualizar provider
+                'google_id' => $googleUserData['google_id'],
+                'avatar' => $googleUserData['avatar'] ?? $user->avatar,
+                'provider' => 'google',
             ]);
 
-            Log::info('✅ Usuario existente actualizado con rol:', [
+            Log::info('Usuario existente actualizado:', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'new_role' => $request->role,
-                'action' => 'role_update',
             ]);
             
         } else {
-            // 🆕 USUARIO NUEVO - CREAR USUARIO
+            // USUARIO NUEVO - CREAR USUARIO
             $user = User::create([
                 'name' => $googleUserData['name'],
                 'email' => $googleUserData['email'],
                 'google_id' => $googleUserData['google_id'],
-                'avatar' => $googleUserData['avatar'],
+                'avatar' => $googleUserData['avatar'] ?? null,
                 'provider' => 'google',
                 'role' => $request->role,
-                'email_verified_at' => now(), // Google ya verificó el email
+                'email_verified_at' => now(),
             ]);
 
             // Disparar evento de usuario registrado solo para usuarios nuevos
             event(new Registered($user));
 
-            Log::info('✅ Usuario nuevo creado desde Google:', [
+            Log::info('Usuario nuevo creado:', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'role' => $request->role,
-                'action' => 'user_creation',
             ]);
         }
 
-        // 🚀 ASIGNAR ROL DE SPATIE (para ambos casos)
+        // ASIGNAR ROL DE SPATIE (si está configurado)
         try {
-            $spatieRoleMap = [
-                'comensal' => 'comensal',
-                'chef_anfitrion' => 'chef',
-            ];
+            if (class_exists(\Spatie\Permission\Models\Role::class)) {
+                $spatieRoleMap = [
+                    'comensal' => 'comensal',
+                    'chef_anfitrion' => 'chef',
+                ];
 
-            $spatieRole = $spatieRoleMap[$request->role] ?? 'comensal';
-            
-            // Limpiar roles anteriores y asignar el nuevo
-            $user->syncRoles([$spatieRole]);
-            
-            Log::info('✅ Rol de Spatie asignado:', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'role_campo' => $user->role,
-                'spatie_role' => $spatieRole,
-                'provider' => 'google',
-            ]);
-            
+                $spatieRole = $spatieRoleMap[$request->role] ?? 'comensal';
+                
+                // Limpiar roles anteriores y asignar el nuevo
+                $user->syncRoles([$spatieRole]);
+                
+                Log::info('Rol de Spatie asignado:', [
+                    'user_id' => $user->id,
+                    'spatie_role' => $spatieRole,
+                ]);
+            }
         } catch (\Exception $e) {
             Log::error('No se pudo asignar rol de Spatie: ' . $e->getMessage());
+            // Continuar sin fallo crítico
         }
 
         // Limpiar datos de Google de la sesión
@@ -316,63 +328,60 @@ public function storeGoogleCompleteRegistration(Request $request): RedirectRespo
         // Hacer login
         Auth::login($user);
 
-        Log::info('=== REDIRECCIÓN POST-REGISTRO/ACTUALIZACIÓN GOOGLE ===');
-        Log::info('Usuario logueado:', [
+        Log::info('Usuario logueado exitosamente:', [
             'user_id' => $user->id,
             'role' => $user->role,
-            'provider' => 'google',
-            'action_type' => isset($googleUserData['is_existing_user']) && $googleUserData['is_existing_user'] ? 'role_update' : 'new_user',
         ]);
 
         // Redireccionar según el rol
         return $this->redirectUserByRole($user);
         
     } catch (\Exception $e) {
-        Log::error('Error al procesar usuario desde Google: ' . $e->getMessage());
-        return redirect()->back()->withErrors(['error' => 'Error al completar el registro. Por favor, intenta de nuevo.']);
+        Log::error('Error al procesar usuario desde Google:', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return redirect()->back()
+            ->withErrors(['error' => 'Error al completar el registro. Por favor, intenta de nuevo.'])
+            ->withInput();
     }
 }
 
 /**
- * Redirect user based on their role (método helper)
+ * Redirect user based on their role
  */
 private function redirectUserByRole(User $user): RedirectResponse
 {
-    // 📝 Log de redirección
-    Log::info('=== REDIRECCIÓN POST-LOGIN ===');
-    Log::info('Usuario logueado:', [
+    Log::info('Redirigiendo usuario:', [
         'user_id' => $user->id,
         'role' => $user->role,
-        'provider' => $user->provider,
     ]);
 
     switch ($user->role) {
         case 'admin':
-            Log::info('🔧 Redirigiendo usuario admin');
             try {
-                return redirect()->intended(route('admin.dashboard'));
+                return redirect()->route('admin.dashboard');
             } catch (\Exception $e) {
-                Log::error('Ruta admin.dashboard no existe: ' . $e->getMessage());
-                return redirect('/dashboard')->with('error', 'Dashboard de admin no disponible');
+                Log::error('Ruta admin.dashboard no existe');
+                return redirect('/dashboard')->with('success', 'Perfil actualizado correctamente');
             }
             
         case 'chef_anfitrion':
-            Log::info('👨‍🍳 Redirigiendo usuario chef_anfitrion');
             try {
-                return redirect()->intended(route('chef.dashboard'));
+                return redirect()->route('chef.dashboard');
             } catch (\Exception $e) {
-                Log::error('Ruta chef.dashboard no existe: ' . $e->getMessage());
-                return redirect('/dashboard')->with('success', 'Perfil actualizado correctamente. Dashboard de chef en desarrollo.');
+                Log::error('Ruta chef.dashboard no existe');
+                return redirect('/dashboard')->with('success', 'Perfil actualizado correctamente');
             }
             
         case 'comensal':
         default:
-            Log::info('🍽️ Redirigiendo usuario comensal (o default)');
             try {
-                return redirect()->intended(route('comensal.dashboard'));
+                return redirect()->route('dashboard');
             } catch (\Exception $e) {
-                Log::error('Ruta comensal.dashboard no existe: ' . $e->getMessage());
-                return redirect('/dashboard')->with('success', 'Perfil actualizado correctamente. Dashboard de comensal en desarrollo.');
+                Log::error('Ruta dashboard no existe');
+                return redirect('/home')->with('success', 'Perfil actualizado correctamente');
             }
     }
 }
