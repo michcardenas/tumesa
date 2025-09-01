@@ -14,6 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use Exception;
+use Illuminate\Support\Str;
 
 class RegisteredUserController extends Controller
 {
