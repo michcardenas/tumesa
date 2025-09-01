@@ -174,7 +174,7 @@
                                        class="form-control" 
                                        id="telefono_contacto" 
                                        name="telefono_contacto" 
-                                       placeholder="+57 300 123 4567" 
+                                       placeholder="+54 300 123 4567" 
                                        required>
                             </div>
                         </div>

@@ -79,39 +79,101 @@
             </div>
 
             <!-- Sidebar -->
-            <div class="col-lg-4">
-                <!-- Chef Info -->
-                <div class="chef-card mb-4">
-                    <div class="chef-avatar">
-                        <i class="fas fa-user-circle fa-3x"></i>
-                    </div>
-                    <h4>{{ $cenaData['chef_name'] }}</h4>
-                    <p class="chef-title">Chef Anfitrión</p>
-                    <p class="chef-description">
-                        Especialista en crear experiencias culinarias únicas que conectan a las personas 
-                        a través de la comida y la conversación.
-                    </p>
-                    <button class="btn btn-outline-primary btn-sm" onclick="showChefModal()">
-                        Ver Perfil Completo
-                    </button>
+          <div class="col-lg-4">
+    <!-- Chef Info -->
+    <div class="chef-card mb-4">
+        <div class="chef-avatar mb-3">
+            @if($cena->user->avatar_url)
+                <img src="{{ $cena->user->avatar_url }}" alt="{{ $cena->user->name }}" 
+                     class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+            @else
+                <i class="fas fa-user-circle fa-5x text-muted"></i>
+            @endif
+        </div>
+        
+        <h4 class="chef-name">{{ $cena->user->name ?? 'Chef Anónimo' }}</h4>
+        
+        @if($cena->user->especialidad)
+            <p class="chef-specialty text-primary mb-2">
+                <i class="fas fa-star me-1"></i>{{ $cena->user->especialidad }}
+            </p>
+        @endif
+        
+        <div class="chef-rating mb-2">
+            @if($cena->user->rating > 0)
+                <div class="rating-stars">
+                    @for($i = 1; $i <= 5; $i++)
+                        @if($i <= floor($cena->user->rating))
+                            <i class="fas fa-star text-warning"></i>
+                        @elseif($i - 0.5 <= $cena->user->rating)
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                        @else
+                            <i class="far fa-star text-warning"></i>
+                        @endif
+                    @endfor
+                    <span class="ms-1">{{ $cena->user->formatted_rating }}</span>
                 </div>
-
-                <!-- Quick Stats -->
-                <div class="stats-card">
-                    <div class="stat">
-                        <div class="stat-number">{{ $cenaData['formatted_price'] }}</div>
-                        <div class="stat-label">Precio</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">{{ $cenaData['guests_max'] }}</div>
-                        <div class="stat-label">Max. Personas</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">{{ abs($cenaData['days_until']) }}</div>
-                        <div class="stat-label">{{ $cenaData['days_until'] >= 0 ? 'Días' : 'Días Atrás' }}</div>
-                    </div>
-                </div>
+            @endif
+        </div>
+        
+        @if($cena->user->experiencia_anos)
+            <p class="chef-experience text-muted mb-2">
+                <i class="fas fa-clock me-1"></i>{{ $cena->user->experience_text }}
+            </p>
+        @endif
+        
+        @if($cena->user->bio)
+            <p class="chef-description">
+                {{ Str::limit($cena->user->bio, 120) }}
+            </p>
+        @else
+            <p class="chef-description">
+                Especialista en crear experiencias culinarias únicas que conectan a las personas 
+                a través de la comida y la conversación.
+            </p>
+        @endif
+        
+        <!-- Redes sociales -->
+        @if($cena->user->instagram || $cena->user->facebook || $cena->user->website)
+            <div class="chef-social mb-3">
+                @if($cena->user->instagram)
+                    <a href="{{ $cena->user->instagram_url }}" target="_blank" class="text-decoration-none me-2">
+                        <i class="fab fa-instagram text-danger"></i>
+                    </a>
+                @endif
+                
+                @if($cena->user->facebook)
+                    <a href="{{ $cena->user->facebook_url }}" target="_blank" class="text-decoration-none me-2">
+                        <i class="fab fa-facebook text-primary"></i>
+                    </a>
+                @endif
+                
+                @if($cena->user->website)
+                    <a href="{{ $cena->user->website }}" target="_blank" class="text-decoration-none me-2">
+                        <i class="fas fa-globe text-info"></i>
+                    </a>
+                @endif
             </div>
+        @endif
+        
+        <button class="btn btn-outline-primary btn-sm" onclick="showChefModal()">
+            <i class="fas fa-user me-1"></i>Ver Perfil Completo
+        </button>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-card">
+        <div class="stat">
+            <div class="stat-number">{{ $cenaData['formatted_price'] }}</div>
+            <div class="stat-label">Precio</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">{{ $cenaData['guests_max'] }}</div>
+            <div class="stat-label">Max. Personas</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">{{ abs($cenaData['days_until']) }}</div>
+            <div class="stat-label">{{ $cenaData['days_until'] >= 0 ? 'Días' : 'Días Atrás' }}</div>
         </div>
     </div>
 </div>

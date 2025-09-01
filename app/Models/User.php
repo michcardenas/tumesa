@@ -22,12 +22,19 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',          // ✅ Ya existe en tu tabla
-        'google_id',     // ✅ Ya existe en tu tabla
-        'avatar',        // ✅ Ya existe en tu tabla
-        'provider',      // ✅ Ya existe en tu tabla (faltaba en tu modelo)
-        'telefono',      // ✅ Ya existe en tu tabla (faltaba en tu modelo)
-        'direccion',     // ✅ Ya existe en tu tabla (faltaba en tu modelo)
+        'role',
+        'google_id',
+        'avatar',
+        'provider',
+        'telefono',
+        'direccion',
+        'bio',
+        'especialidad',
+        'experiencia_anos',
+        'rating',
+        'instagram',
+        'facebook',
+        'website',
     ];
 
     /**
@@ -50,6 +57,64 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'rating' => 'decimal:2',
+            'experiencia_anos' => 'integer',
         ];
+    }
+
+    // Accessors para la información del chef
+    public function getAvatarUrlAttribute()
+    {
+        if ($this->avatar) {
+            return asset('storage/' . $this->avatar);
+        }
+        return null;
+    }
+
+    public function getFormattedRatingAttribute()
+    {
+        return number_format($this->rating, 1);
+    }
+
+    public function getExperienceTextAttribute()
+    {
+        if (!$this->experiencia_anos) return null;
+        
+        return $this->experiencia_anos . ' ' . 
+               ($this->experiencia_anos == 1 ? 'año' : 'años') . 
+               ' de experiencia';
+    }
+
+    public function getInstagramUrlAttribute()
+    {
+        if (!$this->instagram) return null;
+        
+        // Si ya tiene https://, lo deja igual, si no, lo agrega
+        if (str_starts_with($this->instagram, 'http')) {
+            return $this->instagram;
+        }
+        
+        // Si empieza con @, lo remueve
+        $username = str_starts_with($this->instagram, '@') ? 
+                   substr($this->instagram, 1) : $this->instagram;
+        
+        return 'https://instagram.com/' . $username;
+    }
+
+    public function getFacebookUrlAttribute()
+    {
+        if (!$this->facebook) return null;
+        
+        if (str_starts_with($this->facebook, 'http')) {
+            return $this->facebook;
+        }
+        
+        return 'https://facebook.com/' . $this->facebook;
+    }
+
+    // Relaciones
+    public function cenas()
+    {
+        return $this->hasMany(Cena::class);
     }
 }

@@ -238,45 +238,56 @@ class HomeController extends Controller
             'query' => $query
         ]);
     }
- public function showCena(Cena $cena)
-    {
-        // Verificar que la cena esté disponible para el público
-        if ($cena->status !== 'published' || !$cena->is_active) {
-            abort(404, 'Cena no disponible');
-        }
-
-        // Preparar datos de la cena para la vista pública
-        $cenaData = [
-            'id' => $cena->id,
-            'title' => $cena->title,
-            'chef_name' => $cena->user->name ?? 'Chef Anónimo',
-            'datetime' => $cena->datetime,
-            'formatted_date' => $cena->datetime->format('l, j \d\e F \d\e Y'),
-            'formatted_time' => $cena->datetime->format('H:i'),
-            'formatted_datetime' => $cena->datetime->format('d/m/Y H:i'),
-            'location' => $cena->location,
-            'latitude' => $cena->latitude,
-            'longitude' => $cena->longitude,
-            'menu' => $cena->menu,
-            'price' => $cena->price,
-            'formatted_price' => '$' . number_format($cena->price, 0, ',', '.'),
-            'guests_max' => $cena->guests_max,
-            'guests_current' => $cena->guests_current,
-            'available_spots' => $cena->guests_max - $cena->guests_current,
-            'is_available' => ($cena->guests_max - $cena->guests_current) > 0,
-            'cover_image_url' => $cena->cover_image_url,
-            'gallery_image_urls' => $cena->gallery_image_urls ?? collect(),
-            'days_until' => now()->diffInDays($cena->datetime, false),
-            'is_past' => $cena->datetime->isPast(),
-            'can_book' => !$cena->datetime->isPast() && ($cena->guests_max - $cena->guests_current) > 0,
-        ];
-
-        return view('cenas.show', [
-            'cena' => $cena,
-            'cenaData' => $cenaData,
-            'meta_title' => $cena->title . ' - TuMesa',
-            'meta_description' => 'Reserva tu lugar en "' . $cena->title . '" con "' . ($cena->user->name ?? 'nuestro chef'). '" ' . substr($cena->menu, 0, 100) . '...'
-        ]);
+public function showCena(Cena $cena)
+{
+    // Verificar que la cena esté disponible para el público
+    if ($cena->status !== 'published' || !$cena->is_active) {
+        abort(404, 'Cena no disponible');
     }
+
+    // Cargar la relación del usuario/chef (por si acaso no está cargada)
+    $cena->load('user');
+
+    // Preparar datos de la cena para la vista pública
+    $cenaData = [
+        'id' => $cena->id,
+        'title' => $cena->title,
+        'chef_name' => $cena->user->name ?? 'Chef Anónimo',
+        'chef_specialty' => $cena->user->especialidad ?? null,
+        'chef_rating' => $cena->user->formatted_rating ?? '0.0',
+        'chef_experience' => $cena->user->experience_text ?? null,
+        'chef_bio' => $cena->user->bio ?? null,
+        'chef_avatar' => $cena->user->avatar_url ?? null,
+        'chef_instagram' => $cena->user->instagram_url ?? null,
+        'chef_facebook' => $cena->user->facebook_url ?? null,
+        'chef_website' => $cena->user->website ?? null,
+        'datetime' => $cena->datetime,
+        'formatted_date' => $cena->datetime->format('l, j \d\e F \d\e Y'),
+        'formatted_time' => $cena->datetime->format('H:i'),
+        'formatted_datetime' => $cena->datetime->format('d/m/Y H:i'),
+        'location' => $cena->location,
+        'latitude' => $cena->latitude,
+        'longitude' => $cena->longitude,
+        'menu' => $cena->menu,
+        'price' => $cena->price,
+        'formatted_price' => '$' . number_format($cena->price, 0, ',', '.'),
+        'guests_max' => $cena->guests_max,
+        'guests_current' => $cena->guests_current,
+        'available_spots' => $cena->guests_max - $cena->guests_current,
+        'is_available' => ($cena->guests_max - $cena->guests_current) > 0,
+        'cover_image_url' => $cena->cover_image_url,
+        'gallery_image_urls' => $cena->gallery_image_urls ?? collect(),
+        'days_until' => now()->diffInDays($cena->datetime, false),
+        'is_past' => $cena->datetime->isPast(),
+        'can_book' => !$cena->datetime->isPast() && ($cena->guests_max - $cena->guests_current) > 0,
+    ];
+
+    return view('cenas.show', [
+        'cena' => $cena,
+        'cenaData' => $cenaData,
+        'meta_title' => $cena->title . ' - TuMesa',
+        'meta_description' => 'Reserva tu lugar en "' . $cena->title . '" con "' . ($cena->user->name ?? 'nuestro chef'). '" ' . substr($cena->menu, 0, 100) . '...'
+    ]);
+}
     
 }
