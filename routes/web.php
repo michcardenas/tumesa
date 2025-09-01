@@ -8,6 +8,9 @@ use App\Http\Controllers\Chef\ChefController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\IngresosController;
+use App\Http\Controllers\ExperienciasController;
+
 
 
 /*
@@ -119,7 +122,8 @@ Route::middleware('auth')->group(function () {
 
 
 });
-
+Route::get('/experiencias', [ExperienciasController::class, 'index'])
+    ->name('experiencias');
 
 //Chef
 Route::middleware(['auth'])->prefix('chef')->name('chef.')->group(function () {
@@ -127,7 +131,14 @@ Route::middleware(['auth'])->prefix('chef')->name('chef.')->group(function () {
         Route::post('/dinners', [ChefController::class, 'storeDinner'])->name('dinners.store');
           Route::get('/dinners/{cena}', [ChefController::class, 'showDinner'])->name('dinners.show');
     Route::get('/dinners/{cena}/edit', [ChefController::class, 'editDinner'])->name('dinners.edit');
+        Route::put('/dinners/{cena}', [ChefController::class, 'updateDinner'])->name('dinners.update');
 
+
+      Route::get('/dashboard', [ChefController::class, 'dashboard'])->name('dashboard');
+    
+    Route::get('/ingresos', [IngresosController::class, 'index'])->name('ingresos');
+ Route::get('/perfil/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/perfil/update', [ProfileController::class, 'update'])->name('profile.update');
     
   
 });
@@ -143,7 +154,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Gestión de Páginas (CRUD completo)
     Route::resource('pages', PageController::class);
 });
-
+Route::get('/ser-chef', [ExperienciasController::class, 'serChef'])
+    ->name('ser-chef');
+  Route::get('/como-funciona', [ExperienciasController::class, 'comoFunciona'])
+    ->name('como-funciona');  
 /*
 |--------------------------------------------------------------------------
 | Rutas de Autenticación (Laravel Breeze)

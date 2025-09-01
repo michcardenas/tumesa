@@ -6,6 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cena;
+use App\Models\Reserva;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+
+
 
 
 class ChefController extends Controller
@@ -262,6 +268,182 @@ public function editDinner(Cena $cena)
 
     return view('chef.edit-dinner', compact('cena', 'user'));
 }
+
+public function updateDinner(Request $request, Cena $cena)
+{
+    $user = Auth::user();
+
+    Log::info('=== ACTUALIZAR CENA ===', [
+        'chef_id' => $user->id,
+        'cena_id' => $cena->id,
+    ]);
+
+    // 1) Verifica que la cena pertenece al chef
+    if ($cena->user_id !== $user->id) {
+        Log::warning('Chef intenta actualizar cena que no le pertenece', [
+            'chef_id' => $user->id,
+            'cena_owner_id' => $cena->user_id,
+            'cena_id' => $cena->id,
+        ]);
+        return redirect()->route('chef.dashboard')
+            ->with('error', 'No tienes permisos para editar esta cena.');
+    }
+
+    // 2) Verifica que no existan reservas confirmadas/pagadas
+    $reservasConfirmadas = Reserva::where('cena_id', $cena->id)
+        ->whereIn('estado', ['confirmada', 'pagada'])
+        ->count();
+
+    if ($reservasConfirmadas > 0) {
+        Log::warning('Intento de actualizar cena con reservas confirmadas', [
+            'cena_id' => $cena->id,
+            'reservas_confirmadas' => $reservasConfirmadas,
+        ]);
+        return redirect()->route('chef.dashboard')
+            ->with('error', 'No puedes editar una cena que ya tiene reservas confirmadas.');
+    }
+
+    // 3) Validación
+    // Nota: se exige futura con after:now (igual que storeDinner).
+    // Si quieres permitir mismo día con margen, cambia a after:now->addMinutes(5).
+    $validated = $request->validate([
+        'title' => ['required','string','max:255'],
+        'datetime' => ['required','date','after:now'],
+        'guests' => ['required','integer','min:1','max:50'],
+        'price' => ['required','numeric','min:0'],
+        'menu' => ['required','string','max:2000'],
+        'location' => ['required','string','max:500'],
+        'latitude' => ['required','numeric','between:-90,90'],
+        'longitude' => ['required','numeric','between:-180,180'],
+        'is_active' => ['nullable'], // boolean luego
+
+        'special_requirements' => ['nullable','string','max:2000'],
+        'cancellation_policy' => ['nullable','string','max:2000'],
+
+        'cover_image' => ['nullable','image','mimes:jpeg,png,jpg,webp','max:5120'],
+        'gallery_images' => ['nullable','array'],
+        'gallery_images.*' => ['image','mimes:jpeg,png,jpg,webp','max:5120'],
+
+        'remove_cover' => ['nullable','boolean'],
+        'remove_gallery' => ['nullable','array'],
+        'remove_gallery.*' => ['integer','min:0'],
+    ]);
+
+    // 3.1) Regla de negocio: no permitir reducir cupos por debajo de los ocupados
+    if ((int)$validated['guests'] < (int)$cena->guests_current) {
+        return back()->withErrors([
+            'guests' => 'No puedes establecer menos de '.$cena->guests_current.' cupos porque ya hay reservas ocupando esos lugares.'
+        ])->withInput();
+    }
+
+    // 4) Preparar galería existente y espacio disponible
+    $existingGallery = $cena->gallery_images ?: []; // array de rutas
+    $removeIdx = collect($request->input('remove_gallery', []))
+        ->filter(fn($i) => is_numeric($i))
+        ->map(fn($i) => (int)$i)
+        ->unique()
+        ->values()
+        ->all();
+
+    // 4.1) Eliminar imágenes marcadas de la galería
+    foreach ($removeIdx as $idx) {
+        if (isset($existingGallery[$idx])) {
+            try {
+                Storage::disk('public')->delete($existingGallery[$idx]);
+            } catch (\Throwable $t) {
+                Log::warning('No se pudo eliminar imagen de galería del storage', [
+                    'path' => $existingGallery[$idx],
+                    'error' => $t->getMessage(),
+                ]);
+            }
+            unset($existingGallery[$idx]);
+        }
+    }
+    // Reindexar
+    $existingGallery = array_values($existingGallery);
+
+    // 4.2) Comprobar límite de 5 con nuevas imágenes
+    $newGalleryFiles = $request->file('gallery_images', []);
+    $spaceLeft = 5 - count($existingGallery);
+    if (is_array($newGalleryFiles) && count($newGalleryFiles) > $spaceLeft) {
+        return back()->withErrors([
+            'gallery_images' => 'Solo puedes agregar '.max($spaceLeft,0).' imágenes más (límite total 5).'
+        ])->withInput();
+    }
+
+    // 5) Manejo de portada
+    $newCoverPath = $cena->cover_image; // por defecto mantener
+    $removeCover = (bool)$request->boolean('remove_cover');
+
+    if ($removeCover && $cena->cover_image) {
+        try {
+            Storage::disk('public')->delete($cena->cover_image);
+        } catch (\Throwable $t) {
+            Log::warning('No se pudo eliminar portada anterior', [
+                'path' => $cena->cover_image,
+                'error' => $t->getMessage(),
+            ]);
+        }
+        $newCoverPath = null;
+    }
+
+    if ($request->hasFile('cover_image')) {
+        // Si sube nueva portada, opcionalmente borra la anterior (si no fue marcada para eliminar ya)
+        if ($cena->cover_image && !$removeCover) {
+            try {
+                Storage::disk('public')->delete($cena->cover_image);
+            } catch (\Throwable $t) {
+                Log::warning('No se pudo eliminar portada anterior (reemplazo)', [
+                    'path' => $cena->cover_image,
+                    'error' => $t->getMessage(),
+                ]);
+            }
+        }
+        $newCoverPath = $request->file('cover_image')->store('cenas/covers', 'public');
+    }
+
+    // 6) Agregar nuevas imágenes a la galería
+    if (is_array($newGalleryFiles)) {
+        foreach ($newGalleryFiles as $img) {
+            $stored = $img->store('cenas/gallery', 'public');
+            $existingGallery[] = $stored;
+        }
+    }
+
+    // Si la galería quedó vacía, guardamos null
+    $finalGallery = count($existingGallery) ? $existingGallery : null;
+
+    // 7) Actualizar modelo
+    $cena->title = $validated['title'];
+    $cena->datetime = $validated['datetime'];
+    $cena->guests_max = (int)$validated['guests'];
+    // guests_current se mantiene
+    $cena->price = $validated['price'];
+    $cena->menu = $validated['menu'];
+    $cena->location = $validated['location'];
+    $cena->latitude = $validated['latitude'];
+    $cena->longitude = $validated['longitude'];
+
+    // Opcionales
+    $cena->special_requirements = $request->input('special_requirements');
+    $cena->cancellation_policy = $request->input('cancellation_policy');
+
+    // Imágenes
+    $cena->cover_image = $newCoverPath;
+    $cena->gallery_images = $finalGallery;
+
+    $cena->save();
+
+    Log::info('Cena actualizada correctamente', [
+        'cena_id' => $cena->id,
+        'chef_id' => $user->id,
+    ]);
+
+    return redirect()
+        ->route('chef.dinners.edit', $cena->id)
+        ->with('success', '¡La cena se actualizó correctamente!');
+}
+
 public function showDinner(Cena $cena)
 {
     // Verificar que la cena pertenezca al chef autenticado

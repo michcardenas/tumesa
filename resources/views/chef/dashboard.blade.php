@@ -11,218 +11,147 @@
         </div>
     </div>
 
-            <!-- Contenido Principal -->
-            <div class="col-md-9">
-                <div class="chef-content">
-                    <!-- Dashboard Principal -->
-                    <div id="dashboard-section" class="content-section active">
-                        <!-- Estadísticas Rápidas -->
-                        <div class="row mb-4">
-                            <div class="col-md-3">
-                                <div class="stat-card">
-                                    <div class="stat-icon bg-success">
-                                        <i class="fas fa-calendar-check"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>5</h4>
-                                        <p>Cenas Este Mes</p>
-                                    </div>
-                                </div>
+    <!-- Contenido Principal -->
+    <div class="">
+        <div class="chef-content">
+            <!-- Dashboard Principal -->
+            <div id="dashboard-section" class="content-section active">
+                <!-- Estadísticas Rápidas -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-success">
+                                <i class="fas fa-calendar-check"></i>
                             </div>
-                            <div class="col-md-3">
-                                <div class="stat-card">
-                                    <div class="stat-icon bg-primary">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>32</h4>
-                                        <p>Comensales Totales</p>
-                                    </div>
-                                </div>
+                            <div class="stat-info">
+                                <h4>{{ $stats['cenas_mes'] ?? 0 }}</h4>
+                                <p>Cenas Este Mes</p>
                             </div>
-                            <div class="col-md-3">
-                                <div class="stat-card">
-                                    <div class="stat-icon bg-warning">
-                                        <i class="fas fa-clock"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>2</h4>
-                                        <p>Cenas Pendientes</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-card">
-                                    <div class="stat-icon bg-danger">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                    </div>
-                                    <div class="stat-info">
-                                        <h4>$1,250</h4>
-                                        <p>Ingresos del Mes</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-               <!-- Próximas Cenas -->
-<div class="section-header">
-    <h2>Próximas Cenas</h2>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDinnerModal" style="background-color: #2563eb; border-color: #2563eb;">
-        <i class="fas fa-plus"></i> Nueva Cena
-    </button>
-</div>
-
-<div class="table-container">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Título</th>
-                <th>Comensales</th>
-                <th>Precio</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($proximas_cenas as $cena)
-            <tr>
-                <td>{{ $cena['fecha_formatted'] }}</td>
-                <td>{{ $cena['titulo'] }}</td>
-                <td>{{ $cena['comensales_actuales'] }}/{{ $cena['comensales_max'] }}</td>
-                <td>${{ number_format($cena['precio'], 0, ',', '.') }}</td>
-                
-                <td>
-                    <div class="action-buttons">
-                        <a href="{{ route('chef.dinners.show', $cena['id']) }}" 
-                           class="btn btn-sm btn-outline-primary" 
-                           title="Ver detalles">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="{{ route('chef.dinners.edit', $cena['id']) }}" 
-                           class="btn btn-sm btn-outline-success" 
-                           title="Editar cena">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="6" class="text-center text-muted py-4">
-                    <i class="fas fa-calendar-times fa-2x mb-3"></i>
-                    <br>
-                    <strong>No tienes cenas próximas</strong>
-                    <br>
-                    <small>Crea tu primera cena usando el botón "Nueva Cena"</small>
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-
-                    <!-- Sección Mis Cenas -->
-                    <div id="mis-cenas-section" class="content-section">
-                        <div class="section-header">
-                            <h2>Mis Cenas</h2>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDinnerModal" style="background-color: #2563eb; border-color: #2563eb;">
-                                <i class="fas fa-plus"></i> Nueva Cena
-                            </button>
-                        </div>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            Aquí aparecerán todas tus cenas organizadas. Podrás editarlas, ver los comensales registrados y gestionar los pagos.
                         </div>
                     </div>
-
-                    <!-- Sección Ingresos -->
-                    <div id="ingresos-section" class="content-section">
-                        <div class="section-header">
-                            <h2>Gestión de Ingresos</h2>
-                        </div>
-                        
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <div class="income-card">
-                                    <h5>Ingresos Este Mes</h5>
-                                    <h2 class="text-success">$1,250.000</h2>
-                                    <small class="text-muted">5 cenas realizadas</small>
-                                </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-primary">
+                                <i class="fas fa-users"></i>
                             </div>
-                            <div class="col-md-4">
-                                <div class="income-card">
-                                    <h5>Ingresos Pendientes</h5>
-                                    <h2 class="text-warning">$520.000</h2>
-                                    <small class="text-muted">2 cenas por cobrar</small>
-                                </div>
+                            <div class="stat-info">
+                                <h4>{{ $stats['comensales_totales'] ?? 0 }}</h4>
+                                <p>Comensales Totales</p>
                             </div>
-                            <div class="col-md-4">
-                                <div class="income-card">
-                                    <h5>Total Acumulado</h5>
-                                    <h2 class="text-primary">$8,750.000</h2>
-                                    <small class="text-muted">Desde enero 2025</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-success">
-                            <i class="fas fa-chart-line"></i>
-                            <strong>¡Excelente!</strong> Tus ingresos han aumentado un 15% este mes comparado con el anterior.
                         </div>
                     </div>
-
-                    <!-- Sección Editar Perfil -->
-                    <div id="perfil-section" class="content-section">
-                        <div class="section-header">
-                            <h2>Editar Perfil de Chef</h2>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-8">
-                                <form class="profile-form">
-                                    <div class="mb-3">
-                                        <label class="form-label">Nombre del Chef</label>
-                                        <input type="text" class="form-control" value="{{ Auth::user()->name }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Especialidad Culinaria</label>
-                                        <input type="text" class="form-control" placeholder="Ej: Cocina Italiana, Fusión Asiática">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Biografía</label>
-                                        <textarea class="form-control" rows="4" placeholder="Cuéntanos sobre tu experiencia culinaria..."></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Precio Base por Comensal</label>
-                                        <input type="number" class="form-control" placeholder="35000">
-                                    </div>
-                                    <button type="submit" class="btn btn-success" style="background-color: #1e293b; border-color: #1e293b;">
-                                        <i class="fas fa-save"></i> Guardar Cambios
-                                    </button>
-                                </form>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-warning">
+                                <i class="fas fa-clock"></i>
                             </div>
-                            <div class="col-md-4">
-                                <div class="profile-photo-section">
-                                    <h5>Foto de Perfil</h5>
-                                    <div class="photo-placeholder">
-                                        <i class="fas fa-user-circle fa-5x text-muted"></i>
-                                    </div>
-                                    <button class="btn btn-outline-primary btn-sm mt-2">
-                                        <i class="fas fa-camera"></i> Cambiar Foto
-                                    </button>
-                                </div>
+                            <div class="stat-info">
+                                <h4>{{ $stats['cenas_pendientes'] ?? 0 }}</h4>
+                                <p>Cenas Pendientes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-danger">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h4>${{ number_format($stats['ingresos_mes'] ?? 0, 0, ',', '.') }}</h4>
+                                <p>Ingresos del Mes</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+                
+                <!-- Opcional: Mostrar mensaje cuando no hay datos -->
+                @if(($stats['cenas_mes'] ?? 0) === 0 && ($stats['cenas_pendientes'] ?? 0) === 0)
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>¡Comienza tu aventura culinaria!</strong> 
+                    No tienes cenas programadas aún. Crea tu primera cena usando el botón "Nueva Cena".
+                </div>
+                @endif
+
+                <!-- Próximas Cenas -->
+                <div class="section-header">
+                    <h2>Próximas Cenas</h2>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDinnerModal" style="background-color: #2563eb; border-color: #2563eb;">
+                        <i class="fas fa-plus"></i> Nueva Cena
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Título</th>
+                                <th>Comensales</th>
+                                <th>Precio</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($proximas_cenas as $cena)
+                            <tr>
+                                <td>{{ $cena['fecha_formatted'] }}</td>
+                                <td>{{ $cena['titulo'] }}</td>
+                                <td>{{ $cena['comensales_actuales'] }}/{{ $cena['comensales_max'] }}</td>
+                                <td>${{ number_format($cena['precio'], 0, ',', '.') }}</td>
+                                
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{{ route('chef.dinners.show', $cena['id']) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('chef.dinners.edit', $cena['id']) }}" 
+                                           class="btn btn-sm btn-outline-success" 
+                                           title="Editar cena">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <i class="fas fa-calendar-times fa-2x mb-3"></i>
+                                    <br>
+                                    <strong>No tienes cenas próximas</strong>
+                                    <br>
+                                    <small>Crea tu primera cena usando el botón "Nueva Cena"</small>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div> <!-- Cierre de dashboard-section -->
+
+            <!-- Sección Mis Cenas -->
+            <div id="mis-cenas-section" class="content-section">
+                <div class="section-header">
+                    <h2>Mis Cenas</h2>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDinnerModal" style="background-color: #2563eb; border-color: #2563eb;">
+                        <i class="fas fa-plus"></i> Nueva Cena
+                    </button>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Aquí aparecerán todas tus cenas organizadas. Podrás editarlas, ver los comensales registrados y gestionar los pagos.
+                </div>
+            </div> <!-- Cierre de mis-cenas-section -->
+
+        </div> <!-- Cierre de chef-content -->
+    </div> <!-- Cierre de col-md-9 -->
+</div> <!-- Cierre de chef-container -->
 
 <!-- Modal para Nueva Cena -->
 <div class="modal fade" id="newDinnerModal" tabindex="-1">
-    <div class="modal-dialog modal-xl"> <!-- Cambié a modal-xl para más espacio -->
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
@@ -266,122 +195,121 @@
                     </div>
 
                     <div class="mb-4">
-    <label class="form-label">
-        <i class="fas fa-images text-primary"></i> Imágenes de la Cena
-    </label>
-    
-    <!-- Imagen de Portada -->
-    <div class="image-upload-section mb-3">
-        <h6 class="image-section-title">
-            <i class="fas fa-star text-warning"></i> Imagen de Portada
-        </h6>
-        <p class="image-section-description">Esta será la imagen principal que verán los comensales</p>
-        
-        <div class="cover-image-upload">
-            <input type="file" 
-                   id="coverImageInput" 
-                   name="cover_image" 
-                   accept="image/*" 
-                   class="d-none">
-            
-            <div id="coverImageDropZone" class="image-drop-zone cover-drop-zone">
-                <div class="drop-zone-content">
-                    <i class="fas fa-cloud-upload-alt drop-zone-icon"></i>
-                    <h5>Imagen de Portada</h5>
-                    <p>Arrastra tu imagen aquí o <span class="upload-link">haz clic para seleccionar</span></p>
-                    <small class="text-muted">JPG, PNG o WebP • Máximo 5MB</small>
-                </div>
-            </div>
-            
-            <!-- Preview de imagen de portada -->
-            <div id="coverImagePreview" class="image-preview-container d-none">
-                <div class="image-preview-wrapper">
-                    <img id="coverImagePreviewImg" src="" alt="Portada" class="cover-preview-img">
-                    <div class="image-overlay">
-                        <button type="button" 
-                                class="btn btn-sm btn-danger remove-image-btn" 
-                                onclick="removeCoverImage()">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        <button type="button" 
-                                class="btn btn-sm btn-primary change-image-btn" 
-                                onclick="changeCoverImage()">
-                            <i class="fas fa-edit"></i>
-                        </button>
+                        <label class="form-label">
+                            <i class="fas fa-images text-primary"></i> Imágenes de la Cena
+                        </label>
+                        
+                        <!-- Imagen de Portada -->
+                        <div class="image-upload-section mb-3">
+                            <h6 class="image-section-title">
+                                <i class="fas fa-star text-warning"></i> Imagen de Portada
+                            </h6>
+                            <p class="image-section-description">Esta será la imagen principal que verán los comensales</p>
+                            
+                            <div class="cover-image-upload">
+                                <input type="file" 
+                                       id="coverImageInput" 
+                                       name="cover_image" 
+                                       accept="image/*" 
+                                       class="d-none">
+                                
+                                <div id="coverImageDropZone" class="image-drop-zone cover-drop-zone">
+                                    <div class="drop-zone-content">
+                                        <i class="fas fa-cloud-upload-alt drop-zone-icon"></i>
+                                        <h5>Imagen de Portada</h5>
+                                        <p>Arrastra tu imagen aquí o <span class="upload-link">haz clic para seleccionar</span></p>
+                                        <small class="text-muted">JPG, PNG o WebP • Máximo 5MB</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Preview de imagen de portada -->
+                                <div id="coverImagePreview" class="image-preview-container d-none">
+                                    <div class="image-preview-wrapper">
+                                        <img id="coverImagePreviewImg" src="" alt="Portada" class="cover-preview-img">
+                                        <div class="image-overlay">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-danger remove-image-btn" 
+                                                    onclick="removeCoverImage()">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-primary change-image-btn" 
+                                                    onclick="changeCoverImage()">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="image-info">
+                                        <small class="text-success">
+                                            <i class="fas fa-check-circle"></i> Imagen de portada cargada
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Galería de Imágenes Adicionales -->
+                        <div class="image-upload-section">
+                            <h6 class="image-section-title">
+                                <i class="fas fa-images text-info"></i> Galería de Imágenes (Opcional)
+                            </h6>
+                            <p class="image-section-description">Agrega hasta 5 imágenes adicionales de tus platos o ambiente</p>
+                            
+                            <div class="gallery-images-upload">
+                                <input type="file" 
+                                       id="galleryImagesInput" 
+                                       name="gallery_images[]" 
+                                       accept="image/*" 
+                                       multiple 
+                                       class="d-none">
+                                
+                                <div id="galleryDropZone" class="image-drop-zone gallery-drop-zone">
+                                    <div class="drop-zone-content">
+                                        <i class="fas fa-photo-video drop-zone-icon"></i>
+                                        <h6>Galería de Imágenes</h6>
+                                        <p>Arrastra varias imágenes aquí o <span class="upload-link">haz clic para seleccionar</span></p>
+                                        <small class="text-muted">Máximo 5 imágenes • JPG, PNG o WebP • 5MB cada una</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Preview de galería -->
+                                <div id="galleryPreview" class="gallery-preview-container"></div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="image-info">
-                    <small class="text-success">
-                        <i class="fas fa-check-circle"></i> Imagen de portada cargada
-                    </small>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Galería de Imágenes Adicionales -->
-    <div class="image-upload-section">
-        <h6 class="image-section-title">
-            <i class="fas fa-images text-info"></i> Galería de Imágenes (Opcional)
-        </h6>
-        <p class="image-section-description">Agrega hasta 5 imágenes adicionales de tus platos o ambiente</p>
-        
-        <div class="gallery-images-upload">
-            <input type="file" 
-                   id="galleryImagesInput" 
-                   name="gallery_images[]" 
-                   accept="image/*" 
-                   multiple 
-                   class="d-none">
-            
-            <div id="galleryDropZone" class="image-drop-zone gallery-drop-zone">
-                <div class="drop-zone-content">
-                    <i class="fas fa-photo-video drop-zone-icon"></i>
-                    <h6>Galería de Imágenes</h6>
-                    <p>Arrastra varias imágenes aquí o <span class="upload-link">haz clic para seleccionar</span></p>
-                    <small class="text-muted">Máximo 5 imágenes • JPG, PNG o WebP • 5MB cada una</small>
-                </div>
-            </div>
-            
-            <!-- Preview de galería -->
-            <div id="galleryPreview" class="gallery-preview-container"></div>
-        </div>
-    </div>
-</div>
 
-                    
-                   <!-- 🌍 SECCIÓN DE UBICACIÓN SIMPLIFICADA -->
-<div class="mb-3">
-    <label class="form-label">
-        <i class="fas fa-map-marker-alt"></i> Ubicación de la Cena
-    </label>
-    
-    <!-- Un solo input con búsqueda inteligente -->
-    <div class="input-group mb-3">
-        <input type="text" 
-               id="locationInput" 
-               class="form-control" 
-               name="location" 
-               placeholder="🔍 Busca cualquier lugar: restaurantes, hoteles, ciudades, direcciones..."
-               autocomplete="off">
-        <button type="button" 
-                id="myLocationBtn" 
-                class="btn btn-outline-success" 
-                title="Usar mi ubicación actual">
-            <i class="fas fa-crosshairs"></i>
-        </button>
-    </div>
-    
-    <!-- Mapa interactivo -->
-    <div id="map" style="height: 400px; width: 100%; border-radius: 8px; border: 2px solid #e9ecef;"></div>
-    
-    <!-- Campos ocultos para guardar coordenadas -->
-    <input type="hidden" id="latitude" name="latitude">
-    <input type="hidden" id="longitude" name="longitude">
-    
-    <!-- Confirmación visual de la ubicación seleccionada -->
-    <div id="selectedAddress" class="mt-2"></div>
-</div>
+                    <!-- 🌍 SECCIÓN DE UBICACIÓN SIMPLIFICADA -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Ubicación de la Cena
+                        </label>
+                        
+                        <!-- Un solo input con búsqueda inteligente -->
+                        <div class="input-group mb-3">
+                            <input type="text" 
+                                   id="locationInput" 
+                                   class="form-control" 
+                                   name="location" 
+                                   placeholder="🔍 Busca cualquier lugar: restaurantes, hoteles, ciudades, direcciones..."
+                                   autocomplete="off">
+                            <button type="button" 
+                                    id="myLocationBtn" 
+                                    class="btn btn-outline-success" 
+                                    title="Usar mi ubicación actual">
+                                <i class="fas fa-crosshairs"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Mapa interactivo -->
+                        <div id="map" style="height: 400px; width: 100%; border-radius: 8px; border: 2px solid #e9ecef;"></div>
+                        
+                        <!-- Campos ocultos para guardar coordenadas -->
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+                        
+                        <!-- Confirmación visual de la ubicación seleccionada -->
+                        <div id="selectedAddress" class="mt-2"></div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -393,70 +321,188 @@
         </div>
     </div>
 </div>
-
 <style>
-        /* Chef Container */
-        .chef-container {
-            background-color: #f8f9fa;
-            min-height: 100vh;
-        }
+/* ==================== CONTENEDOR PRINCIPAL ==================== */
+.chef-container {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
 
-        /* Chef Header */
-        .chef-header {
-            color: white;
-            padding: 1rem 0;
-            margin-bottom: 0;
-        }
+/* ==================== HEADER ==================== */
+.chef-header {
+    color: white;
+    padding: 1rem 0;
+    margin-bottom: 0;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
 
-        .chef-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
+.chef-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
 
-        .chef-header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 0.9rem;
-        }
+.chef-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
 
-        /* Sidebar */
-        .chef-sidebar {
-            background: white;
-            border-radius: 8px;
-            padding: 1rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            height: fit-content;
-            position: sticky;
-            top: 20px;
-        }
+/* ==================== ÁREA DE CONTENIDO ==================== */
+.chef-content {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-height: 90%;
+}
 
-        .chef-menu {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+.content-section {
+    display: none;
+}
 
-        .menu-item {
-            margin-bottom: 0.25rem;
-        }
+.content-section.active {
+    display: block;
+}
 
-        .menu-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            color: #6c757d;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-            cursor: pointer;
-        }
+/* ==================== HEADER DE SECCIONES ==================== */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
 
-        .menu-link:hover {
-            background: #f1f5f9;
-            color: #2563eb;
-        }
-        .image-upload-section {
+.section-header h2 {
+    margin: 0;
+    color: #495057;
+    font-size: 1.5rem;
+}
+
+/* ==================== TARJETAS DE ESTADÍSTICAS ==================== */
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+
+.stat-icon.bg-primary {
+    background-color: #2563eb !important;
+}
+
+.stat-icon.bg-success {
+    background-color: #059669 !important;
+}
+
+.stat-icon.bg-warning {
+    background-color: #d97706 !important;
+}
+
+.stat-icon.bg-danger {
+    background-color: #1e293b !important;
+}
+
+.stat-info h4 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #495057;
+}
+
+.stat-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* ==================== TABLAS ==================== */
+.table-container {
+    overflow-x: auto;
+    background: white;
+    border-radius: 8px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background: #f8f9fa;
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* ==================== BOTONES DE ACCIÓN ==================== */
+.action-buttons {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+/* ==================== MODAL ==================== */
+.modal-header {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-bottom: 2px solid #dee2e6;
+}
+
+.modal-title {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 2px solid #e9ecef;
+    background-color: #f8fafc;
+}
+
+.modal-xl {
+    max-width: 1200px;
+}
+
+/* ==================== FORMULARIOS ==================== */
+.form-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-label i {
+    color: #2563eb;
+    margin-right: 0.25rem;
+}
+
+/* ==================== CARGA DE IMÁGENES ==================== */
+.image-upload-section {
     background: #f8fafc;
     border-radius: 12px;
     padding: 1.5rem;
@@ -479,7 +525,6 @@
     margin-bottom: 1rem;
 }
 
-/* Drop zones */
 .image-drop-zone {
     border: 3px dashed #cbd5e1;
     border-radius: 12px;
@@ -495,26 +540,6 @@
     background: #f1f5f9;
 }
 
-.image-drop-zone.dragover {
-    border-color: #059669;
-    background: #f0fdf4;
-    transform: scale(1.02);
-}
-
-.cover-drop-zone {
-    min-height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.gallery-drop-zone {
-    min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .drop-zone-content {
     pointer-events: none;
 }
@@ -523,25 +548,6 @@
     font-size: 3rem;
     color: #94a3b8;
     margin-bottom: 1rem;
-}
-
-.cover-drop-zone .drop-zone-icon {
-    color: #f59e0b;
-}
-
-.gallery-drop-zone .drop-zone-icon {
-    color: #06b6d4;
-}
-
-.drop-zone-content h5,
-.drop-zone-content h6 {
-    color: #374151;
-    margin-bottom: 0.5rem;
-}
-
-.drop-zone-content p {
-    color: #6b7280;
-    margin-bottom: 0.5rem;
 }
 
 .upload-link {
@@ -590,20 +596,6 @@
     opacity: 1;
 }
 
-.remove-image-btn,
-.change-image-btn {
-    padding: 0.5rem;
-    border-radius: 50%;
-    border: none;
-    font-size: 0.875rem;
-}
-
-.image-info {
-    margin-top: 0.5rem;
-    text-align: center;
-}
-
-/* Galería preview */
 .gallery-preview-container {
     margin-top: 1rem;
     display: grid;
@@ -611,606 +603,125 @@
     gap: 1rem;
 }
 
-.gallery-item {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.gallery-item img {
+/* ==================== MAPA ==================== */
+#map {
+    height: 400px;
     width: 100%;
-    height: 120px;
-    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: border-color 0.3s ease;
 }
 
-.gallery-item .image-overlay {
-    justify-content: flex-end;
-    align-items: flex-start;
-    padding: 0.5rem;
+#map:hover {
+    border-color: #2563eb;
 }
 
-.gallery-item .remove-image-btn {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-}
-
-/* Contador de imágenes */
-.image-counter {
-    background: #2563eb;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-top: 0.5rem;
-}
-
-/* Estados de error */
-.drop-zone-error {
-    border-color: #dc2626 !important;
-    background: #fef2f2 !important;
-}
-
-.error-message {
-    color: #dc2626;
+#selectedAddress {
     font-size: 0.875rem;
-    margin-top: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+    color: #059669 !important;
+    font-weight: 500;
+    margin-top: 8px;
+    padding: 8px;
+    background-color: #f0fdf4;
+    border-radius: 4px;
+    border-left: 3px solid #059669;
 }
 
-/* Responsive */
+/* ==================== ALERTAS ==================== */
+.alert {
+    border: none;
+    border-radius: 6px;
+}
+
+.alert-info {
+    background-color: #e0f2fe;
+    border-left: 4px solid #2563eb;
+    color: #075985;
+}
+
+/* ==================== BOTONES PERSONALIZADOS ==================== */
+.btn-primary {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+}
+
+.btn-secondary {
+    background-color: #64748b !important;
+    border-color: #64748b !important;
+}
+
+.btn-secondary:hover {
+    background-color: #475569 !important;
+    border-color: #475569 !important;
+}
+
+.btn-outline-primary {
+    color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-outline-primary:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+
+.btn-outline-success {
+    color: #059669;
+    border-color: #059669;
+}
+
+.btn-outline-success:hover {
+    background-color: #059669;
+    border-color: #059669;
+    color: white;
+}
+
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
-    .image-upload-section {
-        padding: 1rem;
+    .chef-content {
+        margin-top: 1rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stat-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    #map {
+        height: 300px !important;
+    }
+    
+    .modal-xl {
+        max-width: 95%;
+        margin: 1rem auto;
     }
     
     .image-drop-zone {
         padding: 1.5rem 1rem;
     }
     
-    .drop-zone-icon {
-        font-size: 2rem;
-    }
-    
-    .cover-preview-img {
-        max-width: 100%;
-        height: 150px;
-    }
-    
     .gallery-preview-container {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     }
-    
-    .gallery-item img {
-        height: 100px;
-    }
 }
-
-/* Animaciones */
-@keyframes uploadSuccess {
-    0% {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.upload-success {
-    animation: uploadSuccess 0.3s ease;
-}
-        .menu-link.active {
-            background: #2563eb;
-            color: white;
-        }
-
-        .menu-link.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .menu-link i {
-            margin-right: 0.75rem;
-            width: 16px;
-            text-align: center;
-        }
-
-        .coming-soon {
-            margin-left: auto;
-            font-size: 0.7rem;
-            background: #64748b;
-            color: white;
-            padding: 0.1rem 0.4rem;
-            border-radius: 10px;
-        }
-
-        /* Content Area */
-        .chef-content {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .content-section {
-            display: none;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        /* Section Header */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .section-header h2 {
-            margin: 0;
-            color: #495057;
-            font-size: 1.5rem;
-        }
-
-        /* Stat Cards */
-        .stat-card {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            margin-right: 1rem;
-        }
-
-        .stat-info h4 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #495057;
-        }
-
-        .stat-info p {
-            margin: 0;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        /* Income Cards */
-        .income-card {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .income-card h5 {
-            color: #6c757d;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .income-card h2 {
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-        }
-
-        /* Profile Section */
-        .profile-form {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-        }
-
-        .profile-photo-section {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .photo-placeholder {
-            margin: 1rem 0;
-        }
-
-        /* Table Container */
-        .table-container {
-            overflow-x: auto;
-            background: white;
-            border-radius: 8px;
-        }
-
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table th {
-            background: #f8f9fa;
-            border-top: none;
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .table td {
-            vertical-align: middle;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 0.25rem;
-        }
-
-        .action-buttons .btn {
-            padding: 0.25rem 0.5rem;
-        }
-
-        /* Modal Improvements */
-        .modal-header {
-            background: #f1f5f9;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .modal-title {
-            color: #2563eb;
-            font-weight: 600;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .chef-content {
-                margin-top: 1rem;
-            }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 1rem;
-            }
-            
-            .stat-card {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .stat-icon {
-                margin-right: 0;
-                margin-bottom: 1rem;
-            }
-        }
-
-        /* Alerts */
-        .alert {
-            border: none;
-            border-radius: 6px;
-        }
-
-        /* Colores personalizados para botones */
-        .btn-primary {
-            background-color: #2563eb !important;
-            border-color: #2563eb !important;
-        }
-
-        .btn-primary:hover {
-            background-color: #1d4ed8 !important;
-            border-color: #1d4ed8 !important;
-        }
-
-        .btn-secondary {
-            background-color: #64748b !important;
-            border-color: #64748b !important;
-        }
-
-        .btn-secondary:hover {
-            background-color: #475569 !important;
-            border-color: #475569 !important;
-        }
-
-        /* Iconos de estado personalizados */
-        .stat-icon.bg-primary {
-            background-color: #2563eb !important;
-        }
-
-        .stat-icon.bg-success {
-            background-color: #059669 !important;
-        }
-
-        .stat-icon.bg-warning {
-            background-color: #d97706 !important;
-        }
-
-        .stat-icon.bg-danger {
-            background-color: #1e293b !important;
-        }
-
-        /* Links y textos con colores consistentes */
-        .text-primary {
-            color: #2563eb !important;
-        }
-
-        /* Botones outline con colores consistentes */
-        .btn-outline-primary {
-            color: #2563eb;
-            border-color: #2563eb;
-        }
-
-        .btn-outline-primary:hover {
-            background-color: #2563eb;
-            border-color: #2563eb;
-            color: white;
-        }
-
-        .btn-outline-success {
-            color: #059669;
-            border-color: #059669;
-        }
-
-        .btn-outline-success:hover {
-            background-color: #059669;
-            border-color: #059669;
-            color: white;
-        }
-
-        /* 🗺️ ESTILOS PARA GOOGLE MAPS */
-        #map {
-            border-radius: 8px;
-            border: 2px solid #e9ecef;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: border-color 0.3s ease;
-        }
-
-        #map:hover {
-            border-color: #2563eb;
-        }
-
-        /* Input group para búsqueda de ubicación */
-        .input-group .btn {
-            min-width: 45px;
-        }
-
-        /* Información de coordenadas */
-        #selectedAddress {
-            font-size: 0.875rem;
-            color: #059669 !important;
-            font-weight: 500;
-            margin-top: 8px;
-            padding: 8px;
-            background-color: #f0fdf4;
-            border-radius: 4px;
-            border-left: 3px solid #059669;
-        }
-
-        /* Modal más grande para el mapa */
-        .modal-xl {
-            max-width: 1200px;
-        }
-
-        /* Responsive para el mapa */
-        @media (max-width: 768px) {
-            #map {
-                height: 300px !important;
-            }
-            
-            .modal-xl {
-                max-width: 95%;
-                margin: 1rem auto;
-            }
-            
-            .input-group {
-                flex-direction: column;
-            }
-            
-            .input-group .btn {
-                width: 100%;
-                margin-top: 0.5rem;
-                border-radius: 0.375rem !important;
-            }
-        }
-
-        /* Loading state para botones */
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* Estilos para el marcador personalizado */
-        .gm-style .gm-style-iw {
-            border-radius: 8px;
-            padding: 0;
-        }
-
-        .gm-style .gm-style-iw-c {
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        /* ✅ AGREGAR ESTOS ESTILOS AL FINAL DE TU <style> EXISTENTE: */
-
-/* Dropdown de sugerencias */
-.suggestions-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    z-index: 1050;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 4px;
-}
-
-.suggestions-header {
-    padding: 12px 16px;
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: #2563eb;
-    border-bottom: 1px solid #e2e8f0;
-    position: sticky;
-    top: 0;
-}
-
-.suggestion-item {
-    padding: 12px 16px;
-    cursor: pointer;
-    border-bottom: 1px solid #f1f5f9;
-    display: flex;
-    align-items: center;
-    transition: all 0.2s ease;
-}
-
-.suggestion-item:hover {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-left: 4px solid #2563eb;
-    padding-left: 12px;
-}
-
-.suggestion-item:last-child {
-    border-bottom: none;
-}
-
-.suggestion-item i {
-    color: #2563eb;
-    margin-right: 12px;
-    width: 18px;
-    font-size: 1rem;
-}
-
-.suggestion-content {
-    flex: 1;
-}
-
-.suggestion-main {
-    font-weight: 600;
-    color: #1f2937;
-    font-size: 0.95rem;
-    margin-bottom: 2px;
-}
-
-.suggestion-secondary {
-    font-size: 0.8rem;
-    color: #6b7280;
-}
-        /* 🔍 ESTILOS PARA BÚSQUEDA DE LUGARES */
-        .search-suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .suggestions-header {
-            padding: 8px 12px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #2563eb;
-            background: #f1f5f9;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .suggestion-item {
-            padding: 10px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #f1f5f9;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.2s ease;
-        }
-
-        .suggestion-item:hover {
-            background-color: #f8fafc;
-        }
-
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
-
-        .suggestion-item i {
-            color: #2563eb;
-            margin-right: 8px;
-            width: 16px;
-            font-size: 0.875rem;
-        }
-
-        .suggestion-item span {
-            color: #374151;
-            font-size: 0.9rem;
-        }
-
-        .suggestion-item:hover span {
-            color: #2563eb;
-            font-weight: 500;
-        }
-
-        /* Input group para búsqueda */
-        .input-group .btn {
-            min-width: 45px;
-        }
-
-        /* Contenedor relativo para sugerencias */
-        .input-group {
-            position: relative;
-        }
-
-        /* Mejorar la apariencia del modal */
-        .modal-header {
-            border-bottom: 2px solid #e9ecef;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            border-top: 2px solid #e9ecef;
-            background-color: #f8fafc;
-        }
-
-        /* Etiquetas de formulario más atractivas */
-        .form-label {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-label i {
-            color: #2563eb;
-            margin-right: 0.25rem;
-        }
 </style>
 
 <script>
@@ -1418,7 +929,7 @@ function initMap() {
         setupSimpleSearch();
 
         // Inicializar display
-        updateLocationDisplay(defaultLocation, 'Bogotá, Colombia (ubicación predeterminada)');
+        updateLocationDisplay(defaultLocation, 'Buenos Aires, Argentina (ubicación predeterminada)');
 
         console.log('🌍 Google Maps con buscador simple inicializado exitosamente');
         

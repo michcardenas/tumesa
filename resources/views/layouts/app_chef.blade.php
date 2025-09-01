@@ -496,7 +496,7 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <!-- Center navigation links -->
                     <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
+                          <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}" 
                                href="{{ route('experiencias') ?? '#' }}">Experiencias</a>
                         </li>
@@ -524,7 +524,7 @@
                                     <li><a class="dropdown-item" href="{{ route('profile') ?? '#' }}">
                                         <i class="fas fa-user me-2"></i>Mi Perfil
                                     </a></li>
-                                    <li><a class="dropdown-item" href="{{ route('reservas') ?? '#' }}">
+                                    <li><a class="dropdown-item" href="{{ route('chef.dashboard') }}">
                                         <i class="fas fa-calendar me-2"></i>Mis Reservas
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>
@@ -586,6 +586,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     
     <!-- Scripts específicos de chef -->
     <script>
