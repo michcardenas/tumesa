@@ -116,115 +116,185 @@
     </div>
 </div>
 
-<!-- Información del Chef -->
+<!-- Información de Comensales y Reservas -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card border-primary">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Información del Chef Anfitrión</h5>
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Comensales y Reservas</h5>
             </div>
             <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-3 text-center">
-                        <div class="chef-avatar-container mb-3">
-                            @if($cena->user->avatar_url)
-                                <img src="{{ $cena->user->avatar_url }}" alt="{{ $cena->user->name }}" 
-                                     class="chef-avatar-large rounded-circle border border-primary" 
-                                     style="width: 120px; height: 120px; object-fit: cover;">
-                            @else
-                                <div class="chef-avatar-large rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
-                                     style="width: 120px; height: 120px;">
-                                    <i class="fas fa-user fa-3x"></i>
-                                </div>
-                            @endif
+                @if($reservasData['total_reservas'] > 0)
+                    <!-- Estadísticas de Reservas -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-box text-center p-3 border rounded">
+                                <h4 class="text-primary mb-1">{{ $reservasData['total_reservas'] }}</h4>
+                                <small class="text-muted">Total Reservas</small>
+                            </div>
                         </div>
-                        @if($cena->user->rating > 0)
-                            <div class="chef-rating mb-2">
-                                <div class="rating-stars">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($cena->user->rating))
-                                            <i class="fas fa-star text-warning"></i>
-                                        @elseif($i - 0.5 <= $cena->user->rating)
-                                            <i class="fas fa-star-half-alt text-warning"></i>
-                                        @else
-                                            <i class="far fa-star text-warning"></i>
-                                        @endif
-                                    @endfor
-                                </div>
-                                <small class="text-muted d-block">{{ number_format($cena->user->rating, 1) }} de 5</small>
+                        <div class="col-md-3">
+                            <div class="stat-box text-center p-3 border rounded">
+                                <h4 class="text-success mb-1">{{ $reservasData['reservas_confirmadas'] }}</h4>
+                                <small class="text-muted">Confirmadas</small>
                             </div>
-                        @endif
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box text-center p-3 border rounded">
+                                <h4 class="text-info mb-1">{{ $reservasData['reservas_pagadas'] }}</h4>
+                                <small class="text-muted">Pagadas</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box text-center p-3 border rounded">
+                                <h4 class="text-warning mb-1">{{ $reservasData['reservas_pendientes'] }}</h4>
+                                <small class="text-muted">Pendientes</small>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="col-md-9">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4 class="text-primary mb-2">{{ $cena->user->name }}</h4>
-                                
-                                @if($cena->user->especialidad)
-                                    <p class="mb-2">
-                                        <i class="fas fa-star text-warning me-2"></i>
-                                        <strong>Especialidad:</strong> {{ $cena->user->especialidad }}
-                                    </p>
-                                @endif
-                                
-                                @if($cena->user->experiencia_anos)
-                                    <p class="mb-2">
-                                        <i class="fas fa-award text-success me-2"></i>
-                                        <strong>Experiencia:</strong> {{ $cena->user->experiencia_anos }} {{ $cena->user->experiencia_anos == 1 ? 'año' : 'años' }}
-                                    </p>
-                                @endif
-                                
-                                <p class="mb-2">
-                                    <i class="fas fa-envelope text-info me-2"></i>
-                                    <strong>Email:</strong> {{ $cena->user->email }}
-                                </p>
-                                
-                                @if($cena->user->telefono)
-                                    <p class="mb-2">
-                                        <i class="fas fa-phone text-success me-2"></i>
-                                        <strong>Teléfono:</strong> {{ $cena->user->telefono }}
-                                    </p>
-                                @endif
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="info-card bg-light p-3 rounded">
+                                <h6 class="text-primary"><i class="fas fa-users me-2"></i>Comensales Confirmados</h6>
+                                <p class="mb-0 h5">{{ $reservasData['total_comensales_reservados'] }} personas</p>
                             </div>
-                            
-                            <div class="col-md-6">
-                                @if($cena->user->bio)
-                                    <div class="chef-bio">
-                                        <h6 class="text-primary"><i class="fas fa-quote-left me-2"></i>Acerca de mí</h6>
-                                        <p class="text-muted fst-italic">{{ $cena->user->bio }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card bg-light p-3 rounded">
+                                <h6 class="text-success"><i class="fas fa-dollar-sign me-2"></i>Ingresos Pagados</h6>
+                                <p class="mb-0 h5">${{ number_format($reservasData['ingresos_confirmados'], 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card bg-light p-3 rounded">
+                                <h6 class="text-info"><i class="fas fa-chart-line me-2"></i>Promedio por Reserva</h6>
+                                <p class="mb-0 h5">{{ $reservasData['promedio_comensales_por_reserva'] }} comensales</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Reservas -->
+                    <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-list me-2"></i>Detalle de Reservas</h6>
+                    <div class="reservas-list">
+                        @foreach($reservasData['lista_reservas'] as $reserva)
+                            <div class="reserva-item border rounded p-3 mb-3 {{ $reserva->estado == 'cancelada' ? 'bg-light' : '' }}">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            @if($reserva->user && $reserva->user->avatar)
+                                                <img src="{{ $reserva->user->avatar_url }}" alt="{{ $reserva->user->name }}" 
+                                                     class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                            @else
+                                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                            @endif
+                                            <div>
+                                                <h6 class="mb-0">{{ $reserva->nombre_contacto ?? ($reserva->user->name ?? 'Sin nombre') }}</h6>
+                                                <small class="text-muted">{{ $reserva->codigo_reserva }}</small>
+                                            </div>
+                                        </div>
                                     </div>
-                                @endif
-                                
-                                @if($cena->user->instagram || $cena->user->facebook || $cena->user->website)
-                                    <div class="chef-social mt-3">
-                                        <h6 class="text-primary"><i class="fas fa-share-alt me-2"></i>Redes Sociales</h6>
-                                        <div class="d-flex gap-2">
-                                            @if($cena->user->instagram)
-                                                <a href="{{ $cena->user->instagram_url ?? $cena->user->instagram }}" target="_blank" 
-                                                   class="btn btn-outline-danger btn-sm">
-                                                    <i class="fab fa-instagram"></i> Instagram
-                                                </a>
+                                    
+                                    <div class="col-md-2">
+                                        <span class="badge {{ $reserva->estado_badge['class'] }}">
+                                            {{ $reserva->estado_badge['texto'] }}
+                                        </span>
+                                        @if($reserva->estado_pago != 'pendiente')
+                                            <br><small class="badge {{ $reserva->estado_pago_badge['class'] }} mt-1">
+                                                {{ $reserva->estado_pago_badge['texto'] }}
+                                            </small>
+                                        @endif
+                                    </div>
+                                    
+                                    <div class="col-md-2 text-center">
+                                        <span class="h6 text-primary">{{ $reserva->cantidad_comensales }}</span>
+                                        <small class="d-block text-muted">{{ $reserva->cantidad_comensales == 1 ? 'comensal' : 'comensales' }}</small>
+                                    </div>
+                                    
+                                    <div class="col-md-2 text-center">
+                                        <span class="h6 text-success">{{ $reserva->precio_total_formateado }}</span>
+                                        <small class="d-block text-muted">Total</small>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <div class="contact-info">
+                                            @if($reserva->email_contacto)
+                                                <small class="d-block"><i class="fas fa-envelope me-1"></i>{{ $reserva->email_contacto }}</small>
                                             @endif
-                                            @if($cena->user->facebook)
-                                                <a href="{{ $cena->user->facebook_url ?? $cena->user->facebook }}" target="_blank" 
-                                                   class="btn btn-outline-primary btn-sm">
-                                                    <i class="fab fa-facebook"></i> Facebook
-                                                </a>
+                                            @if($reserva->telefono_contacto)
+                                                <small class="d-block"><i class="fas fa-phone me-1"></i>{{ $reserva->telefono_contacto }}</small>
                                             @endif
-                                            @if($cena->user->website)
-                                                <a href="{{ $cena->user->website }}" target="_blank" 
-                                                   class="btn btn-outline-info btn-sm">
-                                                    <i class="fas fa-globe"></i> Website
-                                                </a>
+                                            @if($reserva->restricciones_alimentarias)
+                                                <small class="d-block text-warning"><i class="fas fa-exclamation-triangle me-1"></i>Restricciones</small>
                                             @endif
                                         </div>
                                     </div>
+                                </div>
+                                
+                                @if($reserva->comentarios_especiales || $reserva->restricciones_alimentarias || $reserva->solicitudes_especiales)
+                                    <hr class="my-2">
+                                    <div class="additional-info">
+                                        @if($reserva->restricciones_alimentarias)
+                                            <p class="mb-1"><strong>Restricciones alimentarias:</strong> <span class="text-warning">{{ $reserva->restricciones_alimentarias }}</span></p>
+                                        @endif
+                                        @if($reserva->solicitudes_especiales)
+                                            <p class="mb-1"><strong>Solicitudes especiales:</strong> {{ $reserva->solicitudes_especiales }}</p>
+                                        @endif
+                                        @if($reserva->comentarios_especiales)
+                                            <p class="mb-0"><strong>Comentarios:</strong> {{ $reserva->comentarios_especiales }}</p>
+                                        @endif
+                                    </div>
                                 @endif
+                                
+                                @if($reserva->calificacion)
+                                    <hr class="my-2">
+                                    <div class="rating-info">
+                                        <strong>Calificación:</strong>
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="fas fa-star {{ $i <= $reserva->calificacion ? 'text-warning' : 'text-muted' }}"></i>
+                                        @endfor
+                                        @if($reserva->resena)
+                                            <p class="mt-1 mb-0 fst-italic">"{{ $reserva->resena }}"</p>
+                                        @endif
+                                    </div>
+                                @endif
+                                
+                                <div class="reservation-dates mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>Reservado: {{ $reserva->created_at->format('d/m/Y H:i') }}
+                                        @if($reserva->fecha_confirmacion)
+                                            | <i class="fas fa-check me-1"></i>Confirmado: {{ $reserva->fecha_confirmacion->format('d/m/Y H:i') }}
+                                        @endif
+                                        @if($reserva->fecha_pago)
+                                            | <i class="fas fa-dollar-sign me-1"></i>Pagado: {{ $reserva->fecha_pago->format('d/m/Y H:i') }}
+                                        @endif
+                                    </small>
+                                </div>
                             </div>
-                        </div>
+                        @endforeach
                     </div>
-                </div>
+                @else
+                    <!-- Sin Reservas -->
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h5 class="text-muted mb-2">Sin reservas aún</h5>
+                        <p class="text-muted">Cuando los comensales hagan reservas aparecerán aquí con toda su información.</p>
+                        @if($cenaData['status'] == 'draft')
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Tip:</strong> Publica tu cena para que los comensales puedan hacer reservas.
+                            </div>
+                        @elseif(!$cenaData['is_active'])
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Nota:</strong> Tu cena está inactiva. Actívala para recibir reservas.
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -431,6 +501,83 @@
 
 .breadcrumb-item + .breadcrumb-item::before {
     color: #6c757d;
+}
+
+/* Estilos para la sección de comensales */
+.stat-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef !important;
+    transition: all 0.2s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.info-card {
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reserva-item {
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.reserva-item:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.contact-info {
+    font-size: 0.875rem;
+}
+
+.additional-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 3px solid #17a2b8;
+}
+
+.rating-info {
+    background: #fff3cd;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid #ffc107;
+}
+
+.reservation-dates {
+    font-size: 0.8rem;
+}
+
+.reservas-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.reservas-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.reservas-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.reservas-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.reservas-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 </style>
 @endpush
