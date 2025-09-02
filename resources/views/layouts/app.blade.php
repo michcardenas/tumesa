@@ -214,7 +214,7 @@
                                     <li><a class="dropdown-item" href="{{ route('profile') ?? '#' }}">
                                         <i class="fas fa-user me-2"></i>Mi Perfil
                                     </a></li>
-                                    <li><a class="dropdown-item" href="{{ route('reservas') ?? '#' }}">
+                                    <li><a class="dropdown-item" href="{{ route('reservas.historial') ?? '#' }}">
                                         <i class="fas fa-calendar me-2"></i>Mis Reservas
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>

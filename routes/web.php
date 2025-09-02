@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\IngresosController;
+use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\ExperienciasController;
 
 
@@ -18,6 +19,7 @@ use App\Http\Controllers\ExperienciasController;
 | Página Principal
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/auth/google/complete-registration', [RegisteredUserController::class, 'showGoogleCompleteRegistration'])
     ->name('auth.google.complete-registration')
@@ -79,6 +81,7 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 | Rutas Públicas (sin autenticación)
 |--------------------------------------------------------------------------
 */
+
 Route::get('/experiencias', function () {
     return view('experiencias');
 })->name('experiencias');
@@ -115,9 +118,12 @@ Route::middleware('auth')->group(function () {
     })->name('profile');
     
     // Reservas del usuario
-    Route::get('/mis-reservas', function () {
-        return view('reservas.index');
-    })->name('reservas');
+Route::get('/mis-reservas', [ReservaController::class, 'historial'])->name('reservas.historial')->middleware('auth');
+
+Route::get('/perfil-comensal', [ProfileController::class, 'perfilComensal'])
+    ->name('perfil.comensal')
+    ->middleware('auth');
+    Route::put('/perfil-comensal', [ProfileController::class, 'updatecomensal'])->name('perfil.comensal.update');
 
 
 

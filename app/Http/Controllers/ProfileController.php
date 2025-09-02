@@ -128,4 +128,31 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+
+       public function perfilComensal()
+    {
+        // Trae al usuario autenticado
+        $user = Auth::user();
+
+        // Retorna la vista de edición de perfil del comensal
+        return view('comensal.perfil', compact('user'));
+    }
+    public function updatecomensal(Request $request)
+{
+    $user = Auth::user();
+
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'telefono' => 'nullable|string|max:20',
+        'direccion' => 'nullable|string|max:255',
+        'bio' => 'nullable|string',
+    ]);
+
+    $user->update($data);
+
+    return redirect()->route('perfil.comensal')->with('success', 'Perfil actualizado correctamente.');
+}
+
 }

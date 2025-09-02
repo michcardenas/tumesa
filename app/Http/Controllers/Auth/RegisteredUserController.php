@@ -104,7 +104,7 @@ class RegisteredUserController extends Controller
         case 'comensal':
         default:
             Log::info('🍽️ Redirigiendo nuevo usuario comensal (o default)');
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('comensal.dashboard'));
     }
 }
 

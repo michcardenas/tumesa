@@ -155,6 +155,34 @@
                 visibility: visible !important;
             }
         }
+        .menu-link-static {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #6c757d;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.menu-link-static:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.menu-link-static.active {
+    background: #2563eb;
+    color: white;
+}
+
+.menu-link-static i {
+    margin-right: 0.75rem;
+    width: 16px;
+    text-align: center;
+}
+
         
         /* Mobile styles */
         @media (max-width: 991.98px) {
@@ -404,12 +432,10 @@
                                     <li><a class="dropdown-item" href="{{ route('profile.edit') ?? '#' }}">
                                         <i class="fas fa-user-edit me-2"></i>Editar Perfil
                                     </a></li>
-                                    <li><a class="dropdown-item" href="#">
+                                    <li><a class="dropdown-item" href="{{ route('reservas.historial') }}">
                                         <i class="fas fa-calendar me-2"></i>Mis Reservas
                                     </a></li>
-                                    <li><a class="dropdown-item" href="#">
-                                        <i class="fas fa-heart me-2"></i>Mis Favoritos
-                                    </a></li>
+                               
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form method="POST" action="{{ route('logout') }}">
@@ -446,26 +472,24 @@
                                     </a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="#" class="menu-link" onclick="showSection('cenas-disponibles')">
+                                    <a href="{{ route('experiencias') }}"class="menu-link" ">
                                         <i class="fas fa-search"></i>
                                         Cenas Disponibles
                                     </a>
                                 </li>
-                                <li class="menu-item">
-                                    <a href="#" class="menu-link" onclick="showSection('mis-reservas')">
-                                        <i class="fas fa-calendar-check"></i>
-                                        Mis Reservas
-                                    </a>
-                                </li>
-                                <li class="menu-item">
-                                    <a href="#" class="menu-link" onclick="showSection('historial')">
+                            
+                               <li class="menu-item">
+                                    <a href="{{ route('reservas.historial') }}" 
+                                    class="menu-link-static {{ request()->routeIs('reservas.historial') ? 'active' : '' }}">
                                         <i class="fas fa-history"></i>
                                         Historial
                                     </a>
                                 </li>
+
+
                                
                                 <li class="menu-item">
-                                    <a href="#" class="menu-link" onclick="showSection('perfil')">
+                                    <a href="{{ route('perfil.comensal') }}" class="menu-link-static {{ request()->routeIs('perfil.comensal') ? 'active' : '' }}">
                                         <i class="fas fa-user-edit"></i>
                                         Mi Perfil
                                     </a>
