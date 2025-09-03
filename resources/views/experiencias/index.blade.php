@@ -135,8 +135,7 @@
             {{-- Rango de precio --}}
             <div class="field">
                 <label class="label">
-                    <i class="fas fa-euro-sign" style="color: #6b7280; margin-right: 4px;"></i>
-                    Precio por persona
+<span style="color: #6b7280; margin-right: 4px;">AR$</span>                    Precio por persona
                 </label>
                 <div class="range-wrap">
                     <div class="range-double">

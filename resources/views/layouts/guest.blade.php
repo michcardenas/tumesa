@@ -27,11 +27,16 @@
             <!-- Logo -->
             <div style="text-align: center; margin-bottom: 30px;">
                 <div style="display: inline-block; padding: 20px;  ">
-                    <img src="{{ asset('img/logo-tumesa.png') }}" 
-                         alt="TUMESA" 
-                         style="width: 70px; 
-                                height: 70px; 
-                                object-fit: contain;">
+                    <a href="{{ route('home') }}" style="display: inline-block; transition: transform 0.3s ease;">
+            <img src="{{ asset('img/logo-tumesa.png') }}"
+                 alt="TUMESA"
+                 style="width: 90px;
+                        height: 90px;
+                        object-fit: contain;
+                        transition: opacity 0.3s ease;"
+                 onmouseover="this.style.opacity='0.8'"
+                 onmouseout="this.style.opacity='1'">
+        </a>
                 </div>
          
             </div>

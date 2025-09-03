@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="welcome-page">
     <!-- Hero Section -->
     <section class="hero-section">
@@ -159,42 +160,14 @@
         @endif
         
         <div class="text-center mt-4">
-            <a href="{{ route('cenas.index') ?? route('experiencias') ?? '#' }}" class="btn btn-link">
+            <a href="{{  route('experiencias') ?? '#' }}" class="btn btn-link">
                 Ver Todas las Experiencias
                 <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
         
         <!-- Estadísticas adicionales -->
-        @if(isset($estadisticas) && $estadisticas['total_cenas'] > 0)
-        <div class="row mt-5 pt-4 border-top">
-            <div class="col-6 col-md-3 text-center">
-                <div class="stat-item">
-                    <h3 class="stat-number text-primary">{{ $estadisticas['total_cenas'] }}</h3>
-                    <p class="stat-label">Experiencias</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3 text-center">
-                <div class="stat-item">
-                    <h3 class="stat-number text-success">{{ $estadisticas['total_chefs'] }}</h3>
-                    <p class="stat-label">Chefs</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3 text-center">
-                <div class="stat-item">
-                    <h3 class="stat-number text-warning">{{ $estadisticas['cenas_este_mes'] }}</h3>
-                    <p class="stat-label">Este Mes</p>
-                </div>
-            </div>
-            <div class="col-6 col-md-3 text-center">
-                <div class="stat-item">
-                    <h3 class="stat-number text-info">{{ number_format($estadisticas['comensales_satisfechos']) }}</h3>
-                    <p class="stat-label">Comensales Satisfechos</p>
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>
+     
 </section>
 
     <!-- Como Funciona Section -->

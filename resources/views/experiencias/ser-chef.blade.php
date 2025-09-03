@@ -532,7 +532,7 @@ body {
     </article>
   </section>
 
-  {{-- HISTORIAS DE ÉXITO --}}
+  <!-- {{-- HISTORIAS DE ÉXITO --}}
   <h2 class="section-title">Historias de Éxito</h2>
   <section class="grid-3">
     <article class="story fade-in" style="animation-delay: 0.1s">
@@ -556,7 +556,7 @@ body {
       <div class="earn">$200.000/mes</div>
       <p>"Lo que comenzó como un hobby se convirtió en mi segunda fuente de ingresos. Cada experiencia culinaria es mágica y gratificante."</p>
     </article>
-  </section>
+  </section> -->
 
   {{-- FAQ --}}
   <h2 class="section-title">Preguntas Frecuentes</h2>
@@ -592,9 +592,9 @@ body {
     <a class="btn" href="{{ auth()->check() ? route('chef.dashboard') : (Route::has('register') ? route('register') : '#') }}">
       <span>🍳</span> Crear mi perfil de Chef
     </a>
-    <a class="btn secondary" href="{{ route('experiencias') }}">
+    <!-- <a class="btn secondary" href="{{ route('experiencias') }}">
       <span>👀</span> Ver experiencias
-    </a>
+    </a> -->
   </div>
 </div>
 
