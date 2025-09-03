@@ -11,7 +11,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\IngresosController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\ExperienciasController;
-
+use App\Http\Controllers\LegalController;
+ 
 
 
 /*
@@ -47,6 +48,7 @@ Route::get('/pago-exito', fn() => '✅ Pago exitoso')->name('pago.exito');
 Route::get('/pago-error', fn() => '❌ Pago fallido')->name('pago.error');
 Route::get('/pago-pendiente', fn() => '🕓 Pago pendiente')->name('pago.pendiente');
 
+Route::get('/politica-de-privacidad', [LegalController::class, 'privacidad'])->name('privacidad');
 
 //pagos
 
@@ -93,6 +95,7 @@ Route::get('/ser-chef', function () {
 Route::get('/como-funciona', function () {
     return view('como-funciona');
 })->name('como-funciona');
+Route::get('/terminos-y-condiciones', [LegalController::class, 'terminos'])->name('terminos');
 
 /*
 |--------------------------------------------------------------------------

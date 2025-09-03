@@ -161,6 +161,278 @@
             border: 1px solid #e9ecef;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
+        .footer-main {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: #e2e8f0;
+        padding: 4rem 0 1.5rem;
+        margin-top: 5rem;
+        position: relative;
+    }
+    
+    .footer-wave {
+        position: absolute;
+        top: -50px;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100'%3E%3Cpath fill='%231e293b' fill-opacity='1' d='M0,32L48,42.7C96,53,192,75,288,74.7C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,100L1392,100C1344,100,1248,100,1152,100C1056,100,960,100,864,100C768,100,672,100,576,100C480,100,384,100,288,100C192,100,96,100,48,100L0,100Z'%3E%3C/path%3E%3C/svg%3E");
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .footer-brand img {
+        height: 40px;
+        margin-right: 0.75rem;
+        filter: brightness(0) invert(1);
+    }
+    
+    .footer-brand h4 {
+        color: #ffffff;
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.75rem;
+    }
+    
+    .footer-description {
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .footer-section h5 {
+        color: #ffffff;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        font-size: 1.1rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+    
+    .footer-section h5:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 30px;
+        height: 2px;
+        background: #2563eb;
+    }
+    
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .footer-links a:hover {
+        color: #2563eb;
+        transform: translateX(5px);
+    }
+    
+    .footer-links a i {
+        margin-right: 0.5rem;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+    
+    .social-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+    
+    .social-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .social-button:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        color: #ffffff;
+    }
+    
+    .social-button.facebook:hover {
+        background: #1877f2;
+        border-color: #1877f2;
+    }
+    
+    .social-button.instagram:hover {
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        border-color: transparent;
+    }
+    
+    .newsletter-box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .newsletter-box h6 {
+        color: #ffffff;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    
+    .newsletter-form {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .newsletter-form input {
+        flex: 1;
+        padding: 0.5rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        color: #ffffff;
+        font-size: 0.9rem;
+    }
+    
+    .newsletter-form input::placeholder {
+        color: #94a3b8;
+    }
+    
+    .newsletter-form input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .newsletter-form button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .newsletter-form button:hover {
+        background: #1d4ed8;
+        transform: translateX(2px);
+    }
+    
+    .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+    }
+    
+    .footer-bottom-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .footer-copyright {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    
+    .footer-legal-links {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .footer-legal-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+    
+    .footer-legal-links a:hover {
+        color: #2563eb;
+    }
+    
+    .contact-info {
+        margin-top: 1rem;
+    }
+    
+    .contact-info p {
+        color: #cbd5e1;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .contact-info p i {
+        margin-right: 0.75rem;
+        color: #64748b;
+        width: 16px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .footer-main {
+            padding: 3rem 0 1.5rem;
+        }
+        
+        .footer-bottom-content {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .footer-legal-links {
+            justify-content: center;
+        }
+        
+        .newsletter-form {
+            flex-direction: column;
+        }
+        
+        .newsletter-form button {
+            width: 100%;
+        }
+        
+        .social-buttons {
+            justify-content: center;
+        }
+    }
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -243,29 +515,87 @@
             @yield('content')
         </main>
 
-        <!-- Footer -->
-        <footer class="bg-dark text-light py-4 mt-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center mb-2">
-                            <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" 
-                                 style="height: 24px; margin-right: 0.5rem;">
-                            <h5 class="mb-0">TuMesa</h5>
-                        </div>
-                        <p class="mb-0">Conectando comensales con experiencias gastronómicas únicas.</p>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <div class="social-links">
-                            <a href="#" class="text-light me-3"><i class="fab fa-facebook"></i></a>
-                            <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
-                            <a href="#" class="text-light"><i class="fab fa-twitter"></i></a>
-                        </div>
-                        <p class="mb-0 mt-2">&copy; {{ date('Y') }} TuMesa. Todos los derechos reservados.</p>
-                    </div>
+    <footer class="footer-main">
+    <!-- Wave decoration -->
+    <div class="footer-wave"></div>
+    
+    <div class="container">
+        <div class="row">
+            <!-- Brand Column -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="footer-brand">
+                    <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo">
+                    <h4>TuMesa</h4>
+                </div>
+                <p class="footer-description">
+                    Descubre experiencias gastronómicas únicas en casas de chefs anfitriones. 
+                    Conectamos paladares curiosos con creadores culinarios apasionados.
+                </p>
+                <div class="social-buttons">
+                    <a href="https://www.instagram.com/tumesaarg/" target="_blank" rel="noopener noreferrer" class="social-button instagram" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61579955470419" target="_blank" rel="noopener noreferrer" class="social-button facebook" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                  
                 </div>
             </div>
-        </footer>
+            
+            <!-- Quick Links Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-section">
+                    <h5>Explora</h5>
+                    <ul class="footer-links">
+                        <li><a href="{{ route('experiencias') ?? '#' }}"><i class="fas fa-utensils"></i> Experiencias</a></li>
+                        <li><a href="{{ route('experiencias') ?? '#' }}"><i class="fas fa-star"></i> Destacadas</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- For Hosts Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-section">
+                    <h5>Para Chefs</h5>
+                    <ul class="footer-links">
+                        <li><a href="{{ route('ser-chef') ?? '#' }}"><i class="fas fa-chef-hat"></i> Ser Anfitrión</a></li>
+                        <li><a href="{{ route('ser-chef') ?? '#' }}"><i class="fas fa-book"></i> Guía del Chef</a></li>
+                        <li><a href="{{ route('terminos') }}"><i class="fas fa-shield-alt"></i> Términos y condiciones</a></li>
+                         <li><a href="{{ route('privacidad') }}"><i class="fas fa-user-shield"></i> Política de Privacidad</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Contact & Newsletter Column -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="footer-section">
+                    <h5>Contacto</h5>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> hola@tumesa.com.ar</p>
+                        <p><i class="fas fa-phone"></i> +54 11 1234-5678</p>
+                        <p><i class="fas fa-map-pin"></i> Buenos Aires, Argentina</p>
+                    </div>
+                    
+             
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p class="footer-copyright">
+                    &copy; {{ date('Y') }} TuMesa Argentina. Todos los derechos reservados.
+                </p>
+                <ul class="footer-legal-links">
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                    <li><a href="{{ route('como-funciona') ?? '#' }}">Cómo Funciona</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
     </div>
 
     <!-- Bootstrap JS Bundle (includes Popper) -->

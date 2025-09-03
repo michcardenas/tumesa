@@ -259,8 +259,7 @@
                               margin-top: 2px;
                               cursor: pointer; 
                               accent-color: #3b82f6;">
-                <span>Acepto los <a href="#" style="color: #3b82f6; text-decoration: none;">términos y condiciones</a> y la <a href="#" style="color: #3b82f6; text-decoration: none;">política de privacidad</a></span>
-            </label>
+<span>Acepto los <a href="{{ route('terminos') }}" target="_blank" style="color: #3b82f6; text-decoration: none;">términos y condiciones</a> y la <a href="{{ route('privacidad') }}" target="_blank" style="color: #3b82f6; text-decoration: none;">política de privacidad</a></span>            </label>
         </div>
 
         <!-- Register Button -->
