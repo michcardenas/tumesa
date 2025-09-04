@@ -64,9 +64,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chef/dinners/{cena}', [App\Http\Controllers\Chef\ChefController::class, 'showDinner'])->name('chef.dinners.show');
     Route::get('/dinners/{cena}/asistencia', [AsistenciaController::class, 'show'])
     ->name('chef.dinners.asistencia');
+    Route::post('/reservas/{reserva}/resetear-asistencia', [AsistenciaController::class, 'resetearAsistencia'])
+    ->name('chef.reservas.resetear-asistencia');
    
 });
 
+
+
+    // Rutas del Chef
+Route::middleware(['auth'])->prefix('chef')->group(function () {
+    // ... tus otras rutas del chef ...
+    
+    // AGREGAR ESTA LÍNEA:
+    Route::post('/reservas/{reserva}/asistencia', [App\Http\Controllers\AsistenciaController::class, 'marcarAsistencia']);
+});
 //comensal 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/comensal/dashboard', [App\Http\Controllers\ComensalController::class, 'dashboard'])->name('comensal.dashboard');
@@ -137,10 +148,6 @@ Route::get('/perfil-comensal', [ProfileController::class, 'perfilComensal'])
 Route::get('/experiencias', [ExperienciasController::class, 'index'])
     ->name('experiencias');
 
-    Route::middleware(['auth'])->prefix('chef')->group(function () {
-
-    Route::post('/reservas/{reserva}/asistencia', [App\Http\Controllers\ChefController::class, 'marcarAsistencia']);
-});
 //Chef
 Route::middleware(['auth'])->prefix('chef')->name('chef.')->group(function () {
     Route::get('/dashboard', [ChefController::class, 'dashboard'])->name('dashboard');
@@ -148,7 +155,6 @@ Route::middleware(['auth'])->prefix('chef')->name('chef.')->group(function () {
           Route::get('/dinners/{cena}', [ChefController::class, 'showDinner'])->name('dinners.show');
     Route::get('/dinners/{cena}/edit', [ChefController::class, 'editDinner'])->name('dinners.edit');
         Route::put('/dinners/{cena}', [ChefController::class, 'updateDinner'])->name('dinners.update');
-        
 
 
       Route::get('/dashboard', [ChefController::class, 'dashboard'])->name('dashboard');
