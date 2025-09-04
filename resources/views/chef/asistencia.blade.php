@@ -218,10 +218,10 @@
                                             <i class="fas fa-times"></i> Ausente
                                         </button>
                                     @else
-                                        <button class="btn btn-sm btn-outline-secondary" 
+                                        <!-- <button class="btn btn-sm btn-outline-secondary" 
                                                 onclick="resetearAsistencia({{ $reserva->id }})">
                                             <i class="fas fa-undo"></i> Cambiar
-                                        </button>
+                                        </button> -->
                                         @if($reserva->comentarios_asistencia)
                                             <button class="btn btn-sm btn-outline-info" 
                                                     onclick="verComentarios('{{ addslashes($reserva->comentarios_asistencia) }}')"
