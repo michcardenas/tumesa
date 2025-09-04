@@ -87,13 +87,7 @@
                                         <small class="text-muted">Presenta este código en la cena</small>
                                     </div>
                                     
-                                    <!-- QR Code Placeholder -->
-                                    <div class="qr-code">
-                                        <div class="qr-placeholder">
-                                            <i class="fas fa-qrcode fa-3x"></i>
-                                            <small>Código QR</small>
-                                        </div>
-                                    </div>
+                                  
                                 </div>
                             </div>
                         </div>
