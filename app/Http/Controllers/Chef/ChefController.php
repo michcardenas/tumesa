@@ -100,21 +100,27 @@ class ChefController extends Controller
     // Próximas cenas
 // En tu método dashboard(), actualiza el map de proximas_cenas:
 $proximas_cenas = Cena::where('user_id', $userId)
-    ->where('datetime', '>', now())
+    ->where('datetime', '>', now()->subHours(24)) // Mostrar cenas de las últimas 24 horas también
     ->orderBy('datetime', 'asc')
-    ->take(10)
+    ->take(15) // Aumentar el límite
     ->get()
     ->map(function($cena) {
+        $ahora = now();
+        $esPasada = $cena->datetime < $ahora;
+        $minutosParaCena = $ahora->diffInMinutes($cena->datetime, false);
+        
         return [
             'id' => $cena->id,
-            'datetime' => $cena->datetime, // ← AGREGAR ESTO
-            'fecha_formatted' => $cena->datetime->format('d/m/Y'),
+            'datetime' => $cena->datetime,
+            'fecha_formatted' => $cena->datetime->format('d/m/Y H:i'),
             'titulo' => $cena->title,
             'comensales_actuales' => $cena->guests_current,
             'comensales_max' => $cena->guests_max,
             'precio' => $cena->price,
             'estado' => $cena->status,
-            'location' => $cena->location
+            'location' => $cena->location,
+            'es_pasada' => $esPasada,
+            'minutos_para_cena' => $minutosParaCena
         ];
     });
 
