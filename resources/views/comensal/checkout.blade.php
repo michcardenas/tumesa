@@ -231,24 +231,23 @@
                     </div>
 
                     <div class="terms-section">
-                        <div class="form-check mb-3">
+                       <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="acepta_terminos" name="acepta_terminos" required>
                             <label class="form-check-label" for="acepta_terminos">
-                                Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#terminosModal">términos y condiciones de uso</a> *
+                                Acepto los <a href="{{ route('terminos') }}" target="_blank">términos y condiciones de uso</a> *
                             </label>
                         </div>
-
-                        <div class="form-check mb-4">
+                        <!-- <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="acepta_politica_cancelacion" name="acepta_politica_cancelacion" required>
                             <label class="form-check-label" for="acepta_politica_cancelacion">
                                 Acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#cancelacionModal">política de cancelación</a> *
                             </label>
-                        </div>
+                        </div> -->
 
-                        <div class="alert alert-warning">
+                        <!-- <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle"></i>
                             <strong>Política de cancelación:</strong> Puedes cancelar hasta 24 horas antes de la cena para obtener un reembolso completo.
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 

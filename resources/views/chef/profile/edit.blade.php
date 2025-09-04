@@ -32,10 +32,13 @@
             @csrf
             @method('PUT')
             
+            <!-- Información Personal -->
+            <h5 class="mb-3">
+                <i class="fas fa-user text-primary"></i> Información Personal
+            </h5>
+            
             <div class="mb-3">
-                <label class="form-label">
-                    <i class="fas fa-user text-primary"></i> Nombre del Chef
-                </label>
+                <label class="form-label">Nombre del Chef</label>
                 <input type="text" 
                        class="form-control @error('name') is-invalid @enderror" 
                        name="name" 
@@ -47,9 +50,7 @@
             </div>
             
             <div class="mb-3">
-                <label class="form-label">
-                    <i class="fas fa-envelope text-primary"></i> Correo Electrónico
-                </label>
+                <label class="form-label">Correo Electrónico</label>
                 <input type="email" 
                        class="form-control @error('email') is-invalid @enderror" 
                        name="email" 
@@ -61,9 +62,7 @@
             </div>
             
             <div class="mb-3">
-                <label class="form-label">
-                    <i class="fas fa-phone text-primary"></i> Teléfono
-                </label>
+                <label class="form-label">Teléfono</label>
                 <input type="text" 
                        class="form-control @error('telefono') is-invalid @enderror" 
                        name="telefono" 
@@ -75,9 +74,7 @@
             </div>
             
             <div class="mb-3">
-                <label class="form-label">
-                    <i class="fas fa-map-marker-alt text-primary"></i> Dirección
-                </label>
+                <label class="form-label">Dirección</label>
                 <input type="text" 
                        class="form-control @error('direccion') is-invalid @enderror" 
                        name="direccion" 
@@ -90,6 +87,103 @@
             
             <hr class="my-4">
             
+            <!-- Información Profesional -->
+            <h5 class="mb-3">
+                <i class="fas fa-chef-hat text-primary"></i> Información Profesional
+            </h5>
+            
+            <div class="mb-3">
+                <label class="form-label">Biografía</label>
+                <textarea class="form-control @error('bio') is-invalid @enderror" 
+                          name="bio" 
+                          rows="4" 
+                          placeholder="Cuéntanos sobre tu experiencia y pasión por la cocina...">{{ old('bio', $user->bio) }}</textarea>
+                @error('bio')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">Describe tu trayectoria, estilo de cocina y lo que te hace único.</small>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Especialidad</label>
+                <input type="text" 
+                       class="form-control @error('especialidad') is-invalid @enderror" 
+                       name="especialidad" 
+                       value="{{ old('especialidad', $user->especialidad) }}" 
+                       placeholder="Ej: Cocina italiana, Pastelería francesa, Parrilla argentina...">
+                @error('especialidad')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Años de Experiencia</label>
+                <input type="number" 
+                       class="form-control @error('experiencia_anos') is-invalid @enderror" 
+                       name="experiencia_anos" 
+                       value="{{ old('experiencia_anos', $user->experiencia_anos) }}" 
+                       min="0" 
+                       max="50"
+                       placeholder="¿Cuántos años llevas cocinando profesionalmente?">
+                @error('experiencia_anos')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <hr class="my-4">
+            
+            <!-- Redes Sociales -->
+            <h5 class="mb-3">
+                <i class="fas fa-share-alt text-primary"></i> Redes Sociales y Web
+            </h5>
+            
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="fab fa-instagram text-danger"></i> Instagram
+                </label>
+                <input type="text" 
+                       class="form-control @error('instagram') is-invalid @enderror" 
+                       name="instagram" 
+                       value="{{ old('instagram', $user->instagram) }}" 
+                       placeholder="@tu_usuario o URL completa">
+                @error('instagram')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">Puedes ingresar tu usuario con @ o la URL completa</small>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="fab fa-facebook text-primary"></i> Facebook
+                </label>
+                <input type="text" 
+                       class="form-control @error('facebook') is-invalid @enderror" 
+                       name="facebook" 
+                       value="{{ old('facebook', $user->facebook) }}" 
+                       placeholder="tu.pagina o URL completa">
+                @error('facebook')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">Puedes ingresar tu página o la URL completa</small>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="fas fa-globe"></i> Sitio Web
+                </label>
+                <input type="url" 
+                       class="form-control @error('website') is-invalid @enderror" 
+                       name="website" 
+                       value="{{ old('website', $user->website) }}" 
+                       placeholder="https://tu-sitio-web.com">
+                @error('website')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <hr class="my-4">
+            
+            <!-- Cambiar Contraseña -->
             <h5 class="mb-3">
                 <i class="fas fa-lock text-warning"></i> Cambiar Contraseña (Opcional)
             </h5>
@@ -113,7 +207,7 @@
                        placeholder="Confirma tu nueva contraseña">
             </div>
             
-            <button type="submit" class="btn btn-success" style="background-color: #059669; border-color: #059669;">
+            <button type="submit" class="btn btn-success">
                 <i class="fas fa-save"></i> Guardar Cambios
             </button>
             
@@ -153,6 +247,12 @@
                 <input type="hidden" name="email" value="{{ $user->email }}">
                 <input type="hidden" name="telefono" value="{{ $user->telefono }}">
                 <input type="hidden" name="direccion" value="{{ $user->direccion }}">
+                <input type="hidden" name="bio" value="{{ $user->bio }}">
+                <input type="hidden" name="especialidad" value="{{ $user->especialidad }}">
+                <input type="hidden" name="experiencia_anos" value="{{ $user->experiencia_anos }}">
+                <input type="hidden" name="instagram" value="{{ $user->instagram }}">
+                <input type="hidden" name="facebook" value="{{ $user->facebook }}">
+                <input type="hidden" name="website" value="{{ $user->website }}">
                 
                 <div class="mb-3">
                     <input type="file" 
@@ -180,8 +280,28 @@
                         <i class="fas fa-check-circle"></i> Verificado
                     </span>
                 </p>
-            @else
-       
+            @endif
+            @if($user->rating)
+                <p><strong>Calificación:</strong> 
+                    <span class="text-warning">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= $user->rating)
+                                <i class="fas fa-star"></i>
+                            @elseif($i - 0.5 <= $user->rating)
+                                <i class="fas fa-star-half-alt"></i>
+                            @else
+                                <i class="far fa-star"></i>
+                            @endif
+                        @endfor
+                        ({{ $user->formatted_rating }})
+                    </span>
+                </p>
+            @endif
+            @if($user->experiencia_anos)
+                <p><strong>Experiencia:</strong> {{ $user->experience_text }}</p>
+            @endif
+            @if($user->especialidad)
+                <p><strong>Especialidad:</strong> {{ $user->especialidad }}</p>
             @endif
         </div>
     </div>

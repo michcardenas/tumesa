@@ -39,74 +39,68 @@ class ProfileController extends Controller
         return view('chef.profile.edit', compact('user'));
     }
 
-    public function update(Request $request)
-    {
-        $user = Auth::user();
-        
-        // Validar permisos
-        $hasChefRole = false;
-        
-        if ($user->role === 'chef_anfitrion') {
-            $hasChefRole = true;
-        } elseif (method_exists($user, 'hasRole')) {
-            if ($user->hasRole('chef') || $user->hasRole('chef_anfitrion')) {
-                $hasChefRole = true;
-            }
-        }
-        
-        if (!$hasChefRole) {
-            return response()->json(['error' => 'No autorizado'], 403);
-        }
-
-        // Validación
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'telefono' => ['nullable', 'string', 'max:20'],
-            'direccion' => ['nullable', 'string', 'max:255'],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048']
-        ]);
-
-        // Datos a actualizar
-        $updateData = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'telefono' => $request->telefono,
-            'direccion' => $request->direccion,
-        ];
-
-        // Actualizar contraseña si se proporciona
-        if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($request->password);
-        }
-
-        // Manejar subida de avatar
-        if ($request->hasFile('avatar')) {
-            // Eliminar avatar anterior si existe
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            // Subir nuevo avatar
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $updateData['avatar'] = $avatarPath;
-        }
-
-        // Actualizar usuario
-        $user->update($updateData);
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Perfil actualizado exitosamente',
-                'user' => $user
-            ]);
-        }
-
-        return redirect()->route('chef.profile.edit')
-            ->with('success', 'Perfil actualizado exitosamente');
+   public function update(Request $request)
+{
+    $user = Auth::user();
+    
+    // Validar permisos
+    if ($user->role !== 'chef_anfitrion') {
+        return redirect()->back()->with('error', 'No autorizado');
     }
+
+    // Validación
+    $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+        'telefono' => ['nullable', 'string', 'max:20'],
+        'direccion' => ['nullable', 'string', 'max:255'],
+        'bio' => ['nullable', 'string', 'max:1000'],
+        'especialidad' => ['nullable', 'string', 'max:255'],
+        'experiencia_anos' => ['nullable', 'integer', 'min:0', 'max:50'],
+        'instagram' => ['nullable', 'string', 'max:255'],
+        'facebook' => ['nullable', 'string', 'max:255'],
+        'website' => ['nullable', 'url', 'max:255'],
+        'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048']
+    ]);
+
+    // Datos a actualizar
+    $updateData = [
+        'name' => $request->name,
+        'email' => $request->email,
+        'telefono' => $request->telefono,
+        'direccion' => $request->direccion,
+        'bio' => $request->bio,
+        'especialidad' => $request->especialidad,
+        'experiencia_anos' => $request->experiencia_anos,
+        'instagram' => $request->instagram,
+        'facebook' => $request->facebook,
+        'website' => $request->website,
+    ];
+
+    // Actualizar contraseña si se proporciona
+    if ($request->filled('password')) {
+        $updateData['password'] = Hash::make($request->password);
+    }
+
+    // Manejar subida de avatar
+    if ($request->hasFile('avatar')) {
+        // Eliminar avatar anterior si existe
+        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+        
+        // Subir nuevo avatar
+        $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        $updateData['avatar'] = $avatarPath;
+    }
+
+    // Actualizar usuario
+    $user->update($updateData);
+
+    return redirect()->route('chef.profile.edit')
+        ->with('success', 'Perfil actualizado exitosamente');
+}
 
     /**
      * Delete the user's account.
