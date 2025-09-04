@@ -64,8 +64,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chef/dinners/{cena}', [App\Http\Controllers\Chef\ChefController::class, 'showDinner'])->name('chef.dinners.show');
     Route::get('/dinners/{cena}/asistencia', [AsistenciaController::class, 'show'])
     ->name('chef.dinners.asistencia');
-    Route::post('/reservas/{reserva}/asistencia', [AsistenciaController::class, 'marcarAsistencia'])
-    ->name('chef.reservas.asistencia');
+   Route::post('/reservas/{reserva}/resetear-asistencia', [AsistenciaController::class, 'resetearAsistencia'])
+    ->name('chef.reservas.resetear-asistencia');
 });
 
 //comensal 
