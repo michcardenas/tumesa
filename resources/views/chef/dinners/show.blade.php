@@ -224,9 +224,7 @@
                                             @if($reserva->email_contacto)
                                                 <small class="d-block"><i class="fas fa-envelope me-1"></i>{{ $reserva->email_contacto }}</small>
                                             @endif
-                                            @if($reserva->telefono_contacto)
-                                                <small class="d-block"><i class="fas fa-phone me-1"></i>{{ $reserva->telefono_contacto }}</small>
-                                            @endif
+                                           
                                             @if($reserva->restricciones_alimentarias)
                                                 <small class="d-block text-warning"><i class="fas fa-exclamation-triangle me-1"></i>Restricciones</small>
                                             @endif
