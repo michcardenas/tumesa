@@ -39,7 +39,12 @@ class Reserva extends Model
         'codigo_qr',
         'calificacion',
         'resena',
-        'fecha_resena'
+        'fecha_resena',
+        // Nuevos campos de asistencia
+        'asistencia_marcada',
+        'estado_asistencia',
+        'fecha_asistencia_marcada',
+        'comentarios_asistencia'
     ];
 
     protected $casts = [
@@ -54,7 +59,10 @@ class Reserva extends Model
         'acepta_terminos' => 'boolean',
         'acepta_politica_cancelacion' => 'boolean',
         'cantidad_comensales' => 'integer',
-        'calificacion' => 'integer'
+        'calificacion' => 'integer',
+        // Nuevos casts de asistencia
+        'asistencia_marcada' => 'boolean',
+        'fecha_asistencia_marcada' => 'datetime'
     ];
 
     // Eventos del modelo
@@ -112,6 +120,22 @@ class Reserva extends Model
         return $query->where('estado', 'completada');
     }
 
+    // Nuevos scopes de asistencia
+    public function scopeAsistenciaPresente($query)
+    {
+        return $query->where('estado_asistencia', 'presente');
+    }
+
+    public function scopeAsistenciaAusente($query)
+    {
+        return $query->where('estado_asistencia', 'ausente');
+    }
+
+    public function scopeAsistenciaMarcada($query)
+    {
+        return $query->where('asistencia_marcada', true);
+    }
+
     // Accessors
     public function getPrecioTotalFormateadoAttribute()
     {
@@ -151,6 +175,19 @@ class Reserva extends Model
         ];
 
         return $estados[$this->estado_pago] ?? ['class' => 'bg-secondary', 'texto' => 'Desconocido'];
+    }
+
+    // Nuevo accessor para estado de asistencia
+    public function getEstadoAsistenciaBadgeAttribute()
+    {
+        $estados = [
+            'pendiente' => ['class' => 'bg-secondary', 'texto' => 'Sin marcar'],
+            'presente' => ['class' => 'bg-success', 'texto' => 'Presente'],
+            'ausente' => ['class' => 'bg-danger', 'texto' => 'Ausente'],
+            'parcial' => ['class' => 'bg-warning', 'texto' => 'Asistencia parcial'],
+        ];
+
+        return $estados[$this->estado_asistencia] ?? ['class' => 'bg-secondary', 'texto' => 'Sin marcar'];
     }
 
     public function getPuedeCancelarAttribute()
@@ -227,5 +264,36 @@ class Reserva extends Model
                 'fecha_resena' => now()
             ]);
         }
+    }
+
+    // Nuevos métodos de asistencia
+    public function marcarPresente($comentarios = null)
+    {
+        $this->update([
+            'asistencia_marcada' => true,
+            'estado_asistencia' => 'presente',
+            'fecha_asistencia_marcada' => now(),
+            'comentarios_asistencia' => $comentarios
+        ]);
+    }
+
+    public function marcarAusente($comentarios = null)
+    {
+        $this->update([
+            'asistencia_marcada' => true,
+            'estado_asistencia' => 'ausente',
+            'fecha_asistencia_marcada' => now(),
+            'comentarios_asistencia' => $comentarios
+        ]);
+    }
+
+    public function marcarParcial($comentarios = null)
+    {
+        $this->update([
+            'asistencia_marcada' => true,
+            'estado_asistencia' => 'parcial',
+            'fecha_asistencia_marcada' => now(),
+            'comentarios_asistencia' => $comentarios
+        ]);
     }
 }
