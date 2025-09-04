@@ -471,12 +471,12 @@
                                         Dashboard
                                     </a>
                                 </li>
-                                <li class="menu-item">
-                                    <a href="{{ route('experiencias') }}" >
-                                        <i class="fas fa-search"></i>
-                                        Cenas Disponibles
-                                    </a>
-                                </li>
+                            <li class="menu-item">
+                                <a href="{{ route('experiencias') }}" class="text-decoration-none">
+                                    <i class="fas fa-search"></i>
+                                    Cenas Disponibles
+                                </a>
+                            </li>
                             
                                <li class="menu-item">
                                     <a href="{{ route('reservas.historial') }}" 
