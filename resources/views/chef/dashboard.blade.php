@@ -82,66 +82,103 @@
                 </div>
 
                 <div class="table-container">
-                    <table class="table table-striped">
+                  <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
                                 <th>Título</th>
                                 <th>Comensales</th>
                                 <th>Precio</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($proximas_cenas as $cena)
-                            <tr>
-                                <td>{{ $cena['fecha_formatted'] }}</td>
+                            @php
+                                $ahora = \Carbon\Carbon::now();
+                                $fechaCena = $cena['datetime'];
+                                $minutosParaCena = $ahora->diffInMinutes($fechaCena, false);
+                                $esPasada = $fechaCena < $ahora;
+                                $horasDesde = abs($ahora->diffInHours($fechaCena));
+                            @endphp
+                            
+                            <tr class="{{ $esPasada ? 'table-secondary' : '' }}">
+                                <td>
+                                    {{ $cena['fecha_formatted'] }}
+                                    @if($esPasada)
+                                        <br><span class="badge bg-secondary">Finalizada</span>
+                                    @elseif($minutosParaCena <= 30 && $minutosParaCena > 0)
+                                        <br><span class="badge bg-warning">En {{ $minutosParaCena }} min</span>
+                                    @elseif($minutosParaCena <= 0 && $minutosParaCena >= -120)
+                                        <br><span class="badge bg-success">En curso</span>
+                                    @endif
+                                </td>
                                 <td>{{ $cena['titulo'] }}</td>
                                 <td>{{ $cena['comensales_actuales'] }}/{{ $cena['comensales_max'] }}</td>
                                 <td>${{ number_format($cena['precio'], 0, ',', '.') }}</td>
-                                
-                                    <td>
-                                        <div class="action-buttons">
-                                            @php
-                                                $ahora = \Carbon\Carbon::now();
-                                                $fechaCena = $cena['datetime']; // ← Usar datetime directamente
-                                                $minutosParaCena = $ahora->diffInMinutes($fechaCena, false);
-                                            @endphp
-                                            
-                                            {{-- Botón Iniciar Cena - Solo visible 30 minutos antes --}}
-                                            @if($minutosParaCena <= 30 && $minutosParaCena >= -120)
+                                <td>
+                                    @if($esPasada && $horasDesde > 2)
+                                        <span class="text-muted">Completada</span>
+                                    @elseif($minutosParaCena <= 0 && $minutosParaCena >= -120)
+                                        <span class="text-success">En curso</span>
+                                    @elseif($minutosParaCena > 0 && $minutosParaCena <= 30)
+                                        <span class="text-warning">Por iniciar</span>
+                                    @else
+                                        <span class="text-primary">Próxima</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="action-buttons d-flex gap-1">
+                                        {{-- Botón Asistencia - Solo visible 30 min antes hasta 2 horas después --}}
+                                        @if($minutosParaCena <= 30 && $minutosParaCena >= -120)
+                                            @if($minutosParaCena > 0)
                                                 <button class="btn btn-sm btn-warning" 
                                                         onclick="iniciarCena({{ $cena['id'] }})"
+                                                        title="Iniciar registro de asistencia">
+                                                    <i class="fas fa-clock"></i>
+                                                    <span class="d-none d-md-inline">{{ $minutosParaCena }}min</span>
+                                                </button>
+                                            @else
+                                                <button class="btn btn-sm btn-success" 
+                                                        onclick="marcarAsistencia({{ $cena['id'] }})"
                                                         title="Marcar asistencia">
-                                                    <i class="fas fa-play-circle"></i>
-                                                    @if($minutosParaCena > 0)
-                                                        Iniciar ({{ $minutosParaCena }} min)
-                                                    @else
-                                                        En curso
-                                                    @endif
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span class="d-none d-md-inline">Asistencia</span>
                                                 </button>
                                             @endif
-                                            
-                                            {{-- Botones normales siempre visibles --}}
-                                            <a href="{{ route('chef.dinners.show', $cena['id']) }}" 
-                                            class="btn btn-sm btn-outline-primary" 
-                                            title="Ver detalles">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                        @endif
+                                        
+                                        {{-- Botón Ver - Siempre visible --}}
+                                        <a href="{{ route('chef.dinners.show', $cena['id']) }}" 
+                                        class="btn btn-sm btn-outline-primary" 
+                                        title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        
+                                        {{-- Botón Editar - Solo para cenas futuras --}}
+                                        @if(!$esPasada)
                                             <a href="{{ route('chef.dinners.edit', $cena['id']) }}" 
                                             class="btn btn-sm btn-outline-success" 
                                             title="Editar cena">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                        </div>
-                                    </td>
+                                        @else
+                                            <button class="btn btn-sm btn-outline-secondary" 
+                                                    disabled
+                                                    title="Las cenas pasadas no se pueden editar">
+                                                <i class="fas fa-lock"></i>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </td>
                             </tr>
                             @empty
                             <tr>
                                 <td colspan="6" class="text-center text-muted py-4">
                                     <i class="fas fa-calendar-times fa-2x mb-3"></i>
                                     <br>
-                                    <strong>No tienes cenas próximas</strong>
+                                    <strong>No tienes cenas programadas</strong>
                                     <br>
                                     <small>Crea tu primera cena usando el botón "Nueva Cena"</small>
                                 </td>
@@ -1369,7 +1406,19 @@ function updateLocationDisplay(location, placeName = null) {
         infoWindow.open(map, marker);
     }
 }
+function iniciarCena(cenaId) {
+    if(confirm('¿Iniciar el registro de asistencia para esta cena?')) {
+        alert('Redirigiendo al registro de asistencia - ID: ' + cenaId);
+        // window.location.href = `/chef/dinners/${cenaId}/asistencia`;
+    }
+}
 
+function marcarAsistencia(cenaId) {
+    if(confirm('¿Marcar la asistencia de los comensales?')) {
+        alert('Abriendo registro de asistencia - ID: ' + cenaId);
+        // window.location.href = `/chef/dinners/${cenaId}/asistencia`;
+    }
+}
 // 📱 OBTENER UBICACIÓN DEL USUARIO
 function getUserLocation() {
     if (navigator.geolocation) {
