@@ -196,7 +196,7 @@
                                     </span>
                                     @if($reserva->fecha_asistencia_marcada)
                                     <br>
-                                    <small class="text-muted">
+                                    <small class="text-muted timestamp">
                                         <i class="fas fa-clock"></i> {{ $reserva->fecha_asistencia_marcada->format('H:i') }}
                                     </small>
                                     @endif
@@ -207,12 +207,14 @@
                                     @if(!$reserva->asistencia_marcada)
                                         <button class="btn btn-sm btn-success asistencia-btn" 
                                                 data-reserva="{{ $reserva->id }}" 
-                                                data-estado="presente">
+                                                data-estado="presente"
+                                                data-nombre="{{ $reserva->nombre_contacto }}">
                                             <i class="fas fa-check"></i> Presente
                                         </button>
                                         <button class="btn btn-sm btn-danger asistencia-btn" 
                                                 data-reserva="{{ $reserva->id }}" 
-                                                data-estado="ausente">
+                                                data-estado="ausente"
+                                                data-nombre="{{ $reserva->nombre_contacto }}">
                                             <i class="fas fa-times"></i> Ausente
                                         </button>
                                     @else
@@ -220,6 +222,13 @@
                                                 onclick="resetearAsistencia({{ $reserva->id }})">
                                             <i class="fas fa-undo"></i> Cambiar
                                         </button>
+                                        @if($reserva->comentarios_asistencia)
+                                            <button class="btn btn-sm btn-outline-info" 
+                                                    onclick="verComentarios('{{ addslashes($reserva->comentarios_asistencia) }}')"
+                                                    title="Ver comentarios">
+                                                <i class="fas fa-comment"></i>
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             </td>
@@ -236,6 +245,67 @@
                 Aún no hay comensales confirmados para esta cena.
             </div>
         @endif
+    </div>
+</div>
+
+<!-- Modal para Comentarios de Asistencia -->
+<div class="modal fade" id="comentariosModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-check"></i> 
+                    <span id="modalTitulo">Marcar Asistencia</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Reserva:</strong> <span id="modalReserva"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Estado:</strong> 
+                    <span id="modalEstado" class="badge"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Comentarios (opcional):</label>
+                    <textarea id="modalComentarios" 
+                              class="form-control" 
+                              rows="3" 
+                              maxlength="500"
+                              placeholder="Ej: Llegó 15 minutos tarde, solo vinieron 3 de 4 personas, etc."></textarea>
+                    <small class="text-muted">Máximo 500 caracteres</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="confirmarAsistencia" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Ver Comentarios -->
+<div class="modal fade" id="verComentariosModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-comment"></i> Comentarios de Asistencia
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <div id="comentariosTexto"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -318,6 +388,17 @@ let reservaActual = null;
 let estadoActual = null;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Verificar que los elementos existen antes de agregar listeners
+    const confirmarBtn = document.getElementById('confirmarAsistencia');
+    if (confirmarBtn) {
+        confirmarBtn.addEventListener('click', function() {
+            if (reservaActual && estadoActual) {
+                const comentarios = document.getElementById('modalComentarios').value.trim();
+                marcarAsistencia(reservaActual, estadoActual, comentarios);
+            }
+        });
+    }
+
     // Manejar clicks en botones de asistencia
     document.querySelectorAll('.asistencia-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -342,31 +423,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Buscar al presionar Enter
-    document.getElementById('codigoSearch').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            buscarCodigo();
-        }
-    });
-
-    // Manejar confirmación de asistencia
-    document.getElementById('confirmarAsistencia').addEventListener('click', function() {
-        if (reservaActual && estadoActual) {
-            const comentarios = document.getElementById('modalComentarios').value.trim();
-            marcarAsistencia(reservaActual, estadoActual, comentarios);
-        }
-    });
+    const searchInput = document.getElementById('codigoSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarCodigo();
+            }
+        });
+    }
 });
 
 function mostrarModalComentarios(reservaId, estado, nombre) {
     reservaActual = reservaId;
     estadoActual = estado;
     
+    // Verificar que los elementos existen
+    const modalReserva = document.getElementById('modalReserva');
+    const modalEstado = document.getElementById('modalEstado');
+    const modalTitulo = document.getElementById('modalTitulo');
+    const modalComentarios = document.getElementById('modalComentarios');
+    
+    if (!modalReserva || !modalEstado || !modalTitulo || !modalComentarios) {
+        console.error('Elementos del modal no encontrados');
+        alert('Error: Modal no disponible');
+        return;
+    }
+    
     // Configurar modal
-    document.getElementById('modalReserva').textContent = nombre;
-    document.getElementById('modalEstado').textContent = estado === 'presente' ? 'Presente' : 'Ausente';
-    document.getElementById('modalEstado').className = `badge ${estado === 'presente' ? 'bg-success' : 'bg-danger'}`;
-    document.getElementById('modalTitulo').textContent = `Marcar como ${estado === 'presente' ? 'Presente' : 'Ausente'}`;
-    document.getElementById('modalComentarios').value = '';
+    modalReserva.textContent = nombre;
+    modalEstado.textContent = estado === 'presente' ? 'Presente' : 'Ausente';
+    modalEstado.className = `badge ${estado === 'presente' ? 'bg-success' : 'bg-danger'}`;
+    modalTitulo.textContent = `Marcar como ${estado === 'presente' ? 'Presente' : 'Ausente'}`;
+    modalComentarios.value = '';
     
     // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('comentariosModal'));
@@ -374,13 +462,19 @@ function mostrarModalComentarios(reservaId, estado, nombre) {
 }
 
 function verComentarios(comentarios) {
-    document.getElementById('comentariosTexto').textContent = comentarios;
-    const modal = new bootstrap.Modal(document.getElementById('verComentariosModal'));
-    modal.show();
+    const comentariosTexto = document.getElementById('comentariosTexto');
+    if (comentariosTexto) {
+        comentariosTexto.textContent = comentarios;
+        const modal = new bootstrap.Modal(document.getElementById('verComentariosModal'));
+        modal.show();
+    }
 }
 
 function buscarCodigo() {
-    const codigo = document.getElementById('codigoSearch').value.trim().toUpperCase();
+    const searchInput = document.getElementById('codigoSearch');
+    if (!searchInput) return;
+    
+    const codigo = searchInput.value.trim().toUpperCase();
     
     if (!codigo) {
         alert('Por favor ingresa un código de reserva');
@@ -401,7 +495,7 @@ function buscarCodigo() {
         fila.scrollIntoView({ behavior: 'smooth', block: 'center' });
         
         // Limpiar campo de búsqueda
-        document.getElementById('codigoSearch').value = '';
+        searchInput.value = '';
         
         // Mostrar notificación
         mostrarNotificacion('Reserva encontrada', 'success');
@@ -426,14 +520,21 @@ function aplicarFiltro(filtro) {
 
 function marcarAsistencia(reservaId, estado, comentarios = '') {
     const row = document.getElementById(`reserva-${reservaId}`);
+    if (!row) {
+        console.error('Fila de reserva no encontrada');
+        return;
+    }
+    
     const controls = row.querySelector('.asistencia-controls');
     const statusDiv = row.querySelector('.asistencia-status');
     const badge = statusDiv.querySelector('.asistencia-badge');
     
-    // Deshabilitar botones durante la petición
+    // Deshabilitar botón durante la petición
     const btnConfirmar = document.getElementById('confirmarAsistencia');
-    btnConfirmar.disabled = true;
-    btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    if (btnConfirmar) {
+        btnConfirmar.disabled = true;
+        btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    }
 
     // Hacer petición AJAX
     fetch(`/chef/reservas/${reservaId}/asistencia`, {
@@ -452,7 +553,7 @@ function marcarAsistencia(reservaId, estado, comentarios = '') {
         if (data.success) {
             // Cerrar modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('comentariosModal'));
-            modal.hide();
+            if (modal) modal.hide();
             
             // Actualizar UI
             badge.className = `badge asistencia-badge ${data.badge.class}`;
@@ -508,8 +609,10 @@ function marcarAsistencia(reservaId, estado, comentarios = '') {
     })
     .finally(() => {
         // Rehabilitar botón
-        btnConfirmar.disabled = false;
-        btnConfirmar.innerHTML = '<i class="fas fa-save"></i> Confirmar';
+        if (btnConfirmar) {
+            btnConfirmar.disabled = false;
+            btnConfirmar.innerHTML = '<i class="fas fa-save"></i> Confirmar';
+        }
     });
 }
 
@@ -543,6 +646,12 @@ function resetearAsistencia(reservaId) {
 function marcarTodosPresentes() {
     if (confirm('¿Marcar todos los comensales pendientes como presentes?')) {
         const botonesPendientes = document.querySelectorAll('.asistencia-btn[data-estado="presente"]');
+        
+        if (botonesPendientes.length === 0) {
+            mostrarNotificacion('No hay reservas pendientes para marcar', 'info');
+            return;
+        }
+        
         let procesados = 0;
         
         botonesPendientes.forEach((btn, index) => {
@@ -562,8 +671,10 @@ function marcarTodosPresentes() {
 }
 
 function mostrarNotificacion(mensaje, tipo) {
-    const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
-    const icon = tipo === 'success' ? 'fa-check' : 'fa-exclamation-triangle';
+    const alertClass = tipo === 'success' ? 'alert-success' : 
+                     tipo === 'info' ? 'alert-info' : 'alert-danger';
+    const icon = tipo === 'success' ? 'fa-check' : 
+                tipo === 'info' ? 'fa-info-circle' : 'fa-exclamation-triangle';
     
     const notification = document.createElement('div');
     notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
