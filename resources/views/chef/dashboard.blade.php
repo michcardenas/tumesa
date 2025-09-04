@@ -133,22 +133,13 @@
                 <td>
                     <div class="action-buttons d-flex gap-1">
                         {{-- Botón Asistencia - Solo visible 30 min antes hasta 2 horas después --}}
-                        @if($minutosParaCena <= 30 && $minutosParaCena >= -120)
-                            @if($minutosParaCena > 0)
-                                <button class="btn btn-sm btn-warning" 
-                                        onclick="iniciarCena({{ $cena['id'] }})"
-                                        title="Iniciar registro de asistencia">
-                                    <i class="fas fa-clock"></i>
-                                    <span class="d-none d-md-inline">{{ round($minutosParaCena) }}min</span>
-                                </button>
-                            @else
-                                <button class="btn btn-sm btn-success" 
-                                        onclick="marcarAsistencia({{ $cena['id'] }})"
-                                        title="Marcar asistencia">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span class="d-none d-md-inline">Asistencia</span>
-                                </button>
-                            @endif
+                      @if($minutosParaCena <= 30 && $minutosParaCena >= -120)
+                            <a href="{{ route('chef.dinners.asistencia', $cena['id']) }}" 
+                            class="btn btn-sm btn-success" 
+                            title="Marcar asistencia de comensales">
+                                <i class="fas fa-check-circle"></i>
+                                <span class="d-none d-md-inline">Asistencia</span>
+                            </a>
                         @endif
                         
                         {{-- Botón Ver - Siempre visible --}}
@@ -1408,19 +1399,7 @@ function updateLocationDisplay(location, placeName = null) {
         infoWindow.open(map, marker);
     }
 }
-function iniciarCena(cenaId) {
-    if(confirm('¿Iniciar el registro de asistencia para esta cena?')) {
-        alert('Redirigiendo al registro de asistencia - ID: ' + cenaId);
-        // window.location.href = `/chef/dinners/${cenaId}/asistencia`;
-    }
-}
 
-function marcarAsistencia(cenaId) {
-    if(confirm('¿Marcar la asistencia de los comensales?')) {
-        alert('Abriendo registro de asistencia - ID: ' + cenaId);
-        // window.location.href = `/chef/dinners/${cenaId}/asistencia`;
-    }
-}
 // 📱 OBTENER UBICACIÓN DEL USUARIO
 function getUserLocation() {
     if (navigator.geolocation) {

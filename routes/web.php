@@ -12,7 +12,7 @@ use App\Http\Controllers\IngresosController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\ExperienciasController;
 use App\Http\Controllers\LegalController;
- 
+use App\Http\Controllers\AsistenciaController;
 
 
 /*
@@ -62,6 +62,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/chef/dinners', [App\Http\Controllers\Chef\ChefController::class, 'storeDinner'])->name('chef.dinners.store');
     Route::get('/chef/dinners/{cena}/edit', [App\Http\Controllers\Chef\ChefController::class, 'editDinner'])->name('chef.dinners.edit');
     Route::get('/chef/dinners/{cena}', [App\Http\Controllers\Chef\ChefController::class, 'showDinner'])->name('chef.dinners.show');
+    Route::get('/dinners/{cena}/asistencia', [AsistenciaController::class, 'show'])
+    ->name('chef.dinners.asistencia');
 });
 
 //comensal 
