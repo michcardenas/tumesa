@@ -314,13 +314,18 @@
 </style>
 
 <script>
+let reservaActual = null;
+let estadoActual = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Manejar clicks en botones de asistencia
     document.querySelectorAll('.asistencia-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const reservaId = this.dataset.reserva;
             const estado = this.dataset.estado;
-            marcarAsistencia(reservaId, estado);
+            const nombre = this.dataset.nombre;
+            
+            mostrarModalComentarios(reservaId, estado, nombre);
         });
     });
 
@@ -342,7 +347,37 @@ document.addEventListener('DOMContentLoaded', function() {
             buscarCodigo();
         }
     });
+
+    // Manejar confirmación de asistencia
+    document.getElementById('confirmarAsistencia').addEventListener('click', function() {
+        if (reservaActual && estadoActual) {
+            const comentarios = document.getElementById('modalComentarios').value.trim();
+            marcarAsistencia(reservaActual, estadoActual, comentarios);
+        }
+    });
 });
+
+function mostrarModalComentarios(reservaId, estado, nombre) {
+    reservaActual = reservaId;
+    estadoActual = estado;
+    
+    // Configurar modal
+    document.getElementById('modalReserva').textContent = nombre;
+    document.getElementById('modalEstado').textContent = estado === 'presente' ? 'Presente' : 'Ausente';
+    document.getElementById('modalEstado').className = `badge ${estado === 'presente' ? 'bg-success' : 'bg-danger'}`;
+    document.getElementById('modalTitulo').textContent = `Marcar como ${estado === 'presente' ? 'Presente' : 'Ausente'}`;
+    document.getElementById('modalComentarios').value = '';
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('comentariosModal'));
+    modal.show();
+}
+
+function verComentarios(comentarios) {
+    document.getElementById('comentariosTexto').textContent = comentarios;
+    const modal = new bootstrap.Modal(document.getElementById('verComentariosModal'));
+    modal.show();
+}
 
 function buscarCodigo() {
     const codigo = document.getElementById('codigoSearch').value.trim().toUpperCase();
@@ -389,14 +424,16 @@ function aplicarFiltro(filtro) {
     });
 }
 
-function marcarAsistencia(reservaId, estado) {
+function marcarAsistencia(reservaId, estado, comentarios = '') {
     const row = document.getElementById(`reserva-${reservaId}`);
     const controls = row.querySelector('.asistencia-controls');
     const statusDiv = row.querySelector('.asistencia-status');
     const badge = statusDiv.querySelector('.asistencia-badge');
     
     // Deshabilitar botones durante la petición
-    controls.querySelectorAll('button').forEach(btn => btn.disabled = true);
+    const btnConfirmar = document.getElementById('confirmarAsistencia');
+    btnConfirmar.disabled = true;
+    btnConfirmar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
     // Hacer petición AJAX
     fetch(`/chef/reservas/${reservaId}/asistencia`, {
@@ -405,35 +442,58 @@ function marcarAsistencia(reservaId, estado) {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({ estado: estado })
+        body: JSON.stringify({ 
+            estado: estado,
+            comentarios: comentarios 
+        })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('comentariosModal'));
+            modal.hide();
+            
             // Actualizar UI
             badge.className = `badge asistencia-badge ${data.badge.class}`;
             badge.textContent = data.badge.texto;
             
             // Cambiar controles
-            controls.innerHTML = `
+            let nuevosControles = `
                 <button class="btn btn-sm btn-outline-secondary" 
                         onclick="resetearAsistencia(${reservaId})">
                     <i class="fas fa-undo"></i> Cambiar
                 </button>
             `;
             
+            // Agregar botón de comentarios si existen
+            if (data.comentarios) {
+                nuevosControles += `
+                    <button class="btn btn-sm btn-outline-info" 
+                            onclick="verComentarios('${data.comentarios.replace(/'/g, "\\'")}'))"
+                            title="Ver comentarios">
+                        <i class="fas fa-comment"></i>
+                    </button>
+                `;
+            }
+            
+            controls.innerHTML = nuevosControles;
+            
             // Actualizar datos de la fila
             row.dataset.estadoAsistencia = estado;
             
-            // Agregar timestamp
-            const timestamp = document.createElement('small');
-            timestamp.className = 'text-muted d-block';
-            timestamp.innerHTML = `<i class="fas fa-clock"></i> ${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
-            statusDiv.appendChild(timestamp);
+            // Agregar timestamp si no existe
+            let timestamp = statusDiv.querySelector('.timestamp');
+            if (!timestamp) {
+                timestamp = document.createElement('small');
+                timestamp.className = 'text-muted d-block timestamp';
+                statusDiv.appendChild(timestamp);
+            }
+            timestamp.innerHTML = `<i class="fas fa-clock"></i> ${data.fecha_marcada}`;
             
             mostrarNotificacion('Asistencia registrada correctamente', 'success');
             
-            // Actualizar estadísticas (opcional: recargar página o actualizar dinámicamente)
+            // Actualizar estadísticas después de un momento
             setTimeout(() => {
                 location.reload();
             }, 1500);
@@ -447,25 +507,56 @@ function marcarAsistencia(reservaId, estado) {
         mostrarNotificacion('Error de conexión', 'error');
     })
     .finally(() => {
-        // Rehabilitar botones
-        controls.querySelectorAll('button').forEach(btn => btn.disabled = false);
+        // Rehabilitar botón
+        btnConfirmar.disabled = false;
+        btnConfirmar.innerHTML = '<i class="fas fa-save"></i> Confirmar';
     });
 }
 
 function resetearAsistencia(reservaId) {
     if (confirm('¿Cambiar el estado de asistencia de esta reserva?')) {
-        // Simular reset - aquí puedes implementar la lógica real
-        location.reload();
+        fetch(`/chef/reservas/${reservaId}/resetear-asistencia`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mostrarNotificacion('Asistencia reseteada correctamente', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                mostrarNotificacion('Error al resetear asistencia: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarNotificacion('Error de conexión', 'error');
+        });
     }
 }
 
 function marcarTodosPresentes() {
     if (confirm('¿Marcar todos los comensales pendientes como presentes?')) {
         const botonesPendientes = document.querySelectorAll('.asistencia-btn[data-estado="presente"]');
+        let procesados = 0;
+        
         botonesPendientes.forEach((btn, index) => {
             setTimeout(() => {
-                btn.click();
-            }, index * 500); // Espaciar las peticiones
+                const reservaId = btn.dataset.reserva;
+                marcarAsistencia(reservaId, 'presente', 'Marcado masivamente como presente');
+                procesados++;
+                
+                if (procesados === botonesPendientes.length) {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                }
+            }, index * 1000); // Espaciar las peticiones 1 segundo
         });
     }
 }
