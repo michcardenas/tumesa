@@ -237,17 +237,17 @@
                                 Acepto los <a href="{{ route('terminos') }}" target="_blank">términos y condiciones de uso</a> *
                             </label>
                         </div>
-                        <!-- <div class="form-check mb-4">
+                        <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="acepta_politica_cancelacion" name="acepta_politica_cancelacion" required>
                             <label class="form-check-label" for="acepta_politica_cancelacion">
                                 Acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#cancelacionModal">política de cancelación</a> *
                             </label>
-                        </div> -->
+                        </div>
 
-                        <!-- <div class="alert alert-warning">
+                        <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Política de cancelación:</strong> Puedes cancelar hasta 24 horas antes de la cena para obtener un reembolso completo.
-                        </div> -->
+                            <strong>Política de cancelación:</strong> Generar politicas de cancelacion .
+                        </div>
                     </div>
                 </div>
 
@@ -736,8 +736,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Validar solo el checkbox de términos y condiciones
+        // Validar checkboxes
         const terminosCheck = document.getElementById('acepta_terminos');
+        const cancelacionCheck = document.getElementById('acepta_politica_cancelacion');
         
         if (!terminosCheck.checked) {
             alert('Debes aceptar los términos y condiciones');
@@ -745,8 +746,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // ELIMINADO: La validación del checkbox de política de cancelación
-        // ya que está comentado en el HTML
+        if (!cancelacionCheck.checked) {
+            alert('Debes aceptar la política de cancelación');
+            cancelacionCheck.focus();
+            return;
+        }
         
         // Confirmación final
         const guests = document.getElementById('cantidad_comensales').value;
