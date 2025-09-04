@@ -472,7 +472,7 @@
                                     </a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="{{ route('experiencias') }}"class="menu-link" >
+                                    <a href="{{ route('experiencias') }}" >
                                         <i class="fas fa-search"></i>
                                         Cenas Disponibles
                                     </a>
