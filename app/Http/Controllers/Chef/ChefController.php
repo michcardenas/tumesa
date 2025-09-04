@@ -98,23 +98,25 @@ class ChefController extends Controller
     ];
 
     // Próximas cenas
-    $proximas_cenas = Cena::where('user_id', $userId)
-        ->where('datetime', '>', now())
-        ->orderBy('datetime', 'asc')
-        ->take(10)
-        ->get()
-        ->map(function($cena) {
-            return [
-                'id' => $cena->id,
-                'fecha_formatted' => $cena->datetime->format('d/m/Y'),
-                'titulo' => $cena->title,
-                'comensales_actuales' => $cena->guests_current,
-                'comensales_max' => $cena->guests_max,
-                'precio' => $cena->price,
-                'estado' => $cena->status,
-                'location' => $cena->location
-            ];
-        });
+// En tu método dashboard(), actualiza el map de proximas_cenas:
+$proximas_cenas = Cena::where('user_id', $userId)
+    ->where('datetime', '>', now())
+    ->orderBy('datetime', 'asc')
+    ->take(10)
+    ->get()
+    ->map(function($cena) {
+        return [
+            'id' => $cena->id,
+            'datetime' => $cena->datetime, // ← AGREGAR ESTO
+            'fecha_formatted' => $cena->datetime->format('d/m/Y'),
+            'titulo' => $cena->title,
+            'comensales_actuales' => $cena->guests_current,
+            'comensales_max' => $cena->guests_max,
+            'precio' => $cena->price,
+            'estado' => $cena->status,
+            'location' => $cena->location
+        ];
+    });
 
     // Información de ingresos
     $ingresos = [

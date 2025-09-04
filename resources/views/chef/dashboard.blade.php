@@ -100,41 +100,41 @@
                                 <td>{{ $cena['comensales_actuales'] }}/{{ $cena['comensales_max'] }}</td>
                                 <td>${{ number_format($cena['precio'], 0, ',', '.') }}</td>
                                 
-                                <td>
-                                    <div class="action-buttons">
-                                        @php
-                                            $ahora = \Carbon\Carbon::now();
-                                            $fechaCena = \Carbon\Carbon::parse($cena['fecha']);
-                                            $minutosParaCena = $ahora->diffInMinutes($fechaCena, false); // false para valores negativos si ya pasó
-                                        @endphp
-                                        
-                                        {{-- Botón Iniciar Cena - Solo visible 30 minutos antes --}}
-                                        @if($minutosParaCena <= 30 && $minutosParaCena >= -120) {{-- Visible desde 30 min antes hasta 2 horas después --}}
-                                            <button class="btn btn-sm btn-warning" 
-                                                    onclick="iniciarCena({{ $cena['id'] }})"
-                                                    title="Marcar asistencia">
-                                                <i class="fas fa-play-circle"></i>
-                                                @if($minutosParaCena > 0)
-                                                    Iniciar ({{ $minutosParaCena }} min)
-                                                @else
-                                                    En curso
-                                                @endif
-                                            </button>
-                                        @endif
-                                        
-                                        {{-- Botones normales siempre visibles --}}
-                                        <a href="{{ route('chef.dinners.show', $cena['id']) }}" 
-                                        class="btn btn-sm btn-outline-primary" 
-                                        title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('chef.dinners.edit', $cena['id']) }}" 
-                                        class="btn btn-sm btn-outline-success" 
-                                        title="Editar cena">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    </div>
-                                </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            @php
+                                                $ahora = \Carbon\Carbon::now();
+                                                $fechaCena = $cena['datetime']; // ← Usar datetime directamente
+                                                $minutosParaCena = $ahora->diffInMinutes($fechaCena, false);
+                                            @endphp
+                                            
+                                            {{-- Botón Iniciar Cena - Solo visible 30 minutos antes --}}
+                                            @if($minutosParaCena <= 30 && $minutosParaCena >= -120)
+                                                <button class="btn btn-sm btn-warning" 
+                                                        onclick="iniciarCena({{ $cena['id'] }})"
+                                                        title="Marcar asistencia">
+                                                    <i class="fas fa-play-circle"></i>
+                                                    @if($minutosParaCena > 0)
+                                                        Iniciar ({{ $minutosParaCena }} min)
+                                                    @else
+                                                        En curso
+                                                    @endif
+                                                </button>
+                                            @endif
+                                            
+                                            {{-- Botones normales siempre visibles --}}
+                                            <a href="{{ route('chef.dinners.show', $cena['id']) }}" 
+                                            class="btn btn-sm btn-outline-primary" 
+                                            title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('chef.dinners.edit', $cena['id']) }}" 
+                                            class="btn btn-sm btn-outline-success" 
+                                            title="Editar cena">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
                             </tr>
                             @empty
                             <tr>
