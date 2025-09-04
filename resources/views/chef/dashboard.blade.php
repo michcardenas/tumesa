@@ -81,6 +81,27 @@
                     </button>
                 </div>
 
+                <div class="alert alert-info mb-3" style="background-color: #ffe6e6; border: 2px dashed #ff0000;">
+    <h5>🔧 DEBUG - Información de Tiempo</h5>
+    <div class="row">
+        <div class="col-md-4">
+            <strong>Hora Actual del Servidor:</strong><br>
+            {{ \Carbon\Carbon::now()->format('d/m/Y H:i:s') }}<br>
+            <small class="text-muted">Zona: {{ config('app.timezone') }}</small>
+        </div>
+        <div class="col-md-4">
+            <strong>Timestamp:</strong><br>
+            {{ \Carbon\Carbon::now()->timestamp }}<br>
+            <small class="text-muted">UTC: {{ \Carbon\Carbon::now()->toISOString() }}</small>
+        </div>
+        <div class="col-md-4">
+            <strong>Próxima Actualización:</strong><br>
+            <span id="debugTimer">60</span> segundos<br>
+            <button onclick="location.reload()" class="btn btn-sm btn-danger mt-1">Recargar Ahora</button>
+        </div>
+    </div>
+</div>
+
                 <div class="table-container">
                   <table class="table table-striped">
                         <thead>
@@ -1796,5 +1817,14 @@ function getImageData() {
 
 // Hacer función global para uso en createDinner()
 window.getImageData = getImageData;
+
+let seconds = 60;
+setInterval(function() {
+    seconds--;
+    document.getElementById('debugTimer').textContent = seconds;
+    if (seconds <= 0) {
+        location.reload();
+    }
+}, 1000);
 </script>
 @endsection
