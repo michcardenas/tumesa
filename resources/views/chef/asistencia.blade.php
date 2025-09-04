@@ -179,9 +179,9 @@
                                 <span class="badge bg-primary">{{ $reserva->cantidad_comensales }} personas</span>
                                 @if($reserva->restricciones_alimentarias)
                                 <br>
-                                <small class="text-warning">
+                                <!-- <small class="text-warning">
                                     <i class="fas fa-exclamation-triangle"></i> Restricciones
-                                </small>
+                                </small> -->
                                 @endif
                             </td>
                             <td>
