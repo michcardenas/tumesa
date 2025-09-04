@@ -736,9 +736,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Validar checkboxes
+        // Validar solo el checkbox de términos y condiciones
         const terminosCheck = document.getElementById('acepta_terminos');
-        const cancelacionCheck = document.getElementById('acepta_politica_cancelacion');
         
         if (!terminosCheck.checked) {
             alert('Debes aceptar los términos y condiciones');
@@ -746,11 +745,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        if (!cancelacionCheck.checked) {
-            alert('Debes aceptar la política de cancelación');
-            cancelacionCheck.focus();
-            return;
-        }
+        // ELIMINADO: La validación del checkbox de política de cancelación
+        // ya que está comentado en el HTML
         
         // Confirmación final
         const guests = document.getElementById('cantidad_comensales').value;
