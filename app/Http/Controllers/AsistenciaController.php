@@ -37,49 +37,72 @@ class AsistenciaController extends Controller
         return view('chef.asistencia', compact('cena', 'reservas', 'stats'));
     }
 
-    public function marcarAsistencia(Request $request, Reserva $reserva)
-    {
-        // Verificar que la reserva pertenece a una cena del chef autenticado
-        if ($reserva->cena->user_id !== auth()->id()) {
-            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+  public function marcarAsistencia(Request $request, Reserva $reserva)
+{
+    // Verificar que la reserva pertenece a una cena del chef autenticado
+    if ($reserva->cena->user_id !== auth()->id()) {
+        return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+    }
+
+    // Validar entrada
+    $request->validate([
+        'estado' => 'required|in:presente,ausente',
+        'comentarios' => 'nullable|string|max:500'
+    ]);
+
+    $estado = $request->input('estado');
+    $comentarios = $request->input('comentarios');
+
+    try {
+        // Verificar si es la primera asistencia marcada para esta cena
+        $primeraAsistencia = Reserva::where('cena_id', $reserva->cena_id)
+            ->where('asistencia_marcada', true)
+            ->count() === 0;
+
+        // Marcar asistencia según el estado
+        if ($estado === 'presente') {
+            $reserva->marcarPresente($comentarios);
+        } else {
+            $reserva->marcarAusente($comentarios);
         }
 
-        // Validar entrada
-        $request->validate([
-            'estado' => 'required|in:presente,ausente',
-            'comentarios' => 'nullable|string|max:500'
+        // Si es la primera asistencia, cambiar el estado de la cena a "in_progress"
+        if ($primeraAsistencia) {
+            $cena = $reserva->cena;
+            
+            // Solo cambiar si la cena está publicada
+            if ($cena->status === 'published') {
+                $cena->status = 'in_progress';
+                $cena->save();
+                
+                \Log::info('Cena iniciada automáticamente', [
+                    'cena_id' => $cena->id,
+                    'chef_id' => auth()->id(),
+                    'primera_reserva_marcada' => $reserva->id
+                ]);
+            }
+        }
+
+        // Recargar el modelo para obtener los datos actualizados
+        $reserva->refresh();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asistencia marcada correctamente',
+            'estado' => $reserva->estado_asistencia,
+            'badge' => $reserva->estado_asistencia_badge,
+            'fecha_marcada' => $reserva->fecha_asistencia_marcada->format('H:i'),
+            'comentarios' => $reserva->comentarios_asistencia,
+            'cena_iniciada' => $primeraAsistencia // Indicador para el frontend
         ]);
 
-        $estado = $request->input('estado');
-        $comentarios = $request->input('comentarios');
-
-        try {
-            // Marcar asistencia según el estado usando los métodos del modelo
-            if ($estado === 'presente') {
-                $reserva->marcarPresente($comentarios);
-            } else {
-                $reserva->marcarAusente($comentarios);
-            }
-
-            // Recargar el modelo para obtener los datos actualizados
-            $reserva->refresh();
-
-            return response()->json([
-                'success' => true, 
-                'message' => 'Asistencia marcada correctamente',
-                'estado' => $reserva->estado_asistencia,
-                'badge' => $reserva->estado_asistencia_badge,
-                'fecha_marcada' => $reserva->fecha_asistencia_marcada->format('H:i'),
-                'comentarios' => $reserva->comentarios_asistencia
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Error al marcar asistencia: ' . $e->getMessage()
-            ], 500);
-        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al marcar asistencia: ' . $e->getMessage()
+        ], 500);
     }
+}
 
     public function resetearAsistencia(Request $request, Reserva $reserva)
     {
