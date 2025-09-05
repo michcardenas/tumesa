@@ -50,9 +50,9 @@ Route::get('/pago-error', fn() => '❌ Pago fallido')->name('pago.error');
 Route::get('/pago-pendiente', fn() => '🕓 Pago pendiente')->name('pago.pendiente');
 
 Route::get('/politica-de-privacidad', [LegalController::class, 'privacidad'])->name('privacidad');
-Route::get('/reseñas/{cena}/{reserva}/create', [ReseñaController::class, 'create'])
+Route::get('/reseñas/{cena}/{reserva}/create', [ResenaController::class, 'create'])
     ->name('reseñas.create');
-Route::post('/reseñas', [ReseñaController::class, 'store'])
+Route::post('/reseñas', [ResenaController::class, 'store'])
     ->name('reseñas.store');
 
 //pagos
