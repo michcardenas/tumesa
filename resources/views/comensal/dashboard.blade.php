@@ -11,140 +11,302 @@
         </div>
     </div>
 
-    <!-- Estadísticas Reales -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon bg-primary">
-                <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="stat-info">
-                <h4>{{ $stats['reservas_activas'] }}</h4>
-                <p>Cenas Reservadas</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon bg-success">
-                <i class="fas fa-utensils"></i>
-            </div>
-            <div class="stat-info">
-                <h4>{{ $stats['cenas_disfrutadas'] }}</h4>
-                <p>Cenas Disfrutadas</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon bg-warning">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="stat-info">
-                <h4>{{ $stats['chefs_favoritos'] }}</h4>
-                <p>Chefs Favoritos</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <div class="stat-icon bg-danger">
-                <i class="fas fa-money-bill-wave"></i>
-            </div>
-            <div class="stat-info">
-                <h4>${{ number_format($stats['gastado_mes'], 0, ',', '.') }}</h4>
-                <p>Gastado Este Mes</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Próximas Reservas Reales -->
-<div class="section-header">
-    <h2>Tus Próximas Cenas</h2>
-    <a href="#" class="btn btn-primary" onclick="showSection('cenas-disponibles')">
-        <i class="fas fa-search"></i> Buscar Más Cenas
-    </a>
-</div>
-
-<div class="table-container">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Chef</th>
-                <th>Título</th>
-                <th>Ubicación</th>
-                <th>Precio</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($proximasReservas as $reserva)
-            <tr>
-                <td>
-                    <strong>{{ $reserva->cena->datetime->format('D, j M') }}</strong><br>
-                    <small class="text-muted">{{ $reserva->cena->datetime->format('g:i A') }}</small>
-                </td>
-                <td>
-                    <div class="chef-info">
-                        <strong>{{ $reserva->cena->chef->name }}</strong><br>
-                        <small class="text-muted">⭐ 4.8 (89 reseñas)</small>
+    <!-- Resumen de Estados (NUEVO) -->
+    @if(isset($resumenEstados))
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Resumen de tus Reservas</h6>
+                    <div class="d-flex gap-3 flex-wrap">
+                        @if($resumenEstados['pendientes'] > 0)
+                        <div class="badge bg-warning text-dark p-2">
+                            <i class="fas fa-clock"></i> {{ $resumenEstados['pendientes'] }} Pendientes
+                        </div>
+                        @endif
+                        @if($resumenEstados['confirmadas'] > 0)
+                        <div class="badge bg-info p-2">
+                            <i class="fas fa-check"></i> {{ $resumenEstados['confirmadas'] }} Confirmadas
+                        </div>
+                        @endif
+                        @if($resumenEstados['completadas'] > 0)
+                        <div class="badge bg-success p-2">
+                            <i class="fas fa-flag-checkered"></i> {{ $resumenEstados['completadas'] }} Completadas
+                        </div>
+                        @endif
+                        @if($resumenEstados['canceladas'] > 0)
+                        <div class="badge bg-danger p-2">
+                            <i class="fas fa-times"></i> {{ $resumenEstados['canceladas'] }} Canceladas
+                        </div>
+                        @endif
                     </div>
-                </td>
-                <td>
-                    <strong>{{ $reserva->cena->title }}</strong><br>
-                    <small class="text-muted">{{ Str::limit($reserva->cena->menu, 40) }}</small>
-                </td>
-                <td>
-                    <small>{{ Str::limit($reserva->cena->location, 25) }}</small>
-                </td>
-                <td>
-                    <strong>{{ $reserva->precio_total_formateado }}</strong>
-                    @if($reserva->cantidad_comensales > 1)
-                        <br><small class="text-muted">{{ $reserva->cantidad_comensales }} comensales</small>
-                    @endif
-                </td>
-                <td>
-                    <span class="badge {{ $reserva->estado_badge['class'] }}">
-                        {{ $reserva->estado_badge['texto'] }}
-                    </span>
-                </td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-outline-primary" title="Ver detalles" onclick="verDetallesReserva({{ $reserva->id }})">
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Estadísticas Reales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>{{ $stats['reservas_activas'] }}</h4>
+                    <p>Cenas Reservadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-success">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>{{ $stats['cenas_disfrutadas'] }}</h4>
+                    <p>Cenas Disfrutadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-warning">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>{{ $stats['chefs_favoritos'] }}</h4>
+                    <p>Chefs Favoritos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-danger">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>${{ number_format($stats['gastado_mes'], 0, ',', '.') }}</h4>
+                    <p>Gastado Este Mes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Próximas Reservas -->
+    <div class="section-header">
+        <h2>Tus Próximas Cenas</h2>
+        <a href="{{ route('experiencias') }}" class="btn btn-primary">
+            <i class="fas fa-search"></i> Buscar Más Cenas
+        </a>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Chef</th>
+                    <th>Título</th>
+                    <th>Ubicación</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($proximasReservas as $reserva)
+                <tr>
+                    <td>
+                        <strong>{{ $reserva->cena->datetime->format('D, j M') }}</strong><br>
+                        <small class="text-muted">{{ $reserva->cena->datetime->format('g:i A') }}</small>
+                    </td>
+                    <td>
+                        <div class="chef-info">
+                            <strong>{{ $reserva->cena->chef->name }}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <strong>{{ $reserva->cena->title }}</strong><br>
+                        <small class="text-muted">{{ Str::limit($reserva->cena->menu, 40) }}</small>
+                    </td>
+                    <td>
+                        <small>{{ Str::limit($reserva->cena->location, 25) }}</small>
+                    </td>
+                    <td>
+                        <strong>{{ $reserva->precio_total_formateado }}</strong>
+                        @if($reserva->cantidad_comensales > 1)
+                            <br><small class="text-muted">{{ $reserva->cantidad_comensales }} comensales</small>
+                        @endif
+                    </td>
+                    <td>
+                        @php
+                            $badgeClass = '';
+                            $badgeText = '';
+                            $iconClass = '';
+                            
+                            switch($reserva->estado) {
+                                case 'pendiente':
+                                    $badgeClass = 'bg-warning';
+                                    $badgeText = 'Pendiente';
+                                    $iconClass = 'fas fa-clock';
+                                    break;
+                                case 'confirmada':
+                                    $badgeClass = 'bg-info';
+                                    $badgeText = 'Confirmada';
+                                    $iconClass = 'fas fa-check';
+                                    break;
+                                case 'pagada':
+                                    $badgeClass = 'bg-success';
+                                    $badgeText = 'Pagada';
+                                    $iconClass = 'fas fa-check-double';
+                                    break;
+                                default:
+                                    $badgeClass = 'bg-secondary';
+                                    $badgeText = ucfirst($reserva->estado);
+                                    $iconClass = 'fas fa-info';
+                            }
+                        @endphp
+                        
+                        <span class="badge {{ $badgeClass }} d-flex align-items-center gap-1">
+                            <i class="{{ $iconClass }}"></i> {{ $badgeText }}
+                        </span>
+                        
+                        @if($reserva->estado_pago === 'pendiente')
+                            <small class="text-danger d-block mt-1">
+                                <i class="fas fa-exclamation-triangle"></i> Pago pendiente
+                            </small>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-outline-primary" title="Ver detalles" onclick="verDetallesReserva({{ $reserva->id }})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            @if($reserva->puede_cancelar)
+                                <button class="btn btn-sm btn-outline-danger" title="Cancelar reserva" onclick="cancelarReserva({{ $reserva->id }})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            @endif
+                            @if($reserva->estado_pago === 'pendiente')
+                                <button class="btn btn-sm btn-outline-success" title="Completar pago" onclick="completarPago({{ $reserva->id }})">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-2x mb-3 text-muted"></i>
+                        <br>
+                        <strong>No tienes reservas próximas</strong>
+                        <br>
+                        <small class="text-muted">Explora las cenas disponibles y haz tu primera reserva</small>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Historial de Reservas Pasadas (NUEVO) -->
+    @if(isset($reservasPasadas) && $reservasPasadas->count() > 0)
+    <div class="section-header mt-5">
+        <h2>Historial de Cenas</h2>
+        <span class="badge bg-info">{{ $reservasPasadas->count() }} cenas en total</span>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Cena</th>
+                    <th>Chef</th>
+                    <th>Estado</th>
+                    <th>Total Pagado</th>
+                    <th>Calificación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($reservasPasadas as $reserva)
+                <tr class="{{ $reserva->estado === 'cancelada' ? 'table-danger opacity-75' : '' }}">
+                    <td>
+                        <small>{{ $reserva->cena->datetime->format('d/m/Y') }}</small>
+                    </td>
+                    <td>
+                        <strong>{{ Str::limit($reserva->cena->title, 30) }}</strong>
+                    </td>
+                    <td>
+                        {{ $reserva->cena->chef->name }}
+                    </td>
+                    <td>
+                        @if($reserva->estado === 'completada')
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle"></i> Asististe
+                            </span>
+                        @elseif($reserva->estado === 'cancelada')
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times-circle"></i> Cancelada
+                            </span>
+                        @else
+                            <span class="badge bg-secondary">{{ ucfirst($reserva->estado) }}</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($reserva->estado_pago === 'pagado')
+                            <strong class="text-success">{{ $reserva->precio_total_formateado }}</strong>
+                        @elseif($reserva->estado_pago === 'reembolsado')
+                            <span class="text-info">Reembolsado</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($reserva->calificacion)
+                            <div class="text-warning">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $reserva->calificacion)
+                                        <i class="fas fa-star"></i>
+                                    @else
+                                        <i class="far fa-star"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                        @elseif($reserva->estado === 'completada')
+                            <button class="btn btn-sm btn-outline-warning" onclick="calificarCena({{ $reserva->id }})">
+                                <i class="fas fa-star"></i> Calificar
+                            </button>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="verDetallesReserva({{ $reserva->id }})">
                             <i class="fas fa-eye"></i>
                         </button>
-                        @if($reserva->puede_cancelar)
-                            <button class="btn btn-sm btn-outline-danger" title="Cancelar reserva" onclick="cancelarReserva({{ $reserva->id }})">
-                                <i class="fas fa-times"></i>
+                        @if($reserva->estado === 'completada' && !$reserva->resena)
+                            <button class="btn btn-sm btn-outline-success" onclick="escribirResena({{ $reserva->id }})">
+                                <i class="fas fa-pen"></i>
                             </button>
                         @endif
-                        @if($reserva->estado_pago === 'pendiente')
-                            <button class="btn btn-sm btn-outline-success" title="Completar pago" onclick="completarPago({{ $reserva->id }})">
-                                <i class="fas fa-credit-card"></i>
-                            </button>
-                        @endif
-                    </div>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="7" class="text-center py-4">
-                    <i class="fas fa-calendar-times fa-2x mb-3 text-muted"></i>
-                    <br>
-                    <strong>No tienes reservas próximas</strong>
-                    <br>
-                    <small class="text-muted">Explora las cenas disponibles y haz tu primera reserva</small>
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
 
-                    <!-- Sección Cenas Disponibles -->
+    <!-- Resto de las secciones (Cenas Disponibles, etc.) -->
+    <!-- ... código existente ... -->
+
+</div>
+     <!-- Sección Cenas Disponibles -->
              <!-- Sección Cenas Disponibles -->
 <div id="cenas-disponibles-section" class="content-section">
     <div class="section-header">
