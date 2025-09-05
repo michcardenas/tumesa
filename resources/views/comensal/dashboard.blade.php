@@ -286,9 +286,11 @@
                         @endif
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-primary" onclick="verDetallesReserva({{ $reserva->id }})">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                  <button class="btn btn-sm btn-outline-primary" 
+                        onclick="window.location.href='{{ route('reservas.detalle', $reserva->id) }}'">
+                    <i class="fas fa-eye"></i>
+                </button>
+
                         @if($reserva->estado === 'completada' && !$reserva->resena)
                             <button class="btn btn-sm btn-outline-success" onclick="escribirResena({{ $reserva->id }})">
                                 <i class="fas fa-pen"></i>
