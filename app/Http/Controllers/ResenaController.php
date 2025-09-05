@@ -1,34 +1,35 @@
-@extends('layouts.app_comensal')
+<?php
 
-@section('content')
-<div class="container">
-    <h2>Dejar Reseña</h2>
-    <p><strong>{{ $cena->title }}</strong> - {{ $cena->datetime->format('d/m/Y H:i') }}</p>
+namespace App\Http\Controllers;
+use App\Models\Cena;
+use App\Models\Reserva;
+use App\Models\Reseña;
+use Illuminate\Http\Request;
 
-    <form action="{{ route('reseñas.store') }}" method="POST">
-        @csrf
-        <input type="hidden" name="id_cena" value="{{ $cena->id }}">
-        <input type="hidden" name="id_reserva" value="{{ $reserva->id }}">
-        <input type="hidden" name="id_user" value="{{ auth()->id() }}">
 
-        <div class="mb-3">
-            <label class="form-label">Puntuación:</label>
-            <select name="rating" class="form-control" required>
-                <option value="">Selecciona...</option>
-                @for($i = 1; $i <= 5; $i++)
-                    <option value="{{ $i }}">{{ $i }} ⭐</option>
-                @endfor
-            </select>
-        </div>
+class ResenaController extends Controller
+{
 
-        <div class="mb-3">
-            <label class="form-label">Comentario (opcional):</label>
-            <textarea name="comentario" class="form-control" rows="3"></textarea>
-        </div>
+    
+public function create(Cena $cena, Reserva $reserva)
+{
+    return view('reseñas.create', compact('cena', 'reserva'));
+}
 
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save"></i> Enviar Reseña
-        </button>
-    </form>
-</div>
-@endsection
+public function store(Request $request)
+{
+    $data = $request->validate([
+        'id_cena' => 'required|exists:cenas,id',
+        'id_reserva' => 'required|exists:reservas,id',
+        'id_user' => 'required|exists:users,id',
+        'rating' => 'required|integer|min:1|max:5',
+        'comentario' => 'nullable|string|max:500',
+    ]);
+
+    \App\Models\Reseña::create($data);
+
+    return redirect()->route('comensal.dashboard')
+        ->with('success', '¡Gracias por tu reseña!');
+}
+
+}
