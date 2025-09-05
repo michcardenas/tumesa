@@ -52,7 +52,7 @@ Route::get('/pago-pendiente', fn() => '🕓 Pago pendiente')->name('pago.pendien
 Route::get('/politica-de-privacidad', [LegalController::class, 'privacidad'])->name('privacidad');
 
 //pagos
-Route::patch('/chef/cenas/{cena}/terminar', [ChefController::class, 'terminarCena'])
+Route::patch('/chef/cenas/{cena}/terminar', [App\Http\Controllers\Chef\ChefController::class, 'terminarCena'])
     ->name('chef.cenas.terminar');
 
 Route::post('/reservar', [PagoController::class, 'reservar'])->name('reservar');
