@@ -17,6 +17,24 @@
             </div>
         </div>
     </div>
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Control de Asistencia</h1>
+        <p>{{ $cena->title }} - {{ $cena->formatted_date }}</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ route('chef.dashboard') }}" class="btn btn-light btn-sm">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </a>
+        <form action="{{ route('chef.cenas.terminar', $cena->id) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas terminar esta cena?');">
+            @csrf
+            @method('PATCH')
+            <button type="submit" class="btn btn-danger btn-sm">
+                <i class="fas fa-flag-checkered"></i> Terminar Cena
+            </button>
+        </form>
+    </div>
+</div>
 
     <!-- Contenido Principal -->
     <div class="chef-content">
