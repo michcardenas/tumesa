@@ -19,7 +19,7 @@ class ChefController extends Controller
    
     public function terminarCena(Cena $cena)
 {
-    $cena->estado = 'completed'; // o el estado que uses
+    $cena->status = 'completed'; // o el estado que uses
     $cena->save();
 
     return redirect()->route('chef.dashboard')
