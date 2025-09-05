@@ -18,7 +18,7 @@ class ComensalController extends Controller
     /**
      * Display the comensal dashboard.
      */
-public function dashboard(): View 
+public function dashboard(): View
 {
     $user = Auth::user();
     
@@ -39,10 +39,10 @@ public function dashboard(): View
         ->limit(6)
         ->get();
 
-    // Cenas recomendadas (las más populares o recientes)
+    // Cenas recomendadas
     $cenasRecomendadas = Cena::with('chef')
         ->active()
-        ->published() 
+        ->published()
         ->upcoming()
         ->where('guests_current', '>', 0)
         ->orderBy('guests_current', 'desc')
@@ -59,7 +59,7 @@ public function dashboard(): View
             ->get();
     }
 
-    // NUEVO: Traer reservas del usuario
+    // RESERVAS ACTUALES Y FUTURAS
     $proximasReservas = Reserva::with(['cena', 'cena.chef'])
         ->where('user_id', $user->id)
         ->whereIn('estado', ['pendiente', 'confirmada', 'pagada'])
@@ -69,23 +69,58 @@ public function dashboard(): View
         ->orderBy('created_at', 'desc')
         ->get();
 
-    // NUEVO: Calcular estadísticas reales
+    // NUEVO: RESERVAS PASADAS (HISTORIAL)
+    $reservasPasadas = Reserva::with(['cena', 'cena.chef'])
+        ->where('user_id', $user->id)
+        ->where(function($query) {
+            $query->where('estado', 'completada')
+                  ->orWhere(function($q) {
+                     $q->whereHas('cena', function($subquery) {
+                         $subquery->where('datetime', '<', now());
+                     });
+                  });
+        })
+        ->orderBy('created_at', 'desc')
+        ->limit(10)
+        ->get();
+
+    // ESTADÍSTICAS MEJORADAS
     $stats = [
         'reservas_activas' => $proximasReservas->count(),
         'cenas_disfrutadas' => Reserva::where('user_id', $user->id)
-            ->where('estado', 'completada')
+            ->whereIn('estado', ['completada', 'asistida'])
             ->count(),
-        'chefs_favoritos' => 0, // Implementar después con tabla de favoritos
+        'chefs_favoritos' => Reserva::where('user_id', $user->id)
+            ->distinct('cena.user_id')
+            ->count('cena.user_id'),
         'gastado_mes' => Reserva::where('user_id', $user->id)
             ->where('estado_pago', 'pagado')
             ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
             ->sum('precio_total')
+    ];
+
+    // ESTADÍSTICAS ADICIONALES
+    $resumenEstados = [
+        'pendientes' => Reserva::where('user_id', $user->id)->where('estado', 'pendiente')->count(),
+        'confirmadas' => Reserva::where('user_id', $user->id)->where('estado', 'confirmada')->count(),
+        'completadas' => Reserva::where('user_id', $user->id)->where('estado', 'completada')->count(),
+        'canceladas' => Reserva::where('user_id', $user->id)->where('estado', 'cancelada')->count(),
     ];
 
     Log::info('Estadísticas calculadas:', $stats);
     Log::info('Próximas reservas encontradas: ' . $proximasReservas->count());
+    Log::info('Reservas pasadas encontradas: ' . $reservasPasadas->count());
 
-    return view('comensal.dashboard', compact('user', 'cenasDisponibles', 'cenasRecomendadas', 'proximasReservas', 'stats'));
+    return view('comensal.dashboard', compact(
+        'user', 
+        'cenasDisponibles', 
+        'cenasRecomendadas', 
+        'proximasReservas', 
+        'reservasPasadas',
+        'stats',
+        'resumenEstados'
+    ));
 }
 
 public function checkout(Cena $cena): View|RedirectResponse
