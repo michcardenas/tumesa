@@ -93,6 +93,10 @@ class Reserva extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+        public function reseña()
+    {
+        return $this->hasOne(Reseña::class, 'id_reserva');
+    }
 
     // Scopes
     public function scopePendientes($query)

@@ -179,25 +179,35 @@
                             </small>
                         @endif
                     </td>
-                    <td>
+                  <td>
                         <div class="action-buttons">
-                           <a href="{{ route('reservas.detalle', $reserva->id) }}" 
+                            <a href="{{ route('reservas.detalle', $reserva->id) }}" 
                                 class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                                <i class="fas fa-eye"></i>
+                            </a>
 
                             @if($reserva->puede_cancelar)
                                 <button class="btn btn-sm btn-outline-danger" title="Cancelar reserva" onclick="cancelarReserva({{ $reserva->id }})">
                                     <i class="fas fa-times"></i>
                                 </button>
                             @endif
+
                             @if($reserva->estado_pago === 'pendiente')
                                 <button class="btn btn-sm btn-outline-success" title="Completar pago" onclick="completarPago({{ $reserva->id }})">
                                     <i class="fas fa-credit-card"></i>
                                 </button>
                             @endif
+
+                            {{-- ✅ Nuevo: botón para dejar reseña si está completada y no hay reseña aún --}}
+                            @if($reserva->estado === 'completada' && !$reserva->reseña)
+                                <a href="{{ route('reseñas.create', ['cena' => $reserva->cena->id, 'reserva' => $reserva->id]) }}"
+                                class="btn btn-sm btn-warning" title="Dejar reseña">
+                                    <i class="fas fa-star"></i>
+                                </a>
+                            @endif
                         </div>
                     </td>
+
                 </tr>
                 @empty
                 <tr>

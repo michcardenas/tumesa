@@ -11,7 +11,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
-
+use App\Models\Reseña;
 
 class ComensalController extends Controller
 {
@@ -59,23 +59,22 @@ public function dashboard(): View
     }
 
     // NUEVO: Traer reservas del usuario
-       $proximasReservas = Reserva::with(['cena', 'cena.chef'])
-        ->where('user_id', $user->id)
-        ->whereIn('estado', ['pendiente', 'confirmada', 'pagada'])
-        ->whereHas('cena', function($query) {
-            $query->where(function($q) {
-                // Cenas futuras
-                $q->where('datetime', '>', now())
-                  // O cenas en curso (iniciadas hace menos de 3 horas)
-                  ->orWhere(function($sub) {
-                      $sub->where('datetime', '<=', now())
-                          ->where('datetime', '>=', now()->subHours(3))
-                          ->whereIn('status', ['published', 'in_progress']);
-                  });
-            });
-        })
-        ->orderBy('created_at', 'desc')
-        ->get();
+       $proximasReservas = Reserva::with(['cena', 'cena.chef', 'reseña'])
+    ->where('user_id', $user->id)
+    ->whereIn('estado', ['pendiente', 'confirmada', 'pagada', 'completada'])
+    ->whereHas('cena', function($query) {
+        $query->where(function($q) {
+            $q->where('datetime', '>', now())
+               ->orWhere(function($sub) {
+                   $sub->where('datetime', '<=', now())
+                       ->where('datetime', '>=', now()->subHours(3))
+                       ->whereIn('status', ['published', 'in_progress', 'completed']);
+               });
+        });
+    })
+    ->orderBy('created_at', 'desc')
+    ->get();
+
 
     // NUEVO: Calcular estadísticas reales
     $stats = [
