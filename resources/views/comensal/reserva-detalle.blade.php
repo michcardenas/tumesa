@@ -50,8 +50,10 @@
                     <!-- Detalles de la Cena -->
                     <div class="row">
                         <div class="col-md-6">
-                            <p><i class="fas fa-calendar text-primary"></i> <strong>Fecha:</strong> {{ $reserva->cena->datetime->format('l, d \d\e F Y') }}</p>
-                            <p><i class="fas fa-clock text-primary"></i> <strong>Hora:</strong> {{ $reserva->cena->datetime->format('g:i A') }}</p>
+                        <p><strong>Fecha de Reserva:</strong> 
+                            {{ $reserva->created_at->locale('es')->isoFormat('D [de] MMMM [de] YYYY H:mm') }}
+                        </p>    
+                                                <p><i class="fas fa-clock text-primary"></i> <strong>Hora:</strong> {{ $reserva->cena->datetime->format('g:i A') }}</p>
                             <p><i class="fas fa-map-marker-alt text-primary"></i> <strong>Ubicación:</strong> {{ $reserva->cena->location }}</p>
                         </div>
                         <div class="col-md-6">
