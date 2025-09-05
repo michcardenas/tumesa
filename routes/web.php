@@ -141,7 +141,8 @@ Route::get('/perfil-comensal', [ProfileController::class, 'perfilComensal'])
     ->name('perfil.comensal')
     ->middleware('auth');
     Route::put('/perfil-comensal', [ProfileController::class, 'updatecomensal'])->name('perfil.comensal.update');
-
+    Route::get('/reservas/{reserva}', [ComensalController::class, 'verDetalleReserva'])
+        ->name('reservas.detalle');
 
 
 });

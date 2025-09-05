@@ -353,7 +353,8 @@
                             <i class="fas fa-circle text-white me-1" style="animation: pulse 2s infinite;"></i>
                             EN CURSO
                         </div>
-                    @elseif($cena->is_full)
+                    @el                    @endif
+seif($cena->is_full)
                         <div class="full-badge">
                             <i class="fas fa-users"></i> Completa
                         </div>
@@ -361,7 +362,6 @@
                         <div class="available-spots">
                             {{ $cena->available_spots }} lugares disponibles
                         </div>
-                    @endif
                 </div>
                 
                 <div class="dinner-content">

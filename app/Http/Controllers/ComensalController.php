@@ -96,6 +96,37 @@ public function dashboard(): View
     return view('comensal.dashboard', compact('user', 'cenasDisponibles', 'cenasRecomendadas', 'proximasReservas', 'stats'));
 }
 
+public function verDetalleReserva(Reserva $reserva)
+{
+    // Verificar que la reserva pertenece al usuario autenticado
+    if ($reserva->user_id !== auth()->id()) {
+        abort(403, 'No tienes permiso para ver esta reserva');
+    }
+
+    // Cargar relaciones necesarias
+    $reserva->load(['cena', 'cena.chef']);
+
+    // Calcular información adicional
+    $puedeCalificar = $reserva->puede_calificar;
+    $puedeCancelar = $reserva->puede_cancelar;
+    
+    // Estado de la cena
+    $ahora = now();
+    $fechaCena = $reserva->cena->datetime;
+    $minutosParaCena = $ahora->diffInMinutes($fechaCena, false);
+    $cenaPasada = $fechaCena < $ahora;
+    $cenaEnCurso = $reserva->cena->status === 'in_progress';
+
+    return view('comensal.reserva-detalle', compact(
+        'reserva',
+        'puedeCalificar',
+        'puedeCancelar',
+        'minutosParaCena',
+        'cenaPasada',
+        'cenaEnCurso'
+    ));
+}
+
 public function checkout(Cena $cena): View|RedirectResponse
     {
         $user = Auth::user();
