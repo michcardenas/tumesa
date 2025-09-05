@@ -141,43 +141,46 @@
                 <span class="badge bg-primary">Próxima</span>
             @endif
         </td>
-        <td>
-            <div class="action-buttons d-flex gap-1">
-                {{-- Botón Asistencia - Visible para cenas en curso o por iniciar --}}
-                @if($estadoCena === 'in_progress' || ($minutosParaCena <= 30 && $minutosParaCena >= -120))
-                    <a href="{{ route('chef.dinners.asistencia', $cena['id']) }}" 
-                       class="btn btn-sm {{ $estadoCena === 'in_progress' ? 'btn-success' : 'btn-warning' }}" 
-                       title="Marcar asistencia de comensales">
-                        <i class="fas fa-check-circle"></i>
-                        <span class="d-none d-md-inline">
-                            {{ $estadoCena === 'in_progress' ? 'Asistencia' : 'Iniciar' }}
-                        </span>
-                    </a>
-                @endif
-                
-                {{-- Botón Ver - Siempre visible --}}
-                <a href="{{ route('chef.dinners.show', $cena['id']) }}" 
-                   class="btn btn-sm btn-outline-primary" 
-                   title="Ver detalles">
-                    <i class="fas fa-eye"></i>
-                </a>
-                
-                {{-- Botón Editar - Solo para cenas no iniciadas --}}
-                @if($estadoCena !== 'in_progress' && $estadoCena !== 'completed' && !$esPasada)
-                    <a href="{{ route('chef.dinners.edit', $cena['id']) }}" 
-                       class="btn btn-sm btn-outline-success" 
-                       title="Editar cena">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                @else
-                    <button class="btn btn-sm btn-outline-secondary" 
-                            disabled
-                            title="No se puede editar">
-                        <i class="fas fa-lock"></i>
-                    </button>
-                @endif
-            </div>
-        </td>
+       <td>
+    <div class="action-buttons d-flex gap-1">
+        {{-- Botón Asistencia - Solo si está en curso o por iniciar (y NO finalizada ni cancelada) --}}
+        @if(($estadoCena === 'in_progress' || ($minutosParaCena <= 30 && $minutosParaCena >= -120)) 
+            && $estadoCena !== 'completed' 
+            && $estadoCena !== 'cancelled')
+            <a href="{{ route('chef.dinners.asistencia', $cena['id']) }}" 
+               class="btn btn-sm {{ $estadoCena === 'in_progress' ? 'btn-success' : 'btn-warning' }}" 
+               title="Marcar asistencia de comensales">
+                <i class="fas fa-check-circle"></i>
+                <span class="d-none d-md-inline">
+                    {{ $estadoCena === 'in_progress' ? 'Asistencia' : 'Iniciar' }}
+                </span>
+            </a>
+        @endif
+
+        {{-- Botón Ver - Siempre visible --}}
+        <a href="{{ route('chef.dinners.show', $cena['id']) }}" 
+           class="btn btn-sm btn-outline-primary" 
+           title="Ver detalles">
+            <i class="fas fa-eye"></i>
+        </a>
+        
+        {{-- Botón Editar - Solo para cenas no iniciadas --}}
+        @if($estadoCena !== 'in_progress' && $estadoCena !== 'completed' && !$esPasada)
+            <a href="{{ route('chef.dinners.edit', $cena['id']) }}" 
+               class="btn btn-sm btn-outline-success" 
+               title="Editar cena">
+                <i class="fas fa-edit"></i>
+            </a>
+        @else
+            <button class="btn btn-sm btn-outline-secondary" 
+                    disabled
+                    title="No se puede editar">
+                <i class="fas fa-lock"></i>
+            </button>
+        @endif
+    </div>
+</td>
+
     </tr>
     @empty
     <tr>
