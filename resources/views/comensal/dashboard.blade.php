@@ -1191,17 +1191,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Eventos para otros botones
-    document.querySelectorAll('.btn-outline-primary, .btn-outline-secondary, .btn-outline-success').forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (this.title) {
-                alert(`Función "${this.title}" próximamente disponible`);
-            } else {
-                alert('Funcionalidad próximamente disponible');
-            }
-        });
-    });
-});
+document.querySelectorAll('.btn-outline-primary, .btn-outline-secondary, .btn-outline-success')
+  .forEach(button => {
+      button.addEventListener('click', function(e) {
+          if (this.title) {
+              alert(`Función "${this.title}" próximamente disponible`);
+          } else {
+              alert('Funcionalidad próximamente disponible');
+          }
+      });
+  });
+
 // Función para reservar cena
 function reservarCena(cenaId) {
     // Redirigir directamente al checkout
