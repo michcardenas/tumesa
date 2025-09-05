@@ -98,7 +98,9 @@
                         <div class="col-md-6">
                             <p><strong>Cantidad de Comensales:</strong> {{ $reserva->cantidad_comensales }}</p>
                             <p><strong>Total Pagado:</strong> {{ $reserva->precio_total_formateado }}</p>
-                            <p><strong>Fecha de Reserva:</strong> {{ $reserva->created_at->format('d/m/Y H:i') }}</p>
+                            <p><strong>Fecha de Reserva:</strong> 
+                                {{ $reserva->created_at->translatedFormat('d \d\e F \d\e Y H:i') }}
+                            </p>
                         </div>
                     </div>
 
