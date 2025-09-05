@@ -17,15 +17,23 @@ use Illuminate\Validation\Rule;
 class ChefController extends Controller
 {
    
-    public function terminarCena(Cena $cena)
+public function terminarCena(Cena $cena)
 {
-    $cena->status = 'completed'; // o el estado que uses
+    // 1. Marcar la cena como completada
+    $cena->status = 'completed';
     $cena->save();
 
-    return redirect()->route('chef.dashboard')
-                     ->with('success', 'La cena ha sido marcada como finalizada.');
-}
+    // 2. Marcar las reservas con asistencia presente como completadas
+    Reserva::where('cena_id', $cena->id)
+        ->where('estado_asistencia', 'presente')
+        ->update([
+            'estado' => 'completada',
+            'fecha_confirmacion' => now() // opcional, por si quieres registrar cuándo se completó
+        ]);
 
+    return redirect()->route('chef.dashboard')
+                     ->with('success', 'La cena y las reservas con asistencia presente han sido marcadas como completadas.');
+}
   public function dashboard() // ✅ Cambié el nombre del método
 {
     $user = Auth::user();
