@@ -13,7 +13,7 @@ class ResenaController extends Controller
     
 public function create(Cena $cena, Reserva $reserva)
 {
-    return view('reseñas.create', compact('cena', 'reserva'));
+    return view('comensal.resenas.create', compact('cena', 'reserva'));
 }
 
 public function store(Request $request)
