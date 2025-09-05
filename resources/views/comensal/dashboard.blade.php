@@ -198,13 +198,14 @@
                                 </button>
                             @endif
 
-                            {{-- ✅ Nuevo: botón para dejar reseña si está completada y no hay reseña aún --}}
-                            @if($reserva->status === 'completed' && !$reserva->reseña)
-                                <a href="{{ route('reseñas.create', ['cena' => $reserva->cena->id, 'reserva' => $reserva->id]) }}"
-                                class="btn btn-sm btn-warning" title="Dejar reseña">
-                                    <i class="fas fa-star"></i>
-                                </a>
-                            @endif
+                         {{-- ✅ Nuevo: botón para dejar reseña si está completada y no hay reseña aún --}}
+                                @if($reserva->estado === 'completada' && !$reserva->reseña)
+                                    <a href="{{ route('reseñas.create', ['cena' => $reserva->cena->id, 'reserva' => $reserva->id]) }}"
+                                    class="btn btn-sm btn-warning" title="Dejar reseña">
+                                        <i class="fas fa-star"></i>
+                                    </a>
+                                @endif
+
                         </div>
                     </td>
 
