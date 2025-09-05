@@ -33,12 +33,11 @@ public function dashboard(): View
     // Traer cenas disponibles (activas, publicadas y próximas)
     $cenasDisponibles = Cena::with('chef')
         ->active()
-        ->published()
-        ->upcoming()
+        ->whereIn('status', ['published', 'in_progress']) // CAMBIO: Incluir en curso
+        ->where('datetime', '>', now()->subHours(2)) // Mostrar hasta 2 horas después de iniciadas
         ->orderBy('datetime')
         ->limit(6)
         ->get();
-
     // Cenas recomendadas (las más populares o recientes)
     $cenasRecomendadas = Cena::with('chef')
         ->active()
