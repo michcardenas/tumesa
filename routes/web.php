@@ -14,6 +14,7 @@ use App\Http\Controllers\ExperienciasController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\ComensalController;
+use App\Http\Controllers\ResenaController;
 
 
 /*
