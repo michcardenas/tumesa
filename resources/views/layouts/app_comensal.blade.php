@@ -471,8 +471,8 @@
                                         Dashboard
                                     </a>
                                 </li>
-                            <li class="menu-item">
-                                <a href="{{ route('experiencias') }}" class="text-decoration-none">
+                           <li class="menu-item">
+                                <a href="{{ route('experiencias') }}" class="menu-link-static">
                                     <i class="fas fa-search"></i>
                                     Cenas Disponibles
                                 </a>
