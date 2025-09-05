@@ -337,79 +337,82 @@
             $yaInicio = $cena->datetime <= now();
         @endphp
         
-        <div class="col-md-6 mb-4 cena-item" data-tipo="{{ strtolower($cena->tipo_cocina ?? '') }}">
-            <div class="available-dinner-card {{ $esEnCurso ? 'border-warning' : '' }}">
-                <div class="dinner-image position-relative">
-                    @if($cena->cover_image_url)
-                        <img src="{{ $cena->cover_image_url }}" alt="{{ $cena->title }}">
-                    @else
-                        <img src="https://via.placeholder.com/400x200?text={{ urlencode($cena->title) }}" alt="{{ $cena->title }}">
-                    @endif
-                    
-                    <div class="price-tag">{{ $cena->formatted_price }}</div>
-                    
-                    @if($esEnCurso)
-                        <div class="badge bg-success position-absolute top-0 start-0 m-2">
-                            <i class="fas fa-circle text-white me-1" style="animation: pulse 2s infinite;"></i>
-                            EN CURSO
-                        </div>
-                    @el                    @endif
-seif($cena->is_full)
-                        <div class="full-badge">
-                            <i class="fas fa-users"></i> Completa
-                        </div>
-                    @else
-                        <div class="available-spots">
-                            {{ $cena->available_spots }} lugares disponibles
-                        </div>
+     <div class="col-md-6 mb-4 cena-item" data-tipo="{{ strtolower($cena->tipo_cocina ?? '') }}">
+    <div class="available-dinner-card {{ $esEnCurso ? 'border-warning' : '' }}">
+        <div class="dinner-image position-relative">
+            @if($cena->cover_image_url)
+                <img src="{{ $cena->cover_image_url }}" alt="{{ $cena->title }}">
+            @else
+                <img src="https://via.placeholder.com/400x200?text={{ urlencode($cena->title) }}" alt="{{ $cena->title }}">
+            @endif
+            
+            <div class="price-tag">{{ $cena->formatted_price }}</div>
+            
+            @if($esEnCurso)
+                <div class="badge bg-success position-absolute top-0 start-0 m-2">
+                    <i class="fas fa-circle text-white me-1" style="animation: pulse 2s infinite;"></i>
+                    EN CURSO
                 </div>
-                
-                <div class="dinner-content">
-                    <div class="dinner-header">
-                        <h5>{{ $cena->title }}</h5>
-                        <div class="chef-rating">
-                            <small>Chef: {{ $cena->chef->name }}</small>
-                            <span class="rating">⭐ 4.8</span>
-                        </div>
-                    </div>
-                    
-                    <p class="dinner-description">{{ Str::limit($cena->menu, 80) }}</p>
-                    
-                    <div class="dinner-details">
-                        <span><i class="fas fa-calendar"></i> {{ $cena->datetime->format('D, j M') }}</span>
-                        <span><i class="fas fa-clock"></i> {{ $cena->datetime->format('g:i A') }}</span>
-                        @if($esEnCurso)
-                            <span class="text-success fw-bold">
-                                <i class="fas fa-play-circle"></i> En progreso
-                            </span>
-                        @else
-                            <span><i class="fas fa-users"></i> {{ $cena->guests_current }}/{{ $cena->guests_max }} lugares</span>
-                        @endif
-                        @if($cena->location)
-                            <span><i class="fas fa-map-marker-alt"></i> {{ Str::limit($cena->location, 20) }}</span>
-                        @endif
-                    </div>
-                    
-                    @if($esEnCurso)
-                        <div class="alert alert-warning p-2 mt-2 mb-0">
-                            <small><i class="fas fa-info-circle"></i> Esta cena ya comenzó. No se admiten nuevas reservas.</small>
-                        </div>
-                    @elseif($yaInicio)
-                        <button class="btn btn-secondary btn-sm w-100 mt-2" disabled>
-                            <i class="fas fa-clock"></i> Cena ya iniciada
-                        </button>
-                    @elseif($cena->is_full)
-                        <button class="btn btn-secondary btn-sm w-100 mt-2" disabled>
-                            <i class="fas fa-users"></i> Cena Completa
-                        </button>
-                    @else
-                        <button class="btn btn-primary btn-sm w-100 mt-2" onclick="reservarCena({{ $cena->id }})">
-                            <i class="fas fa-calendar-plus"></i> Reservar Ahora
-                        </button>
-                    @endif
+            @endif
+
+            @if($cena->is_full)
+                <div class="full-badge">
+                    <i class="fas fa-users"></i> Completa
+                </div>
+            @else
+                <div class="available-spots">
+                    {{ $cena->available_spots }} lugares disponibles
+                </div>
+            @endif
+        </div>
+        
+        <div class="dinner-content">
+            <div class="dinner-header">
+                <h5>{{ $cena->title }}</h5>
+                <div class="chef-rating">
+                    <small>Chef: {{ $cena->chef->name }}</small>
+                    <span class="rating">⭐ 4.8</span>
                 </div>
             </div>
+            
+            <p class="dinner-description">{{ Str::limit($cena->menu, 80) }}</p>
+            
+            <div class="dinner-details">
+                <span><i class="fas fa-calendar"></i> {{ $cena->datetime->format('D, j M') }}</span>
+                <span><i class="fas fa-clock"></i> {{ $cena->datetime->format('g:i A') }}</span>
+                @if($esEnCurso)
+                    <span class="text-success fw-bold">
+                        <i class="fas fa-play-circle"></i> En progreso
+                    </span>
+                @else
+                    <span><i class="fas fa-users"></i> {{ $cena->guests_current }}/{{ $cena->guests_max }} lugares</span>
+                @endif
+                @if($cena->location)
+                    <span><i class="fas fa-map-marker-alt"></i> {{ Str::limit($cena->location, 20) }}</span>
+                @endif
+            </div>
+            
+            @if($esEnCurso)
+                <div class="alert alert-warning p-2 mt-2 mb-0">
+                    <small><i class="fas fa-info-circle"></i> Esta cena ya comenzó. No se admiten nuevas reservas.</small>
+                </div>
+            @elseif($yaInicio)
+                <button class="btn btn-secondary btn-sm w-100 mt-2" disabled>
+                    <i class="fas fa-clock"></i> Cena ya iniciada
+                </button>
+            @elseif($cena->is_full)
+                <button class="btn btn-secondary btn-sm w-100 mt-2" disabled>
+                    <i class="fas fa-users"></i> Cena Completa
+                </button>
+            @else
+                <button class="btn btn-primary btn-sm w-100 mt-2" onclick="reservarCena({{ $cena->id }})">
+                    <i class="fas fa-calendar-plus"></i> Reservar Ahora
+                </button>
+            @endif
         </div>
+    </div>
+</div>
+
         @empty
         <div class="col-12">
             <div class="text-center py-5">
