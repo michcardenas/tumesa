@@ -181,9 +181,11 @@
                     </td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-sm btn-outline-primary" title="Ver detalles" onclick="verDetallesReserva({{ $reserva->id }})">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                           <a href="{{ route('reservas.detalle', $reserva->id) }}" 
+                                class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+
                             @if($reserva->puede_cancelar)
                                 <button class="btn btn-sm btn-outline-danger" title="Cancelar reserva" onclick="cancelarReserva({{ $reserva->id }})">
                                     <i class="fas fa-times"></i>
