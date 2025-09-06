@@ -829,7 +829,19 @@ let geocoder;
 let autocompleteService;
 let placesService;
 
+// Variables globales para imágenes
+let coverImage = null;
+let galleryImages = [];
+const maxGalleryImages = 5;
+const maxFileSize = 5 * 1024 * 1024; // 5MB
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Configurar validación de fecha y hora
+    setupDateTimeValidation();
+    
+    // Configurar subida de imágenes
+    setupImageUploads();
+    
     // Función para mostrar secciones (MANTENER SIN CAMBIOS)
     window.showSection = function(sectionName) {
         // Ocultar todas las secciones
@@ -906,6 +918,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('latitude').value = '';
             document.getElementById('longitude').value = '';
             
+            // Limpiar validación de fecha
+            hideDateTimeError();
+            
             // Resetear mapa si existe
             if (map && marker) {
                 const defaultLocation = { lat: 4.711, lng: -74.0721 };
@@ -918,10 +933,97 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
+            // Limpiar imágenes
+            resetImageUploads();
+            
             console.log('🧹 Modal limpiado correctamente');
         });
     }
 });
+
+// ⏰ CONFIGURAR VALIDACIÓN DE FECHA Y HORA
+function setupDateTimeValidation() {
+    const datetimeInput = document.querySelector('input[name="datetime"]');
+    
+    if (datetimeInput) {
+        // Establecer fecha y hora mínima (1 hora desde ahora)
+        function setMinDateTime() {
+            const now = new Date();
+            now.setHours(now.getHours() + 1); // Agregar 1 hora
+            
+            // Formatear para datetime-local (YYYY-MM-DDTHH:MM)
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            datetimeInput.min = minDateTime;
+        }
+        
+        // Establecer mínimo al cargar
+        setMinDateTime();
+        
+        // Actualizar cada minuto para mantener la validación actualizada
+        setInterval(setMinDateTime, 60000);
+        
+        // Validación en tiempo real cuando el usuario cambia la fecha
+        datetimeInput.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const minDate = new Date();
+            minDate.setHours(minDate.getHours() + 1);
+            
+            if (selectedDate < minDate) {
+                // Mostrar error
+                this.setCustomValidity('La cena debe programarse al menos 1 hora en el futuro');
+                this.reportValidity();
+                
+                // Mostrar mensaje más amigable
+                showDateTimeError();
+            } else {
+                // Limpiar error
+                this.setCustomValidity('');
+                hideDateTimeError();
+            }
+        });
+        
+        // Validación cuando pierde el foco
+        datetimeInput.addEventListener('blur', function() {
+            this.dispatchEvent(new Event('change'));
+        });
+    }
+}
+
+// Función para mostrar error amigable
+function showDateTimeError() {
+    // Buscar si ya existe el mensaje de error
+    let errorDiv = document.getElementById('datetime-error-message');
+    
+    if (!errorDiv) {
+        // Crear el mensaje de error
+        errorDiv = document.createElement('div');
+        errorDiv.id = 'datetime-error-message';
+        errorDiv.className = 'alert alert-warning mt-2';
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Fecha inválida:</strong> La cena debe programarse al menos 1 hora en el futuro.
+            <br><small class="text-muted">Esto permite tiempo suficiente para que los comensales se enteren y reserven.</small>
+        `;
+        
+        // Insertar después del input
+        const datetimeInput = document.querySelector('input[name="datetime"]');
+        datetimeInput.parentNode.insertBefore(errorDiv, datetimeInput.nextSibling);
+    }
+}
+
+// Función para ocultar error
+function hideDateTimeError() {
+    const errorDiv = document.getElementById('datetime-error-message');
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+}
 
 // 🌍 CARGAR GOOGLE MAPS API (SOLO MAPS, SIN PLACES)
 function loadGoogleMaps() {
@@ -955,7 +1057,7 @@ function loadGoogleMaps() {
 
     // 🔑 CARGAR SOLO MAPS API (SIN PLACES) - Esto evita el error
     const script = document.createElement('script');
-script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCuh8GSFyFxvDaiEeWcW7JXs2KIcf89dHY&libraries=places&loading=async&callback=initMapCallback';
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCuh8GSFyFxvDaiEeWcW7JXs2KIcf89dHY&libraries=places&loading=async&callback=initMapCallback';
     script.async = true;
     script.defer = true;
     script.onerror = function() {
@@ -1041,8 +1143,6 @@ function initMap() {
 }
 
 // 🔍 CONFIGURAR BUSCADOR SIMPLE CON GEOCODING
-// 🔍 REEMPLAZA TODA TU FUNCIÓN setupSimpleSearch() POR ESTA:
-
 function setupSimpleSearch() {
     const input = document.getElementById('locationInput');
     const inputGroup = input.parentElement;
@@ -1090,6 +1190,7 @@ function setupSimpleSearch() {
     
     console.log('🔍 Buscador avanzado configurado');
 }
+
 function getPlaceSuggestions(query) {
     if (!autocompleteService) return;
     
@@ -1268,6 +1369,7 @@ function hideSuggestions() {
         suggestions.remove();
     }
 }
+
 // 🔍 BUSCAR UBICACIÓN CON GEOCODING
 function searchLocation() {
     const query = document.getElementById('locationInput').value.trim();
@@ -1464,10 +1566,29 @@ function getUserLocation() {
     }
 }
 
-// 💾 CREAR CENA (MANTENER SIN CAMBIOS)
+// 💾 CREAR CENA CON VALIDACIÓN DE FECHA
 function createDinner() {
     const form = document.getElementById('dinnerForm');
     const formData = new FormData(form);
+    
+    // ⏰ VALIDACIÓN ADICIONAL DE FECHA
+    const datetime = formData.get('datetime');
+    if (datetime) {
+        const selectedDate = new Date(datetime);
+        const minDate = new Date();
+        minDate.setHours(minDate.getHours() + 1);
+        
+        if (selectedDate < minDate) {
+            // Mostrar error y detener envío
+            showDateTimeError();
+            document.querySelector('input[name="datetime"]').focus();
+            alert('La cena debe programarse al menos 1 hora en el futuro.');
+            return false;
+        }
+    }
+    
+    // Si llegamos aquí, la validación de fecha pasó
+    hideDateTimeError();
     
     // Validaciones básicas
     if (!formData.get('title')) {
@@ -1533,11 +1654,16 @@ function createDinner() {
             
         } else {
             // Error de validación
+            if (data.errors && data.errors.datetime) {
+                showDateTimeError();
+                document.querySelector('input[name="datetime"]').focus();
+            }
             alert('Error: ' + (data.message || 'No se pudo crear la cena'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        alert('Error de conexión. Inténtalo de nuevo.');
     })
     .finally(() => {
         // Restaurar botón
@@ -1550,16 +1676,7 @@ function createDinner() {
 window.initMap = initMap;
 window.initMapCallback = window.initMapCallback;
 
-
-let coverImage = null;
-let galleryImages = [];
-const maxGalleryImages = 5;
-const maxFileSize = 5 * 1024 * 1024; // 5MB
-
-document.addEventListener('DOMContentLoaded', function() {
-    setupImageUploads();
-});
-
+// 🖼️ FUNCIONES DE MANEJO DE IMÁGENES
 function setupImageUploads() {
     // Setup cover image
     setupCoverImageUpload();
@@ -1735,7 +1852,7 @@ function updateGalleryDisplay() {
     }
 }
 
-// 🛡️ FUNCIONES AUXILIARES
+// 🛡️ FUNCIONES AUXILIARES PARA IMÁGENES
 function handleDragOver(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -1782,6 +1899,49 @@ function showError(message) {
     console.warn('❌ Error de imagen:', message);
 }
 
+// 🧹 FUNCIONES DE LIMPIEZA
+function resetImageUploads() {
+    // Limpiar imagen de portada
+    coverImage = null;
+    const preview = document.getElementById('coverImagePreview');
+    const dropZone = document.getElementById('coverImageDropZone');
+    const input = document.getElementById('coverImageInput');
+    
+    if (preview && dropZone && input) {
+        preview.classList.add('d-none');
+        dropZone.classList.remove('d-none');
+        input.value = '';
+    }
+    
+    // Limpiar galería
+    galleryImages = [];
+    const galleryContainer = document.getElementById('galleryPreview');
+    if (galleryContainer) {
+        galleryContainer.innerHTML = '';
+    }
+    
+    // Limpiar contador
+    const counter = document.querySelector('.image-counter');
+    if (counter) {
+        counter.remove();
+    }
+    
+    console.log('🧹 Imágenes limpiadas');
+}
+
+function resetMapLocation() {
+    if (map && marker) {
+        const defaultLocation = { lat: -34.6037, lng: -58.3816 };
+        marker.setPosition(defaultLocation);
+        map.setCenter(defaultLocation);
+        map.setZoom(13);
+        
+        if (infoWindow) {
+            infoWindow.close();
+        }
+    }
+}
+
 // 📤 FUNCIÓN PARA OBTENER DATOS DE IMÁGENES (para el formulario)
 function getImageData() {
     return {
@@ -1791,7 +1951,11 @@ function getImageData() {
     };
 }
 
-// Hacer función global para uso en createDinner()
+// Hacer funciones globales
 window.getImageData = getImageData;
+window.removeCoverImage = removeCoverImage;
+window.changeCoverImage = changeCoverImage;
+window.removeGalleryImage = removeGalleryImage;
+window.createDinner = createDinner;
 </script>
 @endsection
