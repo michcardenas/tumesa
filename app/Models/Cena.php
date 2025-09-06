@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cena extends Model
 {
@@ -53,6 +54,32 @@ class Cena extends Model
         return $this->belongsTo(User::class);
     }
 
+    // NUEVAS RELACIONES NECESARIAS
+    public function reservas(): HasMany
+    {
+        return $this->hasMany(Reserva::class);
+    }
+
+    public function reservasPagadas(): HasMany
+    {
+        return $this->hasMany(Reserva::class)->where('estado_pago', 'pagado');
+    }
+
+    public function reservasConfirmadas(): HasMany
+    {
+        return $this->hasMany(Reserva::class)->whereIn('estado', ['confirmada', 'pagada']);
+    }
+
+    public function pagos(): HasMany
+    {
+        return $this->hasMany(Pago::class);
+    }
+
+    public function pagosAprobados(): HasMany
+    {
+        return $this->hasMany(Pago::class)->where('status', 'approved');
+    }
+
     // Scopes
     public function scopeActive($query)
     {
@@ -67,6 +94,11 @@ class Cena extends Model
     public function scopeUpcoming($query)
     {
         return $query->where('datetime', '>', now());
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('datetime', '<', now());
     }
 
     // Accessors
@@ -107,8 +139,20 @@ class Cena extends Model
         }
         return collect();
     }
-      public function getTotalIngresosAttribute()
+
+    // NUEVOS ACCESSORS PARA INGRESOS
+    public function getTotalIngresosAttribute()
     {
         return $this->reservasPagadas->sum('precio_total');
+    }
+
+    public function getTotalReservasAttribute()
+    {
+        return $this->reservas->count();
+    }
+
+    public function getTotalReservasPagadasAttribute()
+    {
+        return $this->reservasPagadas->count();
     }
 }
