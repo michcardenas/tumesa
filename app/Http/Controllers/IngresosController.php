@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cena;
 use Illuminate\Support\Facades\Log;
+use App\Models\Reserva;
+
 
 class IngresosController extends Controller
 {
