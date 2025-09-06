@@ -6,7 +6,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'TUMESA') }}</title>
-
+   <!-- icono de carga -->
+<link rel="icon" type="image/x-icon" href="{{ asset('img/logo-tumesa.png') }}">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

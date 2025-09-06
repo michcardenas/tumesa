@@ -107,4 +107,8 @@ class Cena extends Model
         }
         return collect();
     }
+      public function getTotalIngresosAttribute()
+    {
+        return $this->reservasPagadas->sum('precio_total');
+    }
 }
