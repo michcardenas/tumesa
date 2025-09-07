@@ -102,13 +102,7 @@
                                 <span>{{ $cenaData['guests_current'] }}/{{ $cenaData['guests_max'] }} personas</span>
                             </div>
                         </div>
-                        <div class="detail-item">
-                            <i class="fas fa-map-marker-alt text-primary"></i>
-                            <div>
-                                <strong>Ubicación</strong>
-                                <span>{{ $cenaData['location'] }}</span>
-                            </div>
-                        </div>
+                        
                         <div class="detail-item">
                             <i class="fas fa-dollar-sign text-primary"></i>
                             <div>
