@@ -1143,31 +1143,32 @@ function initMap() {
     @if($cenaData['latitude'] && $cenaData['longitude'])
         const exactLat = {{ $cenaData['latitude'] }};
         const exactLng = {{ $cenaData['longitude'] }};
-        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
-        const now = new Date();
+        const userHasReservation = {{ $cenaData['user_has_reservation'] ? 'true' : 'false' }};
+        const canSeeExactLocation = {{ $cenaData['can_see_exact_location'] ? 'true' : 'false' }};
+        const hoursUntilCena = {{ $cenaData['hours_until_cena'] }};
         
-        // Calcular si faltan menos de 24 horas para la cena
-        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
-        const showExactLocation = hoursUntilCena <= 24;
+        let displayLat, displayLng, zoom, markerTitle, markerColor, showCircle = false;
         
-        let displayLat, displayLng, zoom, markerTitle;
-        
-        if (showExactLocation) {
-            // Mostrar ubicación exacta
+        if (canSeeExactLocation) {
+            // Usuario con reserva y menos de 24h - mostrar ubicación exacta
             displayLat = exactLat;
             displayLng = exactLng;
             zoom = 16;
             markerTitle = '{{ $cenaData["title"] }} - Ubicación exacta';
+            markerColor = '#059669'; // Verde para confirmado
+            showCircle = false;
         } else {
-            // Mostrar ubicación aproximada (agregar offset aleatorio de ~200-500 metros)
-            const offsetRange = 0.003; // Aproximadamente 300 metros
+            // Mostrar ubicación aproximada (sin reserva o más de 24h)
+            const offsetRange = 0.004; // Aproximadamente 400 metros
             const randomOffsetLat = (Math.random() - 0.5) * offsetRange;
             const randomOffsetLng = (Math.random() - 0.5) * offsetRange;
             
             displayLat = exactLat + randomOffsetLat;
             displayLng = exactLng + randomOffsetLng;
-            zoom = 14;
+            zoom = 13;
             markerTitle = '{{ $cenaData["title"] }} - Área aproximada';
+            markerColor = userHasReservation ? '#f59e0b' : '#6b7280'; // Amarillo para reservado, gris para público
+            showCircle = true;
         }
         
         // Configuración del mapa
@@ -1183,105 +1184,149 @@ function initMap() {
             ]
         });
         
-        if (showExactLocation) {
-            // Marcador exacto
-            const exactMarker = new google.maps.Marker({
-                position: { lat: displayLat, lng: displayLng },
-                map: map,
-                title: markerTitle,
-                icon: {
-                    path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-                    scale: 8,
-                    fillColor: '#059669',
-                    fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2
-                }
-            });
-            
-            // Info Window para ubicación exacta
-            const infoWindow = new google.maps.InfoWindow({
-                content: `
-                    <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 250px;">
-                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                            <span style="background: #059669; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 8px;">
-                                UBICACIÓN EXACTA
-                            </span>
-                        </div>
-                        <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
-                        <div style="margin: 8px 0; padding: 8px; background: #f0fdf4; border-radius: 6px;">
-                            <small style="color: #059669; font-weight: 500;">
-                                <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
-                            </small>
-                        </div>
-                        <small style="color: #2563eb; font-size: 13px;">
-                            <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
-                        </small>
-                    </div>
-                `
-            });
-            
-            exactMarker.addListener('click', () => {
-                infoWindow.open(map, exactMarker);
-            });
-            
-        } else {
-            // Círculo para área aproximada
+        // Crear marcador según el estado
+        const marker = new google.maps.Marker({
+            position: { lat: displayLat, lng: displayLng },
+            map: map,
+            title: markerTitle,
+            icon: canSeeExactLocation ? {
+                // Marcador preciso para ubicación exacta
+                path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                scale: 8,
+                fillColor: markerColor,
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            } : {
+                // Marcador circular para ubicación aproximada
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 12,
+                fillColor: markerColor,
+                fillOpacity: 0.8,
+                strokeColor: '#ffffff',
+                strokeWeight: 3
+            }
+        });
+        
+        // Círculo de área aproximada si es necesario
+        if (showCircle) {
             const approximateCircle = new google.maps.Circle({
-                strokeColor: '#f59e0b',
-                strokeOpacity: 0.8,
+                strokeColor: markerColor,
+                strokeOpacity: 0.6,
                 strokeWeight: 2,
-                fillColor: '#f59e0b',
-                fillOpacity: 0.15,
+                fillColor: markerColor,
+                fillOpacity: 0.1,
                 map: map,
                 center: { lat: displayLat, lng: displayLng },
-                radius: 500 // 500 metros de radio
-            });
-            
-            // Marcador central para el área aproximada
-            const approximateMarker = new google.maps.Marker({
-                position: { lat: displayLat, lng: displayLng },
-                map: map,
-                title: markerTitle,
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 10,
-                    fillColor: '#f59e0b',
-                    fillOpacity: 0.8,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 3
-                }
-            });
-            
-            // Info Window para ubicación aproximada
-            const infoWindow = new google.maps.InfoWindow({
-                content: `
-                    <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 280px;">
-                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                            <span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 8px;">
-                                ÁREA APROXIMADA
-                            </span>
-                        </div>
-                        <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
-                        <div style="margin: 8px 0; padding: 8px; background: #fffbeb; border-radius: 6px; border-left: 3px solid #f59e0b;">
-                            <small style="color: #92400e; font-weight: 500;">
-                                <i class="fas fa-info-circle"></i> Ubicación exacta disponible 24h antes del evento
-                            </small>
-                        </div>
-                        <small style="color: #6b7280; font-size: 13px;">
-                            <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
-                        </small><br>
-                        <small style="color: #2563eb; font-size: 13px;">
-                            <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
-                        </small>
-                    </div>
-                `
-            });
-            
-            approximateMarker.addListener('click', () => {
-                infoWindow.open(map, approximateMarker);
+                radius: 600 // 600 metros de radio
             });
         }
+        
+        // Crear InfoWindow según el estado
+        let infoContent = '';
+        
+        if (canSeeExactLocation) {
+            // Usuario con reserva - ubicación exacta disponible
+            infoContent = `
+                <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 280px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <span style="background: #059669; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 8px;">
+                            UBICACIÓN EXACTA
+                        </span>
+                        @if($cenaData['reservation_code'])
+                        <span style="background: #2563eb; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;">
+                            {{ $cenaData['reservation_code'] }}
+                        </span>
+                        @endif
+                    </div>
+                    <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
+                    <div style="margin: 8px 0; padding: 8px; background: #f0fdf4; border-radius: 6px;">
+                        <small style="color: #059669; font-weight: 500;">
+                            <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
+                        </small>
+                    </div>
+                    <small style="color: #2563eb; font-size: 13px;">
+                        <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
+                    </small>
+                    <div style="margin-top: 8px; padding: 6px; background: #eff6ff; border-radius: 4px;">
+                        <small style="color: #1d4ed8; font-weight: 500;">
+                            <i class="fas fa-check-circle"></i> Tienes una reserva confirmada
+                        </small>
+                    </div>
+                </div>
+            `;
+        } else if (userHasReservation) {
+            // Usuario con reserva pero más de 24h antes
+            infoContent = `
+                <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 280px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 8px;">
+                            ÁREA APROXIMADA
+                        </span>
+                        @if($cenaData['reservation_code'])
+                        <span style="background: #2563eb; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;">
+                            {{ $cenaData['reservation_code'] }}
+                        </span>
+                        @endif
+                    </div>
+                    <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
+                    <div style="margin: 8px 0; padding: 8px; background: #fffbeb; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                        <small style="color: #92400e; font-weight: 500;">
+                            <i class="fas fa-clock"></i> Ubicación exacta disponible en ${Math.ceil(hoursUntilCena - 24)}h
+                        </small>
+                    </div>
+                    <small style="color: #6b7280; font-size: 13px;">
+                        <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
+                    </small><br>
+                    <small style="color: #2563eb; font-size: 13px;">
+                        <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
+                    </small>
+                    <div style="margin-top: 8px; padding: 6px; background: #eff6ff; border-radius: 4px;">
+                        <small style="color: #1d4ed8; font-weight: 500;">
+                            <i class="fas fa-ticket-alt"></i> Tienes una reserva confirmada
+                        </small>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Usuario sin reserva - solo área general
+            infoContent = `
+                <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 280px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <span style="background: #6b7280; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                            ÁREA GENERAL
+                        </span>
+                    </div>
+                    <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
+                    <div style="margin: 8px 0; padding: 8px; background: #f9fafb; border-radius: 6px; border-left: 3px solid #6b7280;">
+                        <small style="color: #374151; font-weight: 500;">
+                            <i class="fas fa-info-circle"></i> Ubicación exacta solo para comensales confirmados
+                        </small>
+                    </div>
+                    <small style="color: #6b7280; font-size: 13px;">
+                        <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
+                    </small><br>
+                    <small style="color: #2563eb; font-size: 13px;">
+                        <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
+                    </small>
+                    @if($cenaData['is_available'])
+                    <div style="margin-top: 8px; padding: 6px; background: #f0fdf4; border-radius: 4px;">
+                        <small style="color: #059669; font-weight: 500;">
+                            <i class="fas fa-calendar-plus"></i> Haz tu reserva para obtener la ubicación exacta
+                        </small>
+                    </div>
+                    @endif
+                </div>
+            `;
+        }
+        
+        const infoWindow = new google.maps.InfoWindow({
+            content: infoContent
+        });
+        
+        marker.addListener('click', () => {
+            infoWindow.open(map, marker);
+        });
     @endif
 }
 
@@ -1289,38 +1334,65 @@ function openDirections() {
     @if($cenaData['latitude'] && $cenaData['longitude'])
         const exactLat = {{ $cenaData['latitude'] }};
         const exactLng = {{ $cenaData['longitude'] }};
-        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
-        const now = new Date();
-        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        const userHasReservation = {{ $cenaData['user_has_reservation'] ? 'true' : 'false' }};
+        const canSeeExactLocation = {{ $cenaData['can_see_exact_location'] ? 'true' : 'false' }};
+        const hoursUntilCena = {{ $cenaData['hours_until_cena'] }};
         
-        if (hoursUntilCena <= 24) {
-            // Direcciones exactas disponibles
+        if (canSeeExactLocation) {
+            // Direcciones exactas disponibles para usuarios con reserva
             const url = `https://www.google.com/maps/dir/?api=1&destination=${exactLat},${exactLng}`;
             window.open(url, '_blank');
         } else {
-            // Mostrar mensaje informativo
+            // Mostrar mensaje según el estado del usuario
+            let title, message, icon;
+            
+            if (userHasReservation) {
+                // Usuario con reserva pero más de 24h antes
+                title = 'Ubicación disponible pronto';
+                message = `
+                    <div style="text-align: left;">
+                        <p>Como tienes una reserva confirmada, la ubicación exacta estará disponible <strong>${Math.ceil(hoursUntilCena - 24)} horas antes</strong> del evento.</p>
+                        @if($cenaData['reservation_code'])
+                        <p><small><strong>Tu código de reserva:</strong> {{ $cenaData['reservation_code'] }}</small></p>
+                        @endif
+                        <hr>
+                        <p><strong>Mientras tanto:</strong></p>
+                        <ul style="text-align: left; padding-left: 20px;">
+                            <li>Tu reserva está confirmada</li>
+                            <li>Recibirás la ubicación exacta automáticamente</li>
+                            <li>Puedes contactar al chef si tienes preguntas</li>
+                        </ul>
+                    </div>
+                `;
+                icon = 'info';
+            } else {
+                // Usuario sin reserva
+                title = 'Ubicación solo para comensales';
+                message = `
+                    <div style="text-align: left;">
+                        <p>La ubicación exacta solo está disponible para personas con <strong>reserva confirmada</strong>.</p>
+                        <hr>
+                        <p><strong>Para obtener la ubicación exacta:</strong></p>
+                        <ul style="text-align: left; padding-left: 20px;">
+                            <li>Haz tu reserva para esta cena</li>
+                            <li>Recibirás la ubicación 24h antes del evento</li>
+                            <li>Podrás obtener direcciones precisas</li>
+                        </ul>
+                    </div>
+                `;
+                icon = 'warning';
+            }
+            
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    title: 'Ubicación no disponible aún',
-                    html: `
-                        <div style="text-align: left;">
-                            <p>La ubicación exacta estará disponible <strong>24 horas antes</strong> del evento.</p>
-                            <p><small class="text-muted">Por seguridad y privacidad, revelamos los detalles exactos de ubicación solo cuando se acerca la fecha de la cena.</small></p>
-                            <hr>
-                            <p><strong>Mientras tanto:</strong></p>
-                            <ul style="text-align: left; padding-left: 20px;">
-                                <li>Puedes confirmar tu asistencia</li>
-                                <li>Prepararte para la experiencia culinaria</li>
-                                <li>Contactar al chef si tienes preguntas</li>
-                            </ul>
-                        </div>
-                    `,
-                    icon: 'info',
+                    title: title,
+                    html: message,
+                    icon: icon,
                     confirmButtonText: 'Entendido',
                     confirmButtonColor: '#2563eb'
                 });
             } else {
-                alert('La ubicación exacta estará disponible 24 horas antes del evento.');
+                alert(title + '\n\n' + message.replace(/<[^>]*>/g, '').trim());
             }
         }
     @endif
@@ -1334,18 +1406,22 @@ function showContactModal() {
 document.addEventListener('DOMContentLoaded', function() {
     // Actualizar el botón de direcciones según disponibilidad
     @if($cenaData['latitude'] && $cenaData['longitude'])
-        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
-        const now = new Date();
-        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        const userHasReservation = {{ $cenaData['user_has_reservation'] ? 'true' : 'false' }};
+        const canSeeExactLocation = {{ $cenaData['can_see_exact_location'] ? 'true' : 'false' }};
+        const hoursUntilCena = {{ $cenaData['hours_until_cena'] }};
         
         const directionsBtn = document.querySelector('button[onclick="openDirections()"]');
         if (directionsBtn) {
-            if (hoursUntilCena <= 24) {
+            if (canSeeExactLocation) {
                 directionsBtn.innerHTML = '<i class="fas fa-directions me-1"></i>Cómo llegar';
                 directionsBtn.className = 'btn btn-sm btn-success mt-3';
-            } else {
-                directionsBtn.innerHTML = '<i class="fas fa-clock me-1"></i>Ubicación en ' + Math.ceil(hoursUntilCena) + 'h';
+            } else if (userHasReservation) {
+                const hoursLeft = Math.ceil(hoursUntilCena - 24);
+                directionsBtn.innerHTML = `<i class="fas fa-clock me-1"></i>Disponible en ${hoursLeft}h`;
                 directionsBtn.className = 'btn btn-sm btn-outline-warning mt-3';
+            } else {
+                directionsBtn.innerHTML = '<i class="fas fa-lock me-1"></i>Solo para comensales';
+                directionsBtn.className = 'btn btn-sm btn-outline-secondary mt-3';
             }
         }
     @endif

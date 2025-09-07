@@ -245,8 +245,26 @@ public function showCena(Cena $cena)
         abort(404, 'Cena no disponible');
     }
 
-    // Cargar la relación del usuario/chef (por si acaso no está cargada)
+    // Cargar la relación del usuario/chef
     $cena->load('user');
+
+    // Verificar si el usuario actual tiene una reserva confirmada para esta cena
+    $userHasReservation = false;
+    $userReservation = null;
+    
+    if (Auth::check()) {
+        $userReservation = Reserva::where('cena_id', $cena->id)
+            ->where('user_id', Auth::id())
+            ->whereIn('estado', ['confirmada', 'pagada']) // Solo reservas confirmadas/pagadas
+            ->where('estado_pago', '!=', 'cancelada')
+            ->first();
+            
+        $userHasReservation = $userReservation !== null;
+    }
+
+    // Calcular si debe mostrar ubicación exacta
+    $hoursUntilCena = now()->diffInHours($cena->datetime, false);
+    $canSeeExactLocation = $userHasReservation && $hoursUntilCena <= 24;
 
     // Preparar datos de la cena para la vista pública
     $cenaData = [
@@ -280,11 +298,18 @@ public function showCena(Cena $cena)
         'days_until' => now()->diffInDays($cena->datetime, false),
         'is_past' => $cena->datetime->isPast(),
         'can_book' => !$cena->datetime->isPast() && ($cena->guests_max - $cena->guests_current) > 0,
+        
+        // NUEVOS CAMPOS para control de ubicación
+        'user_has_reservation' => $userHasReservation,
+        'can_see_exact_location' => $canSeeExactLocation,
+        'hours_until_cena' => $hoursUntilCena,
+        'reservation_code' => $userReservation?->codigo_reserva ?? null,
     ];
 
     return view('cenas.show', [
         'cena' => $cena,
         'cenaData' => $cenaData,
+        'userReservation' => $userReservation,
         'meta_title' => $cena->title . ' - TuMesa',
         'meta_description' => 'Reserva tu lugar en "' . $cena->title . '" con "' . ($cena->user->name ?? 'nuestro chef'). '" ' . substr($cena->menu, 0, 100) . '...'
     ]);
