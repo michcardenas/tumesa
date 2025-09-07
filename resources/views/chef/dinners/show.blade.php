@@ -299,13 +299,14 @@
 </div>
 
 <!-- Menú -->
+
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
                 <h5><i class="fas fa-utensils text-warning"></i> Descripción del Menú</h5>
                 <div class="menu-description">
-                    {!! nl2br(e($cenaData['menu'])) !!}
+                    {!! $cenaData['menu'] !!}
                 </div>
             </div>
         </div>
