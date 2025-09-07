@@ -18,13 +18,7 @@
                 <div class="admin-sidebar">
                     <ul class="admin-menu">
                         <li class="menu-item">
-                            <a href="{{ route('admin.dashboard') }}" class="menu-link active">
-                                <i class="fas fa-tachometer-alt"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="{{ route('admin.pages.index') }}" class="menu-link">
+                            <a href="{{ route('admin.dashboard') }}" class="menu-link">
                                 <i class="fas fa-file-alt"></i>
                                 Gestión de Páginas
                             </a>
@@ -62,9 +56,7 @@
                     <div class="content-section">
                         <div class="section-header">
                             <h2>Gestión de Páginas</h2>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPageModal">
-                                <i class="fas fa-plus"></i> Nueva Página
-                            </button>
+                           
                         </div>
 
                         <!-- Tabla de Páginas -->
@@ -130,49 +122,7 @@
     </div>
 </div>
 
-<!-- Modal para Nueva Página -->
-<div class="modal fade" id="addPageModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-plus"></i> Nueva Página
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="pageForm">
-                    <div class="mb-3">
-                        <label class="form-label">Título de la Página</label>
-                        <input type="text" class="form-control" name="title" placeholder="Ej: Acerca de Nosotros">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Slug (URL)</label>
-                        <input type="text" class="form-control" name="slug" placeholder="ej: acerca-de">
-                        <div class="form-text">Se generará automáticamente desde el título</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Estado</label>
-                        <select class="form-select" name="status">
-                            <option value="draft">Borrador</option>
-                            <option value="published">Publicada</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Contenido</label>
-                        <textarea class="form-control" name="content" rows="8" placeholder="Escribe el contenido de la página aquí..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Guardar Página
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <style>
 /* Admin Container */
