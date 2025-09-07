@@ -45,7 +45,7 @@ public function index()
     ->orderBy('created_at', 'desc')
     ->get();
     
-    return view('chef.resenas.index', compact('resenas'));
+    return view('chef.resenas', compact('resenas'));
 }
 
 }
