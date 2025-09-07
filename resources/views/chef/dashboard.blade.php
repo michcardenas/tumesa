@@ -970,6 +970,8 @@ input[name="datetime"]:invalid {
 </style>
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 // ==================== VARIABLES GLOBALES ====================
 let map, marker, infoWindow, geocoder, autocompleteService, placesService;
@@ -1747,26 +1749,52 @@ function createDinner() {
         if (selectedDate < minDate) {
             showDateTimeError();
             document.querySelector('input[name="datetime"]').focus();
-            alert('La cena debe programarse al menos 1 hora en el futuro.');
+            
+            // SweetAlert2 para error de fecha
+            Swal.fire({
+                title: 'Fecha inválida',
+                text: 'La cena debe programarse al menos 1 hora en el futuro.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#f59e0b'
+            });
             return false;
         }
     }
     
     hideDateTimeError();
     
-    // Validaciones básicas
+    // Validaciones básicas con SweetAlert2
     if (!formData.get('title')) {
-        alert('Por favor ingresa el título de la cena');
+        Swal.fire({
+            title: 'Campo requerido',
+            text: 'Por favor ingresa el título de la cena',
+            icon: 'error',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#dc3545'
+        });
         return;
     }
     
     if (!formData.get('datetime')) {
-        alert('Por favor selecciona la fecha y hora');
+        Swal.fire({
+            title: 'Campo requerido',
+            text: 'Por favor selecciona la fecha y hora',
+            icon: 'error',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#dc3545'
+        });
         return;
     }
     
     if (!formData.get('location')) {
-        alert('Por favor selecciona una ubicación en el mapa');
+        Swal.fire({
+            title: 'Campo requerido',
+            text: 'Por favor selecciona una ubicación en el mapa',
+            icon: 'error',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#dc3545'
+        });
         return;
     }
 
@@ -1797,30 +1825,68 @@ function createDinner() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('¡Cena creada exitosamente!');
+            // SweetAlert2 para éxito
+            Swal.fire({
+                title: '¡Cena creada exitosamente!',
+                text: 'Tu cena ha sido publicada y está disponible para reservas',
+                icon: 'success',
+                confirmButtonText: 'Continuar',
+                confirmButtonColor: '#2563eb',
+                background: '#fff',
+                color: '#333',
+                showClass: {
+                    popup: 'animate__animated animate__zoomIn'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__zoomOut'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Cerrar modal y limpiar
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('newDinnerModal'));
+                    modal.hide();
+                    form.reset();
+                    document.getElementById('selectedAddress').innerHTML = '';
+                    
+                    resetImageUploads();
+                    resetMapLocation();
+                    
+                    // Recargar página
+                    window.location.reload();
+                }
+            });
             
-            const modal = bootstrap.Modal.getInstance(document.getElementById('newDinnerModal'));
-            modal.hide();
-            form.reset();
-            document.getElementById('selectedAddress').innerHTML = '';
-            
-            resetImageUploads();
-            resetMapLocation();
-            
-            window.location.reload();
         } else {
+            // Manejar errores de validación
             if (data.errors && data.errors.datetime) {
                 showDateTimeError();
                 document.querySelector('input[name="datetime"]').focus();
             }
-            alert('Error: ' + (data.message || 'No se pudo crear la cena'));
+            
+            // SweetAlert2 para errores del servidor
+            Swal.fire({
+                title: 'Error al crear la cena',
+                text: data.message || 'No se pudo crear la cena. Intenta de nuevo.',
+                icon: 'error',
+                confirmButtonText: 'Intentar de nuevo',
+                confirmButtonColor: '#dc3545'
+            });
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error de conexión. Inténtalo de nuevo.');
+        
+        // SweetAlert2 para errores de conexión
+        Swal.fire({
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.',
+            icon: 'error',
+            confirmButtonText: 'Reintentar',
+            confirmButtonColor: '#dc3545'
+        });
     })
     .finally(() => {
+        // Restaurar botón siempre
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });
