@@ -23,7 +23,7 @@
         @endif
 
         <div class="row g-4">
-            {{-- Columna izquierda: Avatar + Rating --}}
+            {{-- Columna izquierda: Avatar --}}
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-body text-center">
@@ -51,53 +51,7 @@
                             @endif
                         </div>
 
-                        {{-- Rating (solo lectura) --}}
-                        <div class="mb-3">
-                            @php
-                                $rating = (float) ($user->rating ?? 0);
-                                $stars = floor($rating);
-                                $half  = ($rating - $stars) >= 0.5;
-                            @endphp
-                            <div class="mb-1">
-                                {{-- estrellas llenas --}}
-                                @for($i=0; $i<$stars; $i++)
-                                    <i class="fas fa-star text-warning"></i>
-                                @endfor
-                                {{-- media estrella --}}
-                                @if($half)
-                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                @endif
-                                {{-- estrellas vacías --}}
-                                @for($i=0; $i<(5 - $stars - ($half ? 1 : 0)); $i++)
-                                    <i class="far fa-star text-muted"></i>
-                                @endfor
-                            </div>
-                            <span class="badge bg-primary">{{ number_format($rating, 1) }} / 5</span>
-                        </div>
-
-                        <hr>
-
-                        {{-- Formulario solo para cambiar avatar (URL o archivo) --}}
-                        <form action="{{ route('perfil.comensal.update') }}" method="POST" enctype="multipart/form-data" class="text-start">
-                            @csrf
-                            @method('PUT')
-
-                            <div class="mb-3">
-                                <label class="form-label">URL de Avatar (opcional)</label>
-                                <input type="url" name="avatar_url" class="form-control" placeholder="https://..." value="{{ old('avatar_url') }}">
-                                <small class="text-muted">Si pegas una URL, tendrá prioridad sobre la imagen subida.</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Subir Avatar (opcional)</label>
-                                <input type="file" name="avatar_file" class="form-control" accept="image/*" id="avatarFileInput">
-                                <small class="text-muted">JPG/PNG/WebP hasta 2MB.</small>
-                            </div>
-
-                            <button type="submit" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-image me-1"></i> Actualizar Avatar
-                            </button>
-                        </form>
+                        <p class="text-muted">{{ $user->name }}</p>
                     </div>
                 </div>
             </div>
@@ -109,7 +63,6 @@
                         <form action="{{ route('perfil.comensal.update') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
-                            <input type="hidden" name="update_type" value="profile">
 
                             {{-- Información básica --}}
                             <div class="row">
@@ -134,7 +87,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Cambiar Foto de Perfil (opcional)</label>
+                                <label class="form-label">Foto de Perfil (opcional)</label>
                                 <input type="file" name="avatar_file" class="form-control" accept="image/*" id="avatarFileInput">
                                 <small class="text-muted">JPG/PNG/WebP hasta 2MB.</small>
                             </div>
