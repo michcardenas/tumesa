@@ -68,7 +68,6 @@
                                         <th>Título</th>
                                         <th>Slug</th>
                                         <th>Estado</th>
-                                        <th>Fecha Creación</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -95,7 +94,6 @@
                                                 <span class="badge bg-warning">{{ $page['status'] }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ now()->subDays(rand(1, 30))->format('d/m/Y') }}</td>
                                         <td>
                                             <div class="action-buttons">
                                                 <button class="btn btn-sm btn-outline-primary" title="Ver">
