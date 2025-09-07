@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\PageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Chef\ChefController;
@@ -127,10 +127,7 @@ Route::get('/terminos-y-condiciones', [LegalController::class, 'terminos'])->nam
 Route::middleware('auth')->group(function () {
 
 
-    // Dashboard principal
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+   Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Perfil del usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
