@@ -780,7 +780,215 @@ img, svg {
 }
 
 
+#suggestions-container {
+    position: relative;
+    width: 100%;
+}
 
+/* Dropdown de sugerencias */
+.suggestions-dropdown {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    max-height: 350px;
+    overflow-y: auto;
+    animation: fadeInDown 0.2s ease-out;
+}
+
+/* Header de sugerencias */
+.suggestions-header {
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Items de sugerencias */
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.2s ease;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2563eb;
+}
+
+/* Contenido de la sugerencia */
+.suggestion-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.suggestion-main {
+    font-weight: 500;
+    color: #1f2937;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 2px;
+}
+
+.suggestion-secondary {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Animación de entrada */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para el input de búsqueda */
+#locationInput {
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+#locationInput:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+}
+
+/* Botones del input group */
+.input-group .btn {
+    border: 2px solid #e9ecef;
+    border-left: none;
+}
+
+.input-group .btn:hover {
+    background-color: #f8f9fa;
+    border-color: #2563eb;
+}
+
+/* Mapa */
+#map {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Dirección seleccionada */
+#selectedAddress {
+    margin-top: 10px;
+}
+
+#selectedAddress .alert {
+    margin-bottom: 0;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border-left: 4px solid #28a745;
+}
+
+/* Scrollbar personalizado para las sugerencias */
+.suggestions-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .suggestion-item {
+        padding: 10px 12px;
+    }
+    
+    .suggestion-main {
+        font-size: 13px;
+    }
+    
+    .suggestion-secondary {
+        font-size: 11px;
+    }
+    
+    .suggestions-dropdown {
+        max-height: 250px;
+    }
+}
+
+/* Estados de carga */
+.loading-suggestions {
+    padding: 20px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.loading-suggestions i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Error states */
+.map-error {
+    padding: 20px;
+    text-align: center;
+    background: #fee;
+    border: 1px solid #fcc;
+    border-radius: 8px;
+    color: #c33;
+}
+
+/* Input con icono */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon input {
+    padding-left: 35px;
+}
+
+.input-with-icon .input-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    z-index: 1;
+}
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
     .chef-content {
