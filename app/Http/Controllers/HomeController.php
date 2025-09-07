@@ -18,10 +18,21 @@ public function index()
 {
     $data = $this->getWelcomeData();
     
-    // Obtener contenidos específicos de la página 'experiencias' y organizarlos por clave
+    // Obtener contenidos específicos de la página 'experiencias'
     $contenidosExperiencias = \App\Models\Pagina::porPagina('experiencias')->get()->keyBy('clave');
     
-    // Agregar contenidos al array de datos
+    // DEBUG TEMPORAL
+    if(isset($contenidosExperiencias['hero_imagen'])) {
+        $valor = $contenidosExperiencias['hero_imagen']->valor;
+        $urlConstruida = asset('storage/' . $valor);
+        
+        dd([
+            'valor_bd' => $valor,
+            'url_construida' => $urlConstruida,
+            'should_be' => 'https://tumesa.ar/storage/paginas/hero/SvrXQxEXf1JOhPK4E6I7y1YsGEaIMFzNTy13p7Nc.jpg'
+        ]);
+    }
+    
     $data['contenidos'] = $contenidosExperiencias;
     
     return view('welcome', $data);
