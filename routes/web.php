@@ -78,6 +78,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
+// En routes/web.php
+Route::get('/admin/paginas/experiencias/edit', [PaginaController::class, 'editExperiencias'])->name('admin.paginas.experiencias.edit');
+Route::get('/admin/paginas/ser-chef/edit', [PaginaController::class, 'editSerChef'])->name('admin.paginas.ser-chef.edit');
+Route::get('/admin/paginas/como-funciona/edit', [PaginaController::class, 'editComoFunciona'])->name('admin.paginas.como-funciona.edit');
 
     // Rutas del Chef
 Route::middleware(['auth'])->prefix('chef')->group(function () {
