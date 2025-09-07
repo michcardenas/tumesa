@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('content')
@@ -71,15 +72,18 @@
                                             <div class="current-image mb-2">
                                                 @php $heroImg = $contenidos->where('clave', 'hero_imagen')->first()?->valor @endphp
                                                 @if($heroImg)
-                                                    <img src="{{ $heroImg }}" alt="Hero actual" class="img-thumbnail" style="max-width: 200px;">
+                                                    @if(Str::startsWith($heroImg, ['http://', 'https://']))
+                                                        <img src="{{ $heroImg }}" alt="Hero actual" class="img-thumbnail" style="max-width: 200px;">
+                                                    @else
+                                                        <img src="{{ asset('storage/' . $heroImg) }}" alt="Hero actual" class="img-thumbnail" style="max-width: 200px;">
+                                                    @endif
                                                 @else
                                                     <div class="text-muted">No hay imagen actual</div>
                                                 @endif
                                             </div>
-                                            <input type="url" name="hero_imagen" class="form-control" 
-                                                   placeholder="URL de la imagen" 
-                                                   value="{{ $heroImg }}">
-                                            <small class="text-muted">URL de imagen (recomendado: 800x600px)</small>
+                                            <input type="file" name="hero_imagen" class="form-control" 
+                                                   accept="image/*" id="heroImageInput">
+                                            <small class="text-muted">JPG, PNG, WebP hasta 2MB (recomendado: 800x600px)</small>
                                         </div>
                                     </div>
                                 </div>
@@ -319,7 +323,6 @@
         </div>
     </div>
 </div>
-
 <style>
 .admin-container {
     background-color: #f8f9fa;
