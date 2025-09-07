@@ -92,14 +92,28 @@
                     @endif
                     
                     <div class="experience-content">
-                        <!-- <div class="experience-rating">
-                            <i class="fas fa-star"></i>
-                            <span>{{ number_format(4.5 + (rand(3,9) / 10), 1) }}</span>
-                        </div> -->
-                        
                         <h5>{{ $cena['title'] }}</h5>
                         <p class="experience-chef">{{ $cena['chef_name'] }}</p>
-                        <p class="experience-description">{{ $cena['menu_preview'] }}</p>
+                        
+                        {{-- CAMBIO PRINCIPAL: Preview limpio del menú --}}
+                        <div class="experience-description">
+                            @php
+                                // Limpiar HTML y crear preview
+                                $menuText = strip_tags($cena['menu_preview']);
+                                $menuText = preg_replace('/\s+/', ' ', $menuText); // Limpiar espacios extra
+                                $menuText = trim($menuText);
+                                
+                                // Si está vacío, usar un texto por defecto
+                                if (empty($menuText)) {
+                                    $menuText = 'Deliciosa experiencia culinaria preparada especialmente para ti.';
+                                }
+                                
+                                // Limitar a 100 caracteres para las tarjetas
+                                $preview = Str::limit($menuText, 100);
+                            @endphp
+                            
+                            <p class="menu-preview-text">{{ $preview }}</p>
+                        </div>
                         
                         <div class="experience-meta mb-2">
                             <small class="text-muted">
@@ -160,14 +174,12 @@
         @endif
         
         <div class="text-center mt-4">
-            <a href="{{  route('experiencias') ?? '#' }}" class="btn btn-link">
+            <a href="{{ route('experiencias') ?? '#' }}" class="btn btn-link">
                 Ver Todas las Experiencias
                 <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
-        
-        <!-- Estadísticas adicionales -->
-     
+    </div>
 </section>
 
     <!-- Como Funciona Section -->
