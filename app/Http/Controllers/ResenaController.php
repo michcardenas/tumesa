@@ -39,12 +39,13 @@ public function index()
     
     // Obtener reseñas de las cenas del chef
     $resenas = Reseña::whereHas('cena', function($query) use ($chef) {
-        $query->where('chef_id', $chef->id);
+        $query->where('user_id', $chef->id); // Cambiar chef_id por user_id
     })
     ->with(['cena', 'user', 'reserva'])
     ->orderBy('created_at', 'desc')
     ->get();
     
-    return view('chef.resenas', compact('resenas'));
+    return view('chef.resenas.index', compact('resenas'));
 }
+
 }
