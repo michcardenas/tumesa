@@ -119,6 +119,8 @@ Route::get('/como-funciona', function () {
 })->name('como-funciona');
 Route::get('/terminos-y-condiciones', [LegalController::class, 'terminos'])->name('terminos');
 
+
+Route::put('/admin/paginas/experiencias/update', [PaginaController::class, 'updateExperiencias'])->name('admin.paginas.experiencias.update');
 /*
 |--------------------------------------------------------------------------
 | Rutas de Usuario Autenticado
