@@ -471,21 +471,10 @@
     margin-right: 1rem;
 }
 
-.stat-icon.bg-primary {
-    background-color: #2563eb !important;
-}
-
-.stat-icon.bg-success {
-    background-color: #059669 !important;
-}
-
-.stat-icon.bg-warning {
-    background-color: #d97706 !important;
-}
-
-.stat-icon.bg-danger {
-    background-color: #1e293b !important;
-}
+.stat-icon.bg-primary { background-color: #2563eb !important; }
+.stat-icon.bg-success { background-color: #059669 !important; }
+.stat-icon.bg-warning { background-color: #d97706 !important; }
+.stat-icon.bg-danger { background-color: #1e293b !important; }
 
 .stat-info h4 {
     margin: 0;
@@ -623,63 +612,32 @@
     text-decoration: underline;
 }
 
-     .image-preview-container {
-            position: relative;
-            margin-top: 1rem;
-        }
-        
-        .image-preview-wrapper {
-            position: relative;
-            display: inline-block;
-            max-width: 100%;
-        }
-        
-        .cover-preview-img {
-            width: 100%;
-            max-width: 400px;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid #e5e7eb;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .image-overlay {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            display: flex;
-            gap: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .image-preview-wrapper:hover .image-overlay {
-            opacity: 1;
-        }
-        
-        .remove-image-btn, .change-image-btn {
-            padding: 0.5rem;
-            border-radius: 50%;
-            border: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .image-info {
-            margin-top: 0.5rem;
-            text-align: center;
-        }
+.image-preview-container {
+    position: relative;
+    margin-top: 1rem;
+}
+
+.image-preview-wrapper {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.cover-preview-img {
+    width: 100%;
+    max-width: 400px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
 
 .image-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    top: 8px;
+    right: 8px;
     display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 0.5rem;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -688,10 +646,19 @@
 .image-preview-wrapper:hover .image-overlay {
     opacity: 1;
 }
-img, svg {
-    max-width: 11rem;
-    height: auto;
+
+.remove-image-btn, .change-image-btn {
+    padding: 0.5rem;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+
+.image-info {
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
 .gallery-preview-container {
     margin-top: 1rem;
     display: grid;
@@ -699,7 +666,43 @@ img, svg {
     gap: 1rem;
 }
 
-/* ==================== MAPA ==================== */
+/* ==================== VALIDACIÓN DE FECHA/HORA ==================== */
+input[name="datetime"]:invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+#datetime-error-message {
+    animation: slideDown 0.3s ease-out;
+    border-left: 4px solid #ffc107;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== GOOGLE MAPS Y BÚSQUEDA ==================== */
+#locationInput {
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+#locationInput:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+}
+
+.input-group .btn {
+    border: 2px solid #e9ecef;
+    border-left: none;
+}
+
+.input-group .btn:hover {
+    background-color: #f8f9fa;
+    border-color: #2563eb;
+}
+
 #map {
     height: 400px;
     width: 100%;
@@ -714,14 +717,120 @@ img, svg {
 }
 
 #selectedAddress {
-    font-size: 0.875rem;
-    color: #059669 !important;
+    margin-top: 10px;
+}
+
+#selectedAddress .alert {
+    margin-bottom: 0;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border-left: 4px solid #28a745;
+}
+
+/* ==================== SUGERENCIAS DE GOOGLE MAPS ==================== */
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    max-height: 300px;
+    overflow-y: auto;
+    animation: fadeInDown 0.2s ease-out;
+    margin-top: 2px;
+    width: calc(100% - 4px);
+    left: 2px;
+}
+
+.suggestions-header {
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.2s ease;
+    font-size: 13px;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover, .suggestion-item.selected {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2563eb;
+}
+
+.suggestion-item i {
+    width: 16px;
+    margin-right: 8px;
+    color: #2563eb;
+    flex-shrink: 0;
+}
+
+.suggestion-content {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.suggestion-main {
     font-weight: 500;
-    margin-top: 8px;
-    padding: 8px;
-    background-color: #f0fdf4;
-    border-radius: 4px;
-    border-left: 3px solid #059669;
+    color: #1f2937;
+    font-size: 13px;
+    line-height: 1.3;
+    margin-bottom: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.suggestion-secondary {
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.suggestions-dropdown::-webkit-scrollbar {
+    width: 4px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 /* ==================== ALERTAS ==================== */
@@ -779,220 +888,11 @@ img, svg {
     color: white;
 }
 
-
-#suggestions-container {
-    position: relative;
-    width: 100%;
-}
-
-/* Dropdown de sugerencias */
-.suggestions-dropdown {
-    position: absolute;
-    top: 5px;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    z-index: 1050;
-    max-height: 350px;
-    overflow-y: auto;
-    animation: fadeInDown 0.2s ease-out;
-}
-
-/* Header de sugerencias */
-.suggestions-header {
-    padding: 12px 15px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-    font-size: 12px;
-    font-weight: 600;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Items de sugerencias */
-.suggestion-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    cursor: pointer;
-    border-bottom: 1px solid #f1f3f4;
-    transition: all 0.2s ease;
-}
-
-.suggestion-item:last-child {
-    border-bottom: none;
-}
-
-.suggestion-item:hover {
-    background-color: #e3f2fd;
-    border-left: 3px solid #2563eb;
-}
-
-/* Contenido de la sugerencia */
-.suggestion-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.suggestion-main {
-    font-weight: 500;
-    color: #1f2937;
-    font-size: 14px;
-    line-height: 1.4;
-    margin-bottom: 2px;
-}
-
-.suggestion-secondary {
-    font-size: 12px;
-    color: #6b7280;
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Animación de entrada */
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Estilos para el input de búsqueda */
-#locationInput {
-    border: 2px solid #e9ecef;
-    transition: border-color 0.3s ease;
-}
-
-#locationInput:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
-}
-
-/* Botones del input group */
-.input-group .btn {
-    border: 2px solid #e9ecef;
-    border-left: none;
-}
-
-.input-group .btn:hover {
-    background-color: #f8f9fa;
-    border-color: #2563eb;
-}
-
-/* Mapa */
-#map {
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Dirección seleccionada */
-#selectedAddress {
-    margin-top: 10px;
-}
-
-#selectedAddress .alert {
-    margin-bottom: 0;
-    padding: 10px 15px;
-    border-radius: 6px;
-    border-left: 4px solid #28a745;
-}
-
-/* Scrollbar personalizado para las sugerencias */
-.suggestions-dropdown::-webkit-scrollbar {
-    width: 6px;
-}
-
-.suggestions-dropdown::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.suggestions-dropdown::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.suggestions-dropdown::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .suggestion-item {
-        padding: 10px 12px;
-    }
-    
-    .suggestion-main {
-        font-size: 13px;
-    }
-    
-    .suggestion-secondary {
-        font-size: 11px;
-    }
-    
-    .suggestions-dropdown {
-        max-height: 250px;
-    }
-}
-
-/* Estados de carga */
-.loading-suggestions {
-    padding: 20px;
-    text-align: center;
-    color: #6b7280;
-}
-
-.loading-suggestions i {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Error states */
-.map-error {
-    padding: 20px;
-    text-align: center;
-    background: #fee;
-    border: 1px solid #fcc;
-    border-radius: 8px;
-    color: #c33;
-}
-
-/* Input con icono */
-.input-with-icon {
-    position: relative;
-}
-
-.input-with-icon input {
-    padding-left: 35px;
-}
-
-.input-with-icon .input-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6b7280;
-    z-index: 1;
-}
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
     .chef-content {
         margin-top: 1rem;
+        padding: 1rem;
     }
     
     .section-header {
@@ -1004,6 +904,7 @@ img, svg {
     .stat-card {
         flex-direction: column;
         text-align: center;
+        padding: 1rem;
     }
     
     .stat-icon {
@@ -1027,191 +928,165 @@ img, svg {
     .gallery-preview-container {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     }
+    
+    .suggestions-dropdown {
+        max-height: 200px;
+        font-size: 12px;
+    }
+    
+    .suggestion-item {
+        padding: 6px 10px;
+    }
+    
+    .suggestion-main {
+        font-size: 12px;
+    }
+    
+    .suggestion-secondary {
+        font-size: 10px;
+    }
+    
+    .suggestions-header {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
 }
 </style>
 
 <script>
-// Variables globales para Google Maps
-let map;
-let marker;
-let infoWindow;
-let geocoder;
-let autocompleteService;
-let placesService;
-
-// Variables globales para imágenes
+// ==================== VARIABLES GLOBALES ====================
+let map, marker, infoWindow, geocoder, autocompleteService, placesService;
 let coverImage = null;
 let galleryImages = [];
 const maxGalleryImages = 5;
 const maxFileSize = 5 * 1024 * 1024; // 5MB
 
+// ==================== INICIALIZACIÓN ====================
 document.addEventListener('DOMContentLoaded', function() {
-    // Configurar validación de fecha y hora
     setupDateTimeValidation();
-    
-    // Configurar subida de imágenes
     setupImageUploads();
-    
-    // Función para mostrar secciones (MANTENER SIN CAMBIOS)
+    setupNavigation();
+    setupModalEvents();
+});
+
+// ==================== NAVEGACIÓN DEL DASHBOARD ====================
+function setupNavigation() {
+    // Función para mostrar secciones
     window.showSection = function(sectionName) {
-        // Ocultar todas las secciones
         document.querySelectorAll('.content-section').forEach(section => {
             section.classList.remove('active');
         });
         
-        // Remover active de todos los links
         document.querySelectorAll('.menu-link').forEach(link => {
             link.classList.remove('active');
         });
         
-        // Mostrar la sección seleccionada
         const targetSection = document.getElementById(sectionName + '-section');
         if (targetSection) {
             targetSection.classList.add('active');
         } else {
-            // Si no existe la sección, mostrar dashboard
             document.getElementById('dashboard-section').classList.add('active');
         }
         
-        // Activar el link correspondiente
         event.target.closest('.menu-link').classList.add('active');
     };
     
-    // Manejar clicks en sidebar (MANTENER SIN CAMBIOS)
+    // Manejar clicks en sidebar
     document.querySelectorAll('.menu-link:not([data-bs-toggle])').forEach(link => {
         link.addEventListener('click', function(e) {
             if (!this.classList.contains('disabled') && !this.hasAttribute('data-bs-toggle')) {
                 e.preventDefault();
-                
-                // Remover active de todos
                 document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
-                
-                // Agregar active al clickeado
                 this.classList.add('active');
             }
         });
     });
     
-    // Form submission para perfil (MANTENER SIN CAMBIOS)
+    // Form submission para perfil
     document.querySelector('.profile-form')?.addEventListener('submit', function(e) {
         e.preventDefault();
         alert('¡Perfil actualizado exitosamente! (Esta es una demo)');
     });
+}
 
-    // 🗺️ INICIALIZAR GOOGLE MAPS CUANDO SE ABRE EL MODAL
+// ==================== EVENTOS DEL MODAL ====================
+function setupModalEvents() {
     const newDinnerModal = document.getElementById('newDinnerModal');
-    if (newDinnerModal) {
-        newDinnerModal.addEventListener('shown.bs.modal', function () {
-            // Cargar Google Maps si no está cargado
-            if (typeof google === 'undefined' || !google.maps) {
-                loadGoogleMaps();
-            } else {
-                initMap();
-            }
-        });
-    }
+    if (!newDinnerModal) return;
+
+    // Inicializar Google Maps al abrir modal
+    newDinnerModal.addEventListener('shown.bs.modal', function () {
+        if (typeof google === 'undefined' || !google.maps) {
+            loadGoogleMaps();
+        } else {
+            initMap();
+        }
+    });
+
+    // Limpiar al cerrar modal
+    newDinnerModal.addEventListener('hidden.bs.modal', function() {
+        const form = document.getElementById('dinnerForm');
+        if (form) form.reset();
+        
+        document.getElementById('selectedAddress').innerHTML = '';
+        document.getElementById('latitude').value = '';
+        document.getElementById('longitude').value = '';
+        
+        hideDateTimeError();
+        resetImageUploads();
+        resetMapLocation();
+        
+        console.log('🧹 Modal limpiado correctamente');
+    });
 
     // Botón de mi ubicación
     document.getElementById('myLocationBtn')?.addEventListener('click', getUserLocation);
-    
-    // Limpiar al cerrar modal
-    if (newDinnerModal) {
-        newDinnerModal.addEventListener('hidden.bs.modal', function() {
-            // Limpiar formulario
-            const form = document.getElementById('dinnerForm');
-            if (form) {
-                form.reset();
-            }
-            
-            // Limpiar indicadores de ubicación
-            document.getElementById('selectedAddress').innerHTML = '';
-            document.getElementById('latitude').value = '';
-            document.getElementById('longitude').value = '';
-            
-            // Limpiar validación de fecha
-            hideDateTimeError();
-            
-            // Resetear mapa si existe
-            if (map && marker) {
-                const defaultLocation = { lat: 4.711, lng: -74.0721 };
-                marker.setPosition(defaultLocation);
-                map.setCenter(defaultLocation);
-                map.setZoom(13);
-                
-                if (infoWindow) {
-                    infoWindow.close();
-                }
-            }
-            
-            // Limpiar imágenes
-            resetImageUploads();
-            
-            console.log('🧹 Modal limpiado correctamente');
-        });
-    }
-});
-
-// ⏰ CONFIGURAR VALIDACIÓN DE FECHA Y HORA
-function setupDateTimeValidation() {
-    const datetimeInput = document.querySelector('input[name="datetime"]');
-    
-    if (datetimeInput) {
-        // Establecer fecha y hora mínima (1 hora desde ahora)
-        function setMinDateTime() {
-            const now = new Date();
-            now.setHours(now.getHours() + 1); // Agregar 1 hora
-            
-            // Formatear para datetime-local (YYYY-MM-DDTHH:MM)
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            
-            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-            datetimeInput.min = minDateTime;
-        }
-        
-        // Establecer mínimo al cargar
-        setMinDateTime();
-        
-        // Actualizar cada minuto para mantener la validación actualizada
-        setInterval(setMinDateTime, 60000);
-        
-        // Validación en tiempo real cuando el usuario cambia la fecha
-        datetimeInput.addEventListener('change', function() {
-            const selectedDate = new Date(this.value);
-            const minDate = new Date();
-            minDate.setHours(minDate.getHours() + 1);
-            
-            if (selectedDate < minDate) {
-                // Mostrar error
-                this.setCustomValidity('La cena debe programarse al menos 1 hora en el futuro');
-                this.reportValidity();
-                
-                // Mostrar mensaje más amigable
-                showDateTimeError();
-            } else {
-                // Limpiar error
-                this.setCustomValidity('');
-                hideDateTimeError();
-            }
-        });
-        
-        // Validación cuando pierde el foco
-        datetimeInput.addEventListener('blur', function() {
-            this.dispatchEvent(new Event('change'));
-        });
-    }
 }
 
-// Función para mostrar error amigable
-function showDateTimeError() {
-    // Buscar si ya existe el mensaje de error
-    let errorDiv = document.getElementById('datetime-error-message');
+// ==================== VALIDACIÓN DE FECHA Y HORA ====================
+function setupDateTimeValidation() {
+    const datetimeInput = document.querySelector('input[name="datetime"]');
+    if (!datetimeInput) return;
     
+    function setMinDateTime() {
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        datetimeInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    
+    setMinDateTime();
+    setInterval(setMinDateTime, 60000);
+    
+    datetimeInput.addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        const minDate = new Date();
+        minDate.setHours(minDate.getHours() + 1);
+        
+        if (selectedDate < minDate) {
+            this.setCustomValidity('La cena debe programarse al menos 1 hora en el futuro');
+            this.reportValidity();
+            showDateTimeError();
+        } else {
+            this.setCustomValidity('');
+            hideDateTimeError();
+        }
+    });
+    
+    datetimeInput.addEventListener('blur', function() {
+        this.dispatchEvent(new Event('change'));
+    });
+}
+
+function showDateTimeError() {
+    let errorDiv = document.getElementById('datetime-error-message');
     if (!errorDiv) {
-        // Crear el mensaje de error
         errorDiv = document.createElement('div');
         errorDiv.id = 'datetime-error-message';
         errorDiv.className = 'alert alert-warning mt-2';
@@ -1221,34 +1096,25 @@ function showDateTimeError() {
             <br><small class="text-muted">Esto permite tiempo suficiente para que los comensales se enteren y reserven.</small>
         `;
         
-        // Insertar después del input
         const datetimeInput = document.querySelector('input[name="datetime"]');
         datetimeInput.parentNode.insertBefore(errorDiv, datetimeInput.nextSibling);
     }
 }
 
-// Función para ocultar error
 function hideDateTimeError() {
     const errorDiv = document.getElementById('datetime-error-message');
-    if (errorDiv) {
-        errorDiv.remove();
-    }
+    if (errorDiv) errorDiv.remove();
 }
 
-// 🌍 CARGAR GOOGLE MAPS API (SOLO MAPS, SIN PLACES)
+// ==================== GOOGLE MAPS ====================
 function loadGoogleMaps() {
-    // Verificar si ya está cargado
     if (typeof google !== 'undefined' && google.maps) {
         initMap();
         return;
     }
 
-    // Verificar si ya existe el script
-    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
-        return;
-    }
+    if (document.querySelector('script[src*="maps.googleapis.com"]')) return;
 
-    // Crear función global para el callback
     window.initMapCallback = function() {
         if (typeof google !== 'undefined' && google.maps) {
             initMap();
@@ -1257,51 +1123,28 @@ function loadGoogleMaps() {
                 if (typeof google !== 'undefined' && google.maps) {
                     initMap();
                 } else {
-                    console.error('Google Maps not loaded properly');
-                    document.getElementById('map').innerHTML = 
-                        '<div class="alert alert-warning">Error cargando Google Maps. Reintenta abriendo el modal nuevamente.</div>';
+                    showMapError('Google Maps no se cargó correctamente');
                 }
             }, 1000);
         }
     };
 
-    // 🔑 CARGAR SOLO MAPS API (SIN PLACES) - Esto evita el error
     const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCuh8GSFyFxvDaiEeWcW7JXs2KIcf89dHY&libraries=places&loading=async&callback=initMapCallback';
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCuh8GSFyFxvDaiEeWcW7JXs2KIcf89dHY&libraries=places&callback=initMapCallback';
     script.async = true;
     script.defer = true;
-    script.onerror = function() {
-        console.error('Error loading Google Maps script');
-        document.getElementById('map').innerHTML = 
-            '<div class="alert alert-danger">Error cargando Google Maps. Verifica tu conexión a internet.</div>';
-    };
+    script.onerror = () => showMapError('Error cargando Google Maps');
     document.head.appendChild(script);
 }
 
-// 🗺️ INICIALIZAR MAPA SIMPLE
 function initMap() {
-    console.log('🗺️ Inicializando Google Maps...');
-    
     try {
-        // Verificar APIs disponibles
-        if (!google.maps) {
-            throw new Error('Google Maps no está disponible');
+        if (!google.maps || !google.maps.places) {
+            throw new Error('APIs de Google Maps no disponibles');
         }
-        
-        if (!google.maps.places) {
-            throw new Error('Google Places API no está disponible');
-        }
-        
-        console.log('✅ APIs de Google disponibles:', {
-            maps: !!google.maps,
-            places: !!google.maps.places,
-            geocoder: !!google.maps.Geocoder
-        });
 
-        // Ubicación por defecto - Argentina (Buenos Aires)
         const defaultLocation = { lat: -34.6037, lng: -58.3816 };
         
-        // Crear mapa
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 10,
             center: defaultLocation,
@@ -1310,19 +1153,11 @@ function initMap() {
             fullscreenControl: true
         });
 
-        // Inicializar servicios
         geocoder = new google.maps.Geocoder();
         autocompleteService = new google.maps.places.AutocompleteService();
         placesService = new google.maps.places.PlacesService(map);
         infoWindow = new google.maps.InfoWindow();
 
-        console.log('✅ Servicios de Google Maps inicializados:', {
-            geocoder: !!geocoder,
-            autocomplete: !!autocompleteService,
-            places: !!placesService
-        });
-
-        // Crear marcador
         marker = new google.maps.Marker({
             position: defaultLocation,
             map: map,
@@ -1330,24 +1165,18 @@ function initMap() {
             draggable: true
         });
 
-        // Event listeners
         map.addListener('click', function(event) {
-            console.log('🖱️ Click en mapa:', event.latLng.toString());
             placeMarker(event.latLng);
             updateLocationDisplay(event.latLng);
         });
 
         marker.addListener('dragend', function(event) {
-            console.log('🔄 Marcador arrastrado:', event.latLng.toString());
             updateLocationDisplay(event.latLng);
         });
 
-        // Configurar buscador mejorado
         setupAdvancedSearch();
-
-        // Inicializar con ubicación por defecto
         updateLocationDisplay(defaultLocation, 'Buenos Aires, Argentina (ubicación predeterminada)');
-
+        
         console.log('🎉 Google Maps inicializado exitosamente');
         
     } catch (error) {
@@ -1355,168 +1184,81 @@ function initMap() {
         showMapError(`Error inicializando el mapa: ${error.message}`);
     }
 }
-function setupAdvancedSearch() {
-    console.log('🔍 Configurando buscador avanzado...');
-    
-    const input = document.getElementById('locationInput');
-    if (!input) {
-        console.error('❌ Input de ubicación no encontrado');
-        return;
-    }
 
-    // Crear contenedor de sugerencias si no existe
-    if (!document.getElementById('suggestions-container')) {
-        const container = document.createElement('div');
-        container.id = 'suggestions-container';
-        container.style.position = 'relative';
-        input.parentNode.insertBefore(container, input.nextSibling);
-    }
+function setupAdvancedSearch() {
+    const input = document.getElementById('locationInput');
+    if (!input) return;
 
     let searchTimeout;
     
-    // Buscar mientras escribe
     input.addEventListener('input', function() {
         clearTimeout(searchTimeout);
         const query = this.value.trim();
         
         if (query.length >= 3) {
-            searchTimeout = setTimeout(() => {
-                console.log('🔍 Buscando:', query);
-                getPlacePredictions(query);
-            }, 500); // Aumenté el delay para evitar muchas llamadas
+            searchTimeout = setTimeout(() => getPlacePredictions(query), 500);
         } else {
             hideSuggestions();
         }
     });
 
-    // Buscar al presionar Enter
     input.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            searchLocation();
+            const dropdown = document.getElementById('suggestions-dropdown');
+            if (dropdown) {
+                const firstItem = dropdown.querySelector('.suggestion-item');
+                if (firstItem) firstItem.click();
+            } else {
+                searchLocation();
+            }
         }
     });
 
-    // Ocultar sugerencias al perder foco
-    input.addEventListener('blur', function() {
-        setTimeout(hideSuggestions, 200);
-    });
-
-    console.log('✅ Buscador configurado');
-}
-
-// 🔍 CONFIGURAR BUSCADOR SIMPLE CON GEOCODING
-function setupSimpleSearch() {
-    const input = document.getElementById('locationInput');
-    const inputGroup = input.parentElement;
-    
-    // Crear botón de búsqueda si no existe
-    if (!document.getElementById('searchBtn')) {
-        const searchBtn = document.createElement('button');
-        searchBtn.type = 'button';
-        searchBtn.id = 'searchBtn';
-        searchBtn.className = 'btn btn-outline-primary';
-        searchBtn.innerHTML = '<i class="fas fa-search"></i>';
-        searchBtn.title = 'Buscar lugar';
-        inputGroup.insertBefore(searchBtn, document.getElementById('myLocationBtn'));
-    }
-    
-    // Event listeners
-    document.getElementById('searchBtn').addEventListener('click', searchLocation);
-    
-    input.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            searchLocation();
-        }
-    });
-    
-    // 🌟 NUEVO: Autocompletado mientras escribes
-    let searchTimeout;
-    input.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        const query = this.value.trim();
-        
-        if (query.length >= 2) {
-            searchTimeout = setTimeout(() => {
-                getPlaceSuggestions(query);
-            }, 300);
-        } else {
-            hideSuggestions();
-        }
-    });
-    
     // Ocultar sugerencias al hacer clic fuera
-    input.addEventListener('blur', function() {
-        setTimeout(hideSuggestions, 200);
-    });
-    
-    console.log('🔍 Buscador avanzado configurado');
-}
-
-function getPlaceSuggestions(query) {
-    if (!autocompleteService) return;
-    
-    console.log('🔍 Buscando sugerencias para:', query);
-    
-    const request = {
-        input: query,
-        types: ['establishment', 'geocode'],
-        componentRestrictions: { country: ['co', 'us', 'fr', 'es', 'mx', 'ar'] }
-    };
-    
-    autocompleteService.getPlacePredictions(request, function(predictions, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-            console.log('✅ Sugerencias encontradas:', predictions.length);
-            showSuggestions(predictions);
-        } else {
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('suggestions-dropdown');
+        if (dropdown && !input.contains(e.target) && !dropdown.contains(e.target)) {
             hideSuggestions();
         }
     });
+
+    input.addEventListener('blur', function() {
+        setTimeout(() => {
+            const dropdown = document.getElementById('suggestions-dropdown');
+            if (dropdown && !dropdown.matches(':hover')) {
+                hideSuggestions();
+            }
+        }, 150);
+    });
 }
+
 function getPlacePredictions(query) {
     if (!autocompleteService) {
-        console.error('❌ AutocompleteService no disponible');
         fallbackToGeocoding(query);
         return;
     }
 
-    console.log('🔍 Obteniendo predicciones para:', query);
-
     const request = {
         input: query,
         types: ['establishment', 'geocode'],
-        // Priorizar Colombia pero permitir otros países
         componentRestrictions: { country: ['co', 'ar', 'mx', 'us', 'es'] }
     };
 
     autocompleteService.getPlacePredictions(request, function(predictions, status) {
-        console.log('📋 Estado de predicciones:', status, 'Resultados:', predictions?.length || 0);
-        
-        if (status === google.maps.places.PlacesServiceStatus.OK && predictions && predictions.length > 0) {
+        if (status === google.maps.places.PlacesServiceStatus.OK && predictions?.length > 0) {
             showSuggestions(predictions);
         } else {
-            console.warn('⚠️ No se encontraron predicciones, usando geocoding como fallback');
-            // Si no hay predicciones, usar geocoding como fallback
             setTimeout(() => fallbackToGeocoding(query), 100);
         }
     });
 }
 
-// Fallback a geocoding si Places API falla
 function fallbackToGeocoding(query) {
-    if (!geocoder) {
-        console.error('❌ Geocoder no disponible');
-        return;
-    }
-
-    console.log('🔄 Usando geocoding como fallback para:', query);
+    if (!geocoder) return;
 
     geocoder.geocode({ address: query }, function(results, status) {
-        console.log('🌍 Estado de geocoding:', status, 'Resultados:', results?.length || 0);
-        
-        if (status === 'OK' && results && results.length > 0) {
-            // Convertir resultados de geocoding a formato de sugerencias
+        if (status === 'OK' && results?.length > 0) {
             const suggestions = results.slice(0, 5).map(result => ({
                 description: result.formatted_address,
                 place_id: result.place_id,
@@ -1526,62 +1268,56 @@ function fallbackToGeocoding(query) {
                 },
                 types: result.types
             }));
-            
             showSuggestions(suggestions);
         }
     });
 }
 
-// Mostrar sugerencias mejorado
 function showSuggestions(predictions) {
     hideSuggestions();
     
-    const container = document.getElementById('suggestions-container');
-    if (!container) return;
-
+    const inputGroup = document.getElementById('locationInput').closest('.input-group');
+    if (!inputGroup) return;
+    
     const dropdown = document.createElement('div');
     dropdown.id = 'suggestions-dropdown';
     dropdown.className = 'suggestions-dropdown';
     
-    dropdown.innerHTML = `
-        <div class="suggestions-header">
-            <i class="fas fa-search"></i> Lugares encontrados (${predictions.length})
-        </div>
-    `;
-
-    predictions.slice(0, 8).forEach(prediction => {
+    const header = document.createElement('div');
+    header.className = 'suggestions-header';
+    header.innerHTML = `<i class="fas fa-search"></i> ${predictions.length} lugar${predictions.length > 1 ? 'es' : ''} encontrado${predictions.length > 1 ? 's' : ''}`;
+    dropdown.appendChild(header);
+    
+    predictions.slice(0, 6).forEach(prediction => {
         const item = document.createElement('div');
         item.className = 'suggestion-item';
         
         const icon = getPlaceIcon(prediction.types);
         
         item.innerHTML = `
-            <i class="${icon}" style="color: #2563eb; margin-right: 10px;"></i>
+            <i class="${icon}"></i>
             <div class="suggestion-content">
                 <div class="suggestion-main">${prediction.structured_formatting.main_text}</div>
                 <div class="suggestion-secondary">${prediction.structured_formatting.secondary_text || ''}</div>
             </div>
         `;
         
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             selectPlace(prediction);
         });
         
         dropdown.appendChild(item);
     });
-
-    container.appendChild(dropdown);
-    console.log('📋 Mostrando', predictions.length, 'sugerencias');
+    
+    inputGroup.parentNode.insertBefore(dropdown, inputGroup.nextSibling);
 }
 
-// Seleccionar lugar de las sugerencias
 function selectPlace(prediction) {
-    console.log('📍 Lugar seleccionado:', prediction.description);
-    
     hideSuggestions();
     document.getElementById('locationInput').value = prediction.description;
 
-    // Si tiene place_id, obtener detalles
     if (prediction.place_id && placesService) {
         const request = {
             placeId: prediction.place_id,
@@ -1590,24 +1326,20 @@ function selectPlace(prediction) {
 
         placesService.getDetails(request, function(place, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
-                console.log('✅ Detalles del lugar obtenidos');
                 const location = place.geometry.location;
                 placeMarker(location);
                 map.setCenter(location);
                 map.setZoom(16);
                 updateLocationDisplayAdvanced(location, place);
             } else {
-                console.warn('⚠️ No se pudieron obtener detalles, usando geocoding');
                 geocodeAndPlace(prediction.description);
             }
         });
     } else {
-        // Fallback a geocoding
         geocodeAndPlace(prediction.description);
     }
 }
 
-// Geocodificar y colocar marcador
 function geocodeAndPlace(address) {
     geocoder.geocode({ address: address }, function(results, status) {
         if (status === 'OK' && results[0]) {
@@ -1620,72 +1352,42 @@ function geocodeAndPlace(address) {
     });
 }
 
-// Búsqueda directa mejorada
-function searchLocation() {
-    const query = document.getElementById('locationInput').value.trim();
-    
-    if (!query) {
-        alert('Por favor ingresa un lugar para buscar');
-        return;
-    }
-
-    console.log('🔍 Búsqueda directa:', query);
-    
-    // Intentar con Places API primero
-    if (autocompleteService) {
-        getPlacePredictions(query);
-    } else {
-        // Fallback directo a geocoding
-        fallbackToGeocoding(query);
-    }
-}
-
-// Obtener icono según tipo de lugar
 function getPlaceIcon(types) {
-    if (!types) return 'fas fa-map-marker-alt';
+    if (!types || !Array.isArray(types)) return 'fas fa-map-marker-alt';
     
-    if (types.includes('restaurant')) return 'fas fa-utensils';
+    if (types.includes('restaurant') || types.includes('food')) return 'fas fa-utensils';
     if (types.includes('lodging')) return 'fas fa-bed';
     if (types.includes('tourist_attraction')) return 'fas fa-camera';
-    if (types.includes('shopping_mall')) return 'fas fa-shopping-bag';
+    if (types.includes('shopping_mall') || types.includes('store')) return 'fas fa-shopping-bag';
     if (types.includes('park')) return 'fas fa-tree';
-    if (types.includes('locality')) return 'fas fa-city';
+    if (types.includes('locality') || types.includes('sublocality')) return 'fas fa-city';
     if (types.includes('country')) return 'fas fa-flag';
+    
     return 'fas fa-map-marker-alt';
 }
 
-// Funciones auxiliares
 function hideSuggestions() {
     const dropdown = document.getElementById('suggestions-dropdown');
-    if (dropdown) {
-        dropdown.remove();
-    }
+    if (dropdown) dropdown.remove();
 }
 
 function placeMarker(location) {
-    if (marker) {
-        marker.setPosition(location);
-    }
-    if (map) {
-        map.setCenter(location);
-    }
+    if (marker) marker.setPosition(location);
+    if (map) map.setCenter(location);
 }
 
 function updateLocationDisplay(location, placeName = null) {
-    let lat, lng;
-    
-    if (typeof location.lat === 'function') {
-        lat = location.lat();
-        lng = location.lng();
-    } else {
-        lat = location.lat;
-        lng = location.lng;
-    }
+    const lat = typeof location.lat === 'function' ? location.lat() : location.lat;
+    const lng = typeof location.lng === 'function' ? location.lng() : location.lng;
     
     document.getElementById('latitude').value = lat;
     document.getElementById('longitude').value = lng;
     
     const displayName = placeName || document.getElementById('locationInput').value.trim() || 'Ubicación seleccionada';
+    
+    if (placeName && placeName !== document.getElementById('locationInput').value) {
+        document.getElementById('locationInput').value = placeName;
+    }
     
     const addressElement = document.getElementById('selectedAddress');
     addressElement.innerHTML = `
@@ -1696,8 +1398,6 @@ function updateLocationDisplay(location, placeName = null) {
             <small>Coordenadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}</small>
         </div>
     `;
-    
-    console.log('📍 Ubicación actualizada:', displayName, `(${lat}, ${lng})`);
 }
 
 function updateLocationDisplayAdvanced(location, place) {
@@ -1705,15 +1405,63 @@ function updateLocationDisplayAdvanced(location, place) {
     
     if (infoWindow && marker) {
         const rating = place.rating ? `⭐ ${place.rating}` : '';
+        const name = place.name || place.formatted_address;
+        
         infoWindow.setContent(`
             <div style="padding: 10px; max-width: 300px;">
-                <strong>${place.name || place.formatted_address}</strong>
+                <strong>${name}</strong>
                 ${rating}<br>
                 <small>${place.formatted_address}</small>
             </div>
         `);
         infoWindow.open(map, marker);
     }
+}
+
+function getUserLocation() {
+    if (!navigator.geolocation) {
+        alert('Tu navegador no soporta geolocalización.');
+        return;
+    }
+
+    const btn = document.getElementById('myLocationBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    btn.disabled = true;
+    
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            
+            placeMarker(userLocation);
+            map.setCenter(userLocation);
+            map.setZoom(16);
+            
+            const currentName = document.getElementById('locationInput').value.trim();
+            if (!currentName) {
+                document.getElementById('locationInput').value = 'Mi ubicación actual';
+                updateLocationDisplay(userLocation, 'Mi ubicación actual');
+            } else {
+                updateLocationDisplay(userLocation);
+            }
+            
+            btn.innerHTML = '<i class="fas fa-crosshairs"></i>';
+            btn.disabled = false;
+        },
+        function(error) {
+            console.error('Error obteniendo ubicación:', error);
+            alert('No se pudo obtener tu ubicación. Verifica los permisos del navegador.');
+            btn.innerHTML = '<i class="fas fa-crosshairs"></i>';
+            btn.disabled = false;
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
 }
 
 function showMapError(message) {
@@ -1723,531 +1471,66 @@ function showMapError(message) {
             <div class="alert alert-danger">
                 <i class="fas fa-exclamation-triangle"></i>
                 <strong>Error de Google Maps:</strong> ${message}
-                <br><br>
-                <small>Posibles soluciones:</small>
-                <ul style="margin: 5px 0; padding-left: 20px;">
-                    <li>Verifica tu conexión a internet</li>
-                    <li>Recarga la página</li>
-                    <li>Contacta al administrador si el problema persiste</li>
-                </ul>
+                <br><small>Recarga la página si el problema persiste.</small>
             </div>
         `;
     }
 }
 
-// Hacer funciones globales
-window.loadGoogleMaps = loadGoogleMaps;
-window.initMap = initMap;
-window.searchLocation = searchLocation;
-
-// 📋 MOSTRAR SUGERENCIAS
-function showSuggestions(predictions) {
-    hideSuggestions(); // Limpiar anteriores
-    
-    const suggestionsContainer = document.createElement('div');
-    suggestionsContainer.id = 'suggestions';
-    suggestionsContainer.className = 'suggestions-dropdown';
-    
-    // Header
-    const header = document.createElement('div');
-    header.className = 'suggestions-header';
-    header.innerHTML = `<i class="fas fa-search"></i> Lugares encontrados`;
-    suggestionsContainer.appendChild(header);
-    
-    // Agregar cada sugerencia
-    predictions.slice(0, 6).forEach(prediction => {
-        const item = document.createElement('div');
-        item.className = 'suggestion-item';
-        
-        // Determinar ícono según el tipo
-        const icon = getPlaceTypeIcon(prediction.types);
-        
-        item.innerHTML = `
-            <i class="${icon}"></i>
-            <div class="suggestion-content">
-                <div class="suggestion-main">${prediction.structured_formatting.main_text}</div>
-                <div class="suggestion-secondary">${prediction.structured_formatting.secondary_text || ''}</div>
-            </div>
-        `;
-        
-        item.addEventListener('click', function() {
-            selectPlaceFromSuggestion(prediction);
-        });
-        
-        suggestionsContainer.appendChild(item);
-    });
-    
-    // Posicionar y mostrar
-    const searchInput = document.getElementById('locationInput');
-    searchInput.parentElement.appendChild(suggestionsContainer);
-}
-
-// 🏷️ OBTENER ÍCONO SEGÚN TIPO DE LUGAR
-function getPlaceTypeIcon(types) {
-    if (types.includes('restaurant')) return 'fas fa-utensils';
-    if (types.includes('lodging')) return 'fas fa-bed';
-    if (types.includes('tourist_attraction')) return 'fas fa-camera';
-    if (types.includes('shopping_mall')) return 'fas fa-shopping-bag';
-    if (types.includes('park')) return 'fas fa-tree';
-    if (types.includes('locality')) return 'fas fa-city';
-    if (types.includes('country')) return 'fas fa-flag';
-    return 'fas fa-map-marker-alt';
-}
-
-// 📍 SELECCIONAR LUGAR DESDE SUGERENCIA
-function selectPlaceFromSuggestion(prediction) {
-    console.log('📍 Lugar seleccionado:', prediction.description);
-    
-    hideSuggestions();
-    
-    // Actualizar input
-    document.getElementById('locationInput').value = prediction.description;
-    
-    // Obtener detalles del lugar
-    const request = {
-        placeId: prediction.place_id,
-        fields: ['name', 'geometry', 'formatted_address', 'rating', 'types']
-    };
-    
-    placesService.getDetails(request, function(place, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            console.log('✅ Detalles del lugar obtenidos:', place);
-            const location = place.geometry.location;
-            
-            // Actualizar mapa
-            placeMarker(location);
-            map.setCenter(location);
-            map.setZoom(16);
-            
-            // Actualizar información con detalles ricos
-            updateLocationDisplayAdvanced(location, place);
-        } else {
-            // Fallback con geocoding
-            searchLocation();
-        }
-    });
-}
-
-// 📋 ACTUALIZAR DISPLAY CON INFORMACIÓN AVANZADA
-function updateLocationDisplayAdvanced(location, place) {
-    let lat, lng;
-    
-    // Obtener coordenadas
-    if (typeof location.lat === 'function') {
-        lat = location.lat();
-        lng = location.lng();
-    } else {
-        lat = location.lat;
-        lng = location.lng;
-    }
-    
-    // Actualizar coordenadas ocultas
-    document.getElementById('latitude').value = lat;
-    document.getElementById('longitude').value = lng;
-    
-    // Mostrar confirmación con información rica
-    const addressElement = document.getElementById('selectedAddress');
-    const name = place.name || place.formatted_address;
-    const rating = place.rating ? ` ⭐ ${place.rating}` : '';
-    
-    addressElement.innerHTML = `
-        <i class="fas fa-check-circle text-success"></i>
-        <strong>${name}${rating}</strong>
-        <br>
-        <small class="text-muted">
-            📍 ${place.formatted_address}<br>
-            <i class="fas fa-crosshairs"></i> 
-            ${lat.toFixed(6)}, ${lng.toFixed(6)}
-        </small>
-    `;
-    
-    // Mostrar info window mejorado
-    if (infoWindow && marker) {
-        infoWindow.setContent(`
-            <div style="padding: 15px; min-width: 250px; max-width: 350px; font-family: 'Segoe UI', sans-serif;">
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <i class="${getPlaceTypeIcon(place.types)}" style="color: #2563eb; margin-right: 8px; font-size: 18px;"></i>
-                    <strong style="color: #1f2937; font-size: 16px;">${name}</strong>
-                </div>
-                ${rating ? `
-                <div style="margin-bottom: 8px;">
-                    <span style="color: #f59e0b;">⭐</span>
-                    <span style="color: #374151; font-weight: 500;">${place.rating}/5</span>
-                </div>
-                ` : ''}
-                <div style="color: #6b7280; font-size: 12px; line-height: 1.4; margin-bottom: 10px;">
-                    📍 ${place.formatted_address}
-                </div>
-                <div style="padding: 8px; background: #f0fdf4; border-radius: 6px; border-left: 3px solid #059669;">
-                    <small style="color: #059669; font-weight: 500;">
-                        <i class="fas fa-check"></i> Ubicación confirmada para la cena
-                    </small>
-                </div>
-            </div>
-        `);
-        
-        infoWindow.open(map, marker);
-    }
-}
-
-// 🙈 OCULTAR SUGERENCIAS
-function hideSuggestions() {
-    const suggestions = document.getElementById('suggestions');
-    if (suggestions) {
-        suggestions.remove();
-    }
-}
-
-// 🔍 BUSCAR UBICACIÓN CON GEOCODING
-function searchLocation() {
-    const query = document.getElementById('locationInput').value.trim();
-    
-    if (!query) {
-        alert('🔍 Escribe el nombre de un lugar\n\nEjemplos:\n• New York\n• París, Francia\n• Tokyo, Japan\n• Plaza Bolívar, Bogotá');
-        return;
-    }
-    
-    if (!geocoder) {
-        alert('Servicio de búsqueda no disponible');
-        return;
-    }
-    
-    // Mostrar loading
-    const btn = document.getElementById('searchBtn');
-    const originalContent = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    btn.disabled = true;
-    
-    console.log('🔍 Buscando con Geocoder:', query);
-    
-    geocoder.geocode({
-        address: query
-    }, function(results, status) {
-        // Restaurar botón
-        btn.innerHTML = originalContent;
-        btn.disabled = false;
-        
-        if (status === 'OK' && results && results.length > 0) {
-            console.log('✅ Lugar encontrado:', results[0]);
-            
-            const result = results[0];
-            const location = result.geometry.location;
-            const address = result.formatted_address;
-            
-            // Actualizar mapa
-            placeMarker(location);
-            map.setCenter(location);
-            map.setZoom(15);
-            
-            // Actualizar campos
-            document.getElementById('locationInput').value = address;
-            updateLocationDisplay(location, address);
-            
-        } else {
-            console.warn('❌ No se encontró el lugar:', status);
-            
-            let message = `No se encontró "${query}"\n\n`;
-            if (status === 'REQUEST_DENIED') {
-                message += 'Problema con la API key. Verifica la configuración.';
-            } else if (status === 'ZERO_RESULTS') {
-                message += 'Intenta con:\n• Un nombre más específico\n• Una ciudad conocida\n• Agregar el país: "París, Francia"';
-            } else {
-                message += 'Error en la búsqueda. Intenta de nuevo.';
-            }
-            
-            alert(message);
-        }
-    });
-}
-
-// 📍 COLOCAR MARCADOR EN EL MAPA
-function placeMarker(location) {
-    if (marker) {
-        marker.setPosition(location);
-    }
-    map.setCenter(location);
-}
-
-// 📋 ACTUALIZAR DISPLAY DE UBICACIÓN
-function updateLocationDisplay(location, placeName = null) {
-    let lat, lng;
-    
-    // Obtener coordenadas
-    if (typeof location.lat === 'function') {
-        lat = location.lat();
-        lng = location.lng();
-    } else if (location.lat && location.lng) {
-        lat = location.lat;
-        lng = location.lng;
-    } else {
-        console.error('Formato de ubicación no reconocido:', location);
-        return;
-    }
-    
-    // Actualizar coordenadas ocultas
-    document.getElementById('latitude').value = lat;
-    document.getElementById('longitude').value = lng;
-    
-    // Usar el nombre del lugar si se proporciona, sino el del input
-    const displayName = placeName || document.getElementById('locationInput').value.trim();
-    
-    // Actualizar input si se proporciona un nombre mejor
-    if (placeName && placeName !== document.getElementById('locationInput').value) {
-        document.getElementById('locationInput').value = placeName;
-    }
-    
-    // Mostrar confirmación
-    const addressElement = document.getElementById('selectedAddress');
-    if (displayName) {
-        addressElement.innerHTML = `
-            <i class="fas fa-check-circle text-success"></i>
-            <strong>${displayName}</strong>
-            <br>
-            <small class="text-muted">
-                <i class="fas fa-crosshairs"></i> 
-                ${lat.toFixed(6)}, ${lng.toFixed(6)}
-            </small>
-        `;
-    } else {
-        addressElement.innerHTML = `
-            <i class="fas fa-map-marker-alt text-primary"></i>
-            <strong>Ubicación seleccionada</strong>
-            <br>
-            <small class="text-muted">
-                <i class="fas fa-crosshairs"></i> 
-                ${lat.toFixed(6)}, ${lng.toFixed(6)}
-            </small>
-        `;
-    }
-    
-    // Mostrar info en el marcador
-    if (infoWindow && marker) {
-        const finalDisplayName = displayName || 'Ubicación seleccionada';
-        
-        infoWindow.setContent(`
-            <div style="padding: 15px; min-width: 250px; max-width: 350px; font-family: 'Segoe UI', sans-serif;">
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <i class="fas fa-map-marker-alt" style="color: #2563eb; margin-right: 8px; font-size: 18px;"></i>
-                    <strong style="color: #1f2937; font-size: 16px;">${finalDisplayName}</strong>
-                </div>
-                <div style="color: #6b7280; font-size: 12px; line-height: 1.4;">
-                    <i class="fas fa-crosshairs" style="margin-right: 4px;"></i>
-                    Coordenadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}
-                </div>
-                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #e5e7eb;">
-                    <small style="color: #059669; font-weight: 500;">
-                        <i class="fas fa-check"></i> Ubicación confirmada para la cena
-                    </small>
-                </div>
-            </div>
-        `);
-        
-        infoWindow.open(map, marker);
-    }
-}
-
-// 📱 OBTENER UBICACIÓN DEL USUARIO
-function getUserLocation() {
-    if (navigator.geolocation) {
-        const btn = document.getElementById('myLocationBtn');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        btn.disabled = true;
-        
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                const userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                
-                placeMarker(userLocation);
-                map.setCenter(userLocation);
-                map.setZoom(16);
-                
-                // Actualizar display con ubicación actual
-                updateLocationDisplay(userLocation);
-                
-                // Si no hay nombre escrito, sugerir uno
-                const currentName = document.getElementById('locationInput').value.trim();
-                if (!currentName) {
-                    document.getElementById('locationInput').value = 'Mi ubicación actual';
-                    updateLocationDisplay(userLocation, 'Mi ubicación actual');
-                }
-                
-                btn.innerHTML = '<i class="fas fa-crosshairs"></i>';
-                btn.disabled = false;
-            },
-            function(error) {
-                console.error('Error obteniendo ubicación:', error);
-                alert('No se pudo obtener tu ubicación. Verifica los permisos del navegador.');
-                btn.innerHTML = '<i class="fas fa-crosshairs"></i>';
-                btn.disabled = false;
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
-        );
-    } else {
-        alert('Tu navegador no soporta geolocalización.');
-    }
-}
-
-// 💾 CREAR CENA CON VALIDACIÓN DE FECHA
-function createDinner() {
-    const form = document.getElementById('dinnerForm');
-    const formData = new FormData(form);
-    
-    // ⏰ VALIDACIÓN ADICIONAL DE FECHA
-    const datetime = formData.get('datetime');
-    if (datetime) {
-        const selectedDate = new Date(datetime);
-        const minDate = new Date();
-        minDate.setHours(minDate.getHours() + 1);
-        
-        if (selectedDate < minDate) {
-            // Mostrar error y detener envío
-            showDateTimeError();
-            document.querySelector('input[name="datetime"]').focus();
-            alert('La cena debe programarse al menos 1 hora en el futuro.');
-            return false;
-        }
-    }
-    
-    // Si llegamos aquí, la validación de fecha pasó
-    hideDateTimeError();
-    
-    // Validaciones básicas
-    if (!formData.get('title')) {
-        alert('Por favor ingresa el título de la cena');
-        return;
-    }
-    
-    if (!formData.get('datetime')) {
-        alert('Por favor selecciona la fecha y hora');
-        return;
-    }
-    
-    if (!formData.get('location')) {
-        alert('Por favor selecciona una ubicación en el mapa');
-        return;
-    }
-
-    // Agregar token CSRF
-    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-    
-    // Agregar imágenes si existen
-    if (coverImage) {
-        formData.append('cover_image', coverImage);
-    }
-    
-    // Agregar imágenes de galería
-    galleryImages.forEach((img, index) => {
-        formData.append(`gallery_images[${index}]`, img.file);
-    });
-
-    // Mostrar indicador de carga
-    const submitBtn = document.querySelector('#newDinnerModal .btn-primary');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
-    submitBtn.disabled = true;
-
-    // Enviar datos al servidor
-    fetch('/chef/dinners', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Éxito
-            alert('¡Cena creada exitosamente!');
-            
-            // Cerrar modal y limpiar
-            const modal = bootstrap.Modal.getInstance(document.getElementById('newDinnerModal'));
-            modal.hide();
-            form.reset();
-            document.getElementById('selectedAddress').innerHTML = '';
-            
-            // Limpiar imágenes
-            resetImageUploads();
-            resetMapLocation();
-            
-            // Recargar página para mostrar la nueva cena
-            window.location.reload();
-            
-        } else {
-            // Error de validación
-            if (data.errors && data.errors.datetime) {
-                showDateTimeError();
-                document.querySelector('input[name="datetime"]').focus();
-            }
-            alert('Error: ' + (data.message || 'No se pudo crear la cena'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error de conexión. Inténtalo de nuevo.');
-    })
-    .finally(() => {
-        // Restaurar botón
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    });
-}
-
-// Hacer las funciones globales
-window.initMap = initMap;
-window.initMapCallback = window.initMapCallback;
-
-// 🖼️ FUNCIONES DE MANEJO DE IMÁGENES
+// ==================== MANEJO DE IMÁGENES ====================
 function setupImageUploads() {
-    // Setup cover image
     setupCoverImageUpload();
-    
-    // Setup gallery images
     setupGalleryImageUpload();
 }
 
-// 🖼️ IMAGEN DE PORTADA
 function setupCoverImageUpload() {
     const dropZone = document.getElementById('coverImageDropZone');
     const input = document.getElementById('coverImageInput');
     
-    // Click para seleccionar
-    dropZone.addEventListener('click', () => input.click());
+    if (!dropZone || !input) return;
     
-    // Drag & Drop
+    dropZone.addEventListener('click', () => input.click());
     dropZone.addEventListener('dragover', handleDragOver);
     dropZone.addEventListener('dragleave', handleDragLeave);
     dropZone.addEventListener('drop', (e) => handleCoverImageDrop(e));
-    
-    // Input change
     input.addEventListener('change', (e) => handleCoverImageSelect(e.target.files));
+}
+
+function setupGalleryImageUpload() {
+    const dropZone = document.getElementById('galleryDropZone');
+    const input = document.getElementById('galleryImagesInput');
+    
+    if (!dropZone || !input) return;
+    
+    dropZone.addEventListener('click', () => input.click());
+    dropZone.addEventListener('dragover', handleDragOver);
+    dropZone.addEventListener('dragleave', handleDragLeave);
+    dropZone.addEventListener('drop', (e) => handleGalleryImagesDrop(e));
+    input.addEventListener('change', (e) => handleGalleryImagesSelect(e.target.files));
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.target.closest('.image-drop-zone').classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.target.closest('.image-drop-zone').classList.remove('dragover');
 }
 
 function handleCoverImageDrop(e) {
     e.preventDefault();
     e.stopPropagation();
-    
-    const dropZone = e.target.closest('.image-drop-zone');
-    dropZone.classList.remove('dragover');
-    
-    const files = e.dataTransfer.files;
-    handleCoverImageSelect(files);
+    e.target.closest('.image-drop-zone').classList.remove('dragover');
+    handleCoverImageSelect(e.dataTransfer.files);
 }
 
 function handleCoverImageSelect(files) {
-    if (files && files[0]) {
-        const file = files[0];
-        
-        if (validateImageFile(file)) {
-            setCoverImage(file);
-        }
+    if (files && files[0] && validateImageFile(files[0])) {
+        setCoverImage(files[0]);
     }
 }
 
@@ -2263,7 +1546,6 @@ function setCoverImage(file) {
         img.src = e.target.result;
         dropZone.classList.add('d-none');
         preview.classList.remove('d-none');
-        preview.classList.add('upload-success');
         
         console.log('✅ Imagen de portada cargada:', file.name);
     };
@@ -2280,74 +1562,48 @@ function removeCoverImage() {
     preview.classList.add('d-none');
     dropZone.classList.remove('d-none');
     input.value = '';
-    
-    console.log('🗑️ Imagen de portada eliminada');
 }
 
 function changeCoverImage() {
     document.getElementById('coverImageInput').click();
 }
 
-// 🖼️ GALERÍA DE IMÁGENES
-function setupGalleryImageUpload() {
-    const dropZone = document.getElementById('galleryDropZone');
-    const input = document.getElementById('galleryImagesInput');
-    
-    // Click para seleccionar
-    dropZone.addEventListener('click', () => input.click());
-    
-    // Drag & Drop
-    dropZone.addEventListener('dragover', handleDragOver);
-    dropZone.addEventListener('dragleave', handleDragLeave);
-    dropZone.addEventListener('drop', (e) => handleGalleryImagesDrop(e));
-    
-    // Input change
-    input.addEventListener('change', (e) => handleGalleryImagesSelect(e.target.files));
-}
-
 function handleGalleryImagesDrop(e) {
     e.preventDefault();
     e.stopPropagation();
-    
-    const dropZone = e.target.closest('.image-drop-zone');
-    dropZone.classList.remove('dragover');
-    
-    const files = e.dataTransfer.files;
-    handleGalleryImagesSelect(files);
+    e.target.closest('.image-drop-zone').classList.remove('dragover');
+    handleGalleryImagesSelect(e.dataTransfer.files);
 }
 
 function handleGalleryImagesSelect(files) {
-    if (files && files.length > 0) {
-        for (let file of files) {
-            if (galleryImages.length >= maxGalleryImages) {
-                showError(`Máximo ${maxGalleryImages} imágenes en la galería`);
-                break;
-            }
-            
-            if (validateImageFile(file)) {
-                addGalleryImage(file);
-            }
+    if (!files || files.length === 0) return;
+    
+    for (let file of files) {
+        if (galleryImages.length >= maxGalleryImages) {
+            showError(`Máximo ${maxGalleryImages} imágenes en la galería`);
+            break;
         }
-        updateGalleryDisplay();
+        
+        if (validateImageFile(file)) {
+            addGalleryImage(file);
+        }
     }
+    updateGalleryDisplay();
 }
 
 function addGalleryImage(file) {
     const id = Date.now() + Math.random();
     galleryImages.push({ id, file });
-    
-    console.log('✅ Imagen agregada a galería:', file.name);
 }
 
 function removeGalleryImage(id) {
     galleryImages = galleryImages.filter(img => img.id !== id);
     updateGalleryDisplay();
-    
-    console.log('🗑️ Imagen eliminada de galería');
 }
 
 function updateGalleryDisplay() {
     const container = document.getElementById('galleryPreview');
+    if (!container) return;
     
     if (galleryImages.length === 0) {
         container.innerHTML = '';
@@ -2380,27 +1636,12 @@ function updateGalleryDisplay() {
     }
 }
 
-// 🛡️ FUNCIONES AUXILIARES PARA IMÁGENES
-function handleDragOver(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.target.closest('.image-drop-zone').classList.add('dragover');
-}
-
-function handleDragLeave(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.target.closest('.image-drop-zone').classList.remove('dragover');
-}
-
 function validateImageFile(file) {
-    // Validar tipo
     if (!file.type.startsWith('image/')) {
         showError('Solo se permiten archivos de imagen');
         return false;
     }
     
-    // Validar tamaño
     if (file.size > maxFileSize) {
         showError('El archivo es muy grande. Máximo 5MB');
         return false;
@@ -2410,26 +1651,113 @@ function validateImageFile(file) {
 }
 
 function showError(message) {
-    // Crear mensaje de error temporal
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
+    errorDiv.className = 'error-message alert alert-warning';
     errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
     
-    // Agregar al final de la sección de imágenes
     const section = document.querySelector('.image-upload-section');
-    section.appendChild(errorDiv);
-    
-    // Remover después de 3 segundos
-    setTimeout(() => {
-        errorDiv.remove();
-    }, 3000);
-    
-    console.warn('❌ Error de imagen:', message);
+    if (section) {
+        section.appendChild(errorDiv);
+        setTimeout(() => errorDiv.remove(), 3000);
+    }
 }
 
-// 🧹 FUNCIONES DE LIMPIEZA
+// ==================== CREAR CENA ====================
+function createDinner() {
+    const form = document.getElementById('dinnerForm');
+    const formData = new FormData(form);
+    
+    // Validación de fecha
+    const datetime = formData.get('datetime');
+    if (datetime) {
+        const selectedDate = new Date(datetime);
+        const minDate = new Date();
+        minDate.setHours(minDate.getHours() + 1);
+        
+        if (selectedDate < minDate) {
+            showDateTimeError();
+            document.querySelector('input[name="datetime"]').focus();
+            alert('La cena debe programarse al menos 1 hora en el futuro.');
+            return false;
+        }
+    }
+    
+    hideDateTimeError();
+    
+    // Validaciones básicas
+    if (!formData.get('title')) {
+        alert('Por favor ingresa el título de la cena');
+        return;
+    }
+    
+    if (!formData.get('datetime')) {
+        alert('Por favor selecciona la fecha y hora');
+        return;
+    }
+    
+    if (!formData.get('location')) {
+        alert('Por favor selecciona una ubicación en el mapa');
+        return;
+    }
+
+    // Agregar token CSRF
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+    
+    // Agregar imágenes
+    if (coverImage) {
+        formData.append('cover_image', coverImage);
+    }
+    
+    galleryImages.forEach((img, index) => {
+        formData.append(`gallery_images[${index}]`, img.file);
+    });
+
+    // Mostrar indicador de carga
+    const submitBtn = document.querySelector('#newDinnerModal .btn-primary');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+    submitBtn.disabled = true;
+
+    // Enviar datos al servidor
+    fetch('/chef/dinners', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('¡Cena creada exitosamente!');
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newDinnerModal'));
+            modal.hide();
+            form.reset();
+            document.getElementById('selectedAddress').innerHTML = '';
+            
+            resetImageUploads();
+            resetMapLocation();
+            
+            window.location.reload();
+        } else {
+            if (data.errors && data.errors.datetime) {
+                showDateTimeError();
+                document.querySelector('input[name="datetime"]').focus();
+            }
+            alert('Error: ' + (data.message || 'No se pudo crear la cena'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error de conexión. Inténtalo de nuevo.');
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+// ==================== FUNCIONES DE LIMPIEZA ====================
 function resetImageUploads() {
-    // Limpiar imagen de portada
     coverImage = null;
     const preview = document.getElementById('coverImagePreview');
     const dropZone = document.getElementById('coverImageDropZone');
@@ -2441,20 +1769,12 @@ function resetImageUploads() {
         input.value = '';
     }
     
-    // Limpiar galería
     galleryImages = [];
     const galleryContainer = document.getElementById('galleryPreview');
-    if (galleryContainer) {
-        galleryContainer.innerHTML = '';
-    }
+    if (galleryContainer) galleryContainer.innerHTML = '';
     
-    // Limpiar contador
     const counter = document.querySelector('.image-counter');
-    if (counter) {
-        counter.remove();
-    }
-    
-    console.log('🧹 Imágenes limpiadas');
+    if (counter) counter.remove();
 }
 
 function resetMapLocation() {
@@ -2462,28 +1782,18 @@ function resetMapLocation() {
         const defaultLocation = { lat: -34.6037, lng: -58.3816 };
         marker.setPosition(defaultLocation);
         map.setCenter(defaultLocation);
-        map.setZoom(13);
+        map.setZoom(10);
         
-        if (infoWindow) {
-            infoWindow.close();
-        }
+        if (infoWindow) infoWindow.close();
     }
 }
 
-// 📤 FUNCIÓN PARA OBTENER DATOS DE IMÁGENES (para el formulario)
-function getImageData() {
-    return {
-        coverImage: coverImage,
-        galleryImages: galleryImages.map(img => img.file),
-        totalImages: (coverImage ? 1 : 0) + galleryImages.length
-    };
-}
-
-// Hacer funciones globales
-window.getImageData = getImageData;
+// ==================== FUNCIONES GLOBALES ====================
+window.initMap = initMap;
+window.initMapCallback = window.initMapCallback;
+window.createDinner = createDinner;
 window.removeCoverImage = removeCoverImage;
 window.changeCoverImage = changeCoverImage;
 window.removeGalleryImage = removeGalleryImage;
-window.createDinner = createDinner;
 </script>
 @endsection
