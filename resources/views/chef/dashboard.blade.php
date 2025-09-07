@@ -1088,8 +1088,8 @@ function initMap() {
             geocoder: !!google.maps.Geocoder
         });
 
-        // Ubicación por defecto - Colombia (Bogotá)
-        const defaultLocation = { lat: 4.7110, lng: -74.0721 };
+        // Ubicación por defecto - Argentina (Buenos Aires)
+        const defaultLocation = { lat: -34.6037, lng: -58.3816 };
         
         // Crear mapa
         map = new google.maps.Map(document.getElementById('map'), {
@@ -1136,7 +1136,7 @@ function initMap() {
         setupAdvancedSearch();
 
         // Inicializar con ubicación por defecto
-        updateLocationDisplay(defaultLocation, 'Bogotá, Colombia (ubicación predeterminada)');
+        updateLocationDisplay(defaultLocation, 'Buenos Aires, Argentina (ubicación predeterminada)');
 
         console.log('🎉 Google Maps inicializado exitosamente');
         
