@@ -157,7 +157,7 @@
                             <i class="fas fa-lock me-2"></i> Cambiar Contraseña
                         </h5>
                         
-                        <form action="{{ route('perfil.comensal.update-password') }}" method="POST">
+                        <form action="{{ route('perfil.comensal.update') }}" method="POST">
                             @csrf
                             @method('PUT')
 

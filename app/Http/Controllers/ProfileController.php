@@ -154,7 +154,7 @@ public function updatecomensal(Request $request)
         return redirect()->route('perfil.comensal.edit')->with('success', 'Contraseña actualizada correctamente.');
     }
     
-    // Actualización de perfil normal
+    // Actualización de perfil normal (tu código existente)
     $data = $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email,' . $user->id,
@@ -169,11 +169,6 @@ public function updatecomensal(Request $request)
     if ($request->filled('avatar_url')) {
         $data['avatar'] = $request->avatar_url;
     } elseif ($request->hasFile('avatar_file')) {
-        // Eliminar avatar anterior si existe y no es URL
-        if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
-            Storage::disk('public')->delete($user->avatar);
-        }
-        
         $data['avatar'] = $request->file('avatar_file')->store('avatars', 'public');
     }
 
@@ -181,5 +176,4 @@ public function updatecomensal(Request $request)
 
     return redirect()->route('perfil.comensal')->with('success', 'Perfil actualizado correctamente.');
 }
-
 }
