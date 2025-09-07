@@ -67,7 +67,6 @@
                                         <th>ID</th>
                                         <th>Título</th>
                                         <th>Slug</th>
-                                        <th>Estado</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -87,13 +86,7 @@
                                         <td>
                                             <code>/{{ $page['slug'] }}</code>
                                         </td>
-                                        <td>
-                                            @if($page['status'] == 'Publicada')
-                                                <span class="badge bg-success">{{ $page['status'] }}</span>
-                                            @else
-                                                <span class="badge bg-warning">{{ $page['status'] }}</span>
-                                            @endif
-                                        </td>
+                                    
                                         <td>
                                             <div class="action-buttons">
                                                 <button class="btn btn-sm btn-outline-primary" title="Ver">
