@@ -91,7 +91,7 @@ public function store(LoginRequest $request): RedirectResponse
     switch ($efectiveRole) {
      case 'admin':
     Log::info('🔧 Redirigiendo nuevo usuario admin');
-    return redirect('/')->with('success', 'Usuario admin creado correctamente'); // ✅ Redirección simple
+    return redirect('/admin')->with('success', 'Usuario admin creado correctamente');
             
         case 'chef_anfitrion':
             Log::info('👨‍🍳 Caso CHEF_ANFITRION detectado - Redirigiendo a chef.dashboard');
