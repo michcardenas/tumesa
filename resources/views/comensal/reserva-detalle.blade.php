@@ -63,10 +63,13 @@
                     </div>
 
                     <!-- Menú -->
-                    <div class="mt-3">
-                        <h5><i class="fas fa-utensils text-primary"></i> Menú</h5>
-                        <p>{{ $reserva->cena->menu }}</p>
-                    </div>
+                <div class="mt-3">
+                <h5><i class="fas fa-utensils text-primary"></i> Menú</h5>
+                <div class="menu-display">
+                    {{-- CAMBIO PRINCIPAL: Usar {!! !!} en lugar de {{ }} --}}
+                    {!! $reserva->cena->menu !!}
+                </div>
+            </div>
 
                     @if($reserva->cena->special_requirements)
                     <div class="mt-3">

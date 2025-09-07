@@ -59,10 +59,7 @@
                                             <div class="info-icon">
                                                 <i class="fas fa-map-marker-alt"></i>
                                             </div>
-                                            <div class="info-content">
-                                                <span class="info-label">Ubicación</span>
-                                                <span class="info-value">{{ $reserva->cena->location }}</span>
-                                            </div>
+                                          
                                         </div>
 
                                         <div class="info-item">
