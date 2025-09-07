@@ -109,6 +109,7 @@
                         <form action="{{ route('perfil.comensal.update') }}" method="POST">
                             @csrf
                             @method('PUT')
+                            <input type="hidden" name="update_type" value="profile">
 
                             {{-- Información básica --}}
                             <div class="row">

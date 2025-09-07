@@ -132,17 +132,50 @@ class ProfileController extends Controller
         // Retorna la vista de edición de perfil del comensal
         return view('comensal.perfil', compact('user'));
     }
-    public function updatecomensal(Request $request)
+public function updatecomensal(Request $request)
 {
     $user = Auth::user();
+    
+    // Verificar si es actualización de contraseña
+    if ($request->input('update_type') === 'password') {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
 
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'La contraseña actual no es correcta']);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->route('perfil.comensal.edit')->with('success', 'Contraseña actualizada correctamente.');
+    }
+    
+    // Actualización de perfil normal
     $data = $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email,' . $user->id,
         'telefono' => 'nullable|string|max:20',
-        'direccion' => 'nullable|string|max:255',
         'bio' => 'nullable|string',
+        // Avatar
+        'avatar_url' => 'nullable|url',
+        'avatar_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
     ]);
+
+    // Manejar avatar
+    if ($request->filled('avatar_url')) {
+        $data['avatar'] = $request->avatar_url;
+    } elseif ($request->hasFile('avatar_file')) {
+        // Eliminar avatar anterior si existe y no es URL
+        if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+        
+        $data['avatar'] = $request->file('avatar_file')->store('avatars', 'public');
+    }
 
     $user->update($data);
 
