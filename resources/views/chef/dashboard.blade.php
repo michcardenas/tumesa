@@ -1070,18 +1070,30 @@ function loadGoogleMaps() {
 
 // 🗺️ INICIALIZAR MAPA SIMPLE
 function initMap() {
+    console.log('🗺️ Inicializando Google Maps...');
+    
     try {
-        // Verificar que Google Maps esté cargado
-        if (typeof google === 'undefined' || !google.maps) {
-            throw new Error('Google Maps no está cargado');
+        // Verificar APIs disponibles
+        if (!google.maps) {
+            throw new Error('Google Maps no está disponible');
         }
+        
+        if (!google.maps.places) {
+            throw new Error('Google Places API no está disponible');
+        }
+        
+        console.log('✅ APIs de Google disponibles:', {
+            maps: !!google.maps,
+            places: !!google.maps.places,
+            geocoder: !!google.maps.Geocoder
+        });
 
-        // Ubicación por defecto (Buenos Aires, Argentina)
-        const defaultLocation = { lat: -34.6037, lng: -58.3816 };
+        // Ubicación por defecto - Colombia (Bogotá)
+        const defaultLocation = { lat: 4.7110, lng: -74.0721 };
         
         // Crear mapa
         map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 13,
+            zoom: 10,
             center: defaultLocation,
             mapTypeControl: false,
             streetViewControl: false,
@@ -1089,57 +1101,98 @@ function initMap() {
         });
 
         // Inicializar servicios
-        infoWindow = new google.maps.InfoWindow();
         geocoder = new google.maps.Geocoder();
         autocompleteService = new google.maps.places.AutocompleteService();
         placesService = new google.maps.places.PlacesService(map);
+        infoWindow = new google.maps.InfoWindow();
+
+        console.log('✅ Servicios de Google Maps inicializados:', {
+            geocoder: !!geocoder,
+            autocomplete: !!autocompleteService,
+            places: !!placesService
+        });
 
         // Crear marcador
         marker = new google.maps.Marker({
             position: defaultLocation,
             map: map,
             title: 'Ubicación de la cena',
-            draggable: true,
-            icon: {
-                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
-                        <circle cx="12" cy="9" r="2" fill="#ffffff"/>
-                    </svg>
-                `),
-                scaledSize: new google.maps.Size(40, 40),
-                anchor: new google.maps.Point(20, 40)
-            }
+            draggable: true
         });
 
-        // Event listeners del mapa
+        // Event listeners
         map.addListener('click', function(event) {
+            console.log('🖱️ Click en mapa:', event.latLng.toString());
             placeMarker(event.latLng);
             updateLocationDisplay(event.latLng);
         });
 
-        // Event listener del marcador
         marker.addListener('dragend', function(event) {
+            console.log('🔄 Marcador arrastrado:', event.latLng.toString());
             updateLocationDisplay(event.latLng);
         });
 
-        // 🔍 CONFIGURAR BUSCADOR SIMPLE
-        setupSimpleSearch();
+        // Configurar buscador mejorado
+        setupAdvancedSearch();
 
-        // Inicializar display
-        updateLocationDisplay(defaultLocation, 'Buenos Aires, Argentina (ubicación predeterminada)');
+        // Inicializar con ubicación por defecto
+        updateLocationDisplay(defaultLocation, 'Bogotá, Colombia (ubicación predeterminada)');
 
-        console.log('🌍 Google Maps con buscador simple inicializado exitosamente');
+        console.log('🎉 Google Maps inicializado exitosamente');
         
     } catch (error) {
         console.error('❌ Error inicializando Google Maps:', error);
-        document.getElementById('map').innerHTML = 
-            `<div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle"></i> 
-                Error cargando el mapa: ${error.message}
-                <br><small>Verifica tu conexión a internet e intenta de nuevo.</small>
-            </div>`;
+        showMapError(`Error inicializando el mapa: ${error.message}`);
     }
+}
+function setupAdvancedSearch() {
+    console.log('🔍 Configurando buscador avanzado...');
+    
+    const input = document.getElementById('locationInput');
+    if (!input) {
+        console.error('❌ Input de ubicación no encontrado');
+        return;
+    }
+
+    // Crear contenedor de sugerencias si no existe
+    if (!document.getElementById('suggestions-container')) {
+        const container = document.createElement('div');
+        container.id = 'suggestions-container';
+        container.style.position = 'relative';
+        input.parentNode.insertBefore(container, input.nextSibling);
+    }
+
+    let searchTimeout;
+    
+    // Buscar mientras escribe
+    input.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+        
+        if (query.length >= 3) {
+            searchTimeout = setTimeout(() => {
+                console.log('🔍 Buscando:', query);
+                getPlacePredictions(query);
+            }, 500); // Aumenté el delay para evitar muchas llamadas
+        } else {
+            hideSuggestions();
+        }
+    });
+
+    // Buscar al presionar Enter
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchLocation();
+        }
+    });
+
+    // Ocultar sugerencias al perder foco
+    input.addEventListener('blur', function() {
+        setTimeout(hideSuggestions, 200);
+    });
+
+    console.log('✅ Buscador configurado');
 }
 
 // 🔍 CONFIGURAR BUSCADOR SIMPLE CON GEOCODING
@@ -1211,6 +1264,271 @@ function getPlaceSuggestions(query) {
         }
     });
 }
+function getPlacePredictions(query) {
+    if (!autocompleteService) {
+        console.error('❌ AutocompleteService no disponible');
+        fallbackToGeocoding(query);
+        return;
+    }
+
+    console.log('🔍 Obteniendo predicciones para:', query);
+
+    const request = {
+        input: query,
+        types: ['establishment', 'geocode'],
+        // Priorizar Colombia pero permitir otros países
+        componentRestrictions: { country: ['co', 'ar', 'mx', 'us', 'es'] }
+    };
+
+    autocompleteService.getPlacePredictions(request, function(predictions, status) {
+        console.log('📋 Estado de predicciones:', status, 'Resultados:', predictions?.length || 0);
+        
+        if (status === google.maps.places.PlacesServiceStatus.OK && predictions && predictions.length > 0) {
+            showSuggestions(predictions);
+        } else {
+            console.warn('⚠️ No se encontraron predicciones, usando geocoding como fallback');
+            // Si no hay predicciones, usar geocoding como fallback
+            setTimeout(() => fallbackToGeocoding(query), 100);
+        }
+    });
+}
+
+// Fallback a geocoding si Places API falla
+function fallbackToGeocoding(query) {
+    if (!geocoder) {
+        console.error('❌ Geocoder no disponible');
+        return;
+    }
+
+    console.log('🔄 Usando geocoding como fallback para:', query);
+
+    geocoder.geocode({ address: query }, function(results, status) {
+        console.log('🌍 Estado de geocoding:', status, 'Resultados:', results?.length || 0);
+        
+        if (status === 'OK' && results && results.length > 0) {
+            // Convertir resultados de geocoding a formato de sugerencias
+            const suggestions = results.slice(0, 5).map(result => ({
+                description: result.formatted_address,
+                place_id: result.place_id,
+                structured_formatting: {
+                    main_text: result.address_components[0]?.long_name || result.formatted_address,
+                    secondary_text: result.formatted_address
+                },
+                types: result.types
+            }));
+            
+            showSuggestions(suggestions);
+        }
+    });
+}
+
+// Mostrar sugerencias mejorado
+function showSuggestions(predictions) {
+    hideSuggestions();
+    
+    const container = document.getElementById('suggestions-container');
+    if (!container) return;
+
+    const dropdown = document.createElement('div');
+    dropdown.id = 'suggestions-dropdown';
+    dropdown.className = 'suggestions-dropdown';
+    
+    dropdown.innerHTML = `
+        <div class="suggestions-header">
+            <i class="fas fa-search"></i> Lugares encontrados (${predictions.length})
+        </div>
+    `;
+
+    predictions.slice(0, 8).forEach(prediction => {
+        const item = document.createElement('div');
+        item.className = 'suggestion-item';
+        
+        const icon = getPlaceIcon(prediction.types);
+        
+        item.innerHTML = `
+            <i class="${icon}" style="color: #2563eb; margin-right: 10px;"></i>
+            <div class="suggestion-content">
+                <div class="suggestion-main">${prediction.structured_formatting.main_text}</div>
+                <div class="suggestion-secondary">${prediction.structured_formatting.secondary_text || ''}</div>
+            </div>
+        `;
+        
+        item.addEventListener('click', function() {
+            selectPlace(prediction);
+        });
+        
+        dropdown.appendChild(item);
+    });
+
+    container.appendChild(dropdown);
+    console.log('📋 Mostrando', predictions.length, 'sugerencias');
+}
+
+// Seleccionar lugar de las sugerencias
+function selectPlace(prediction) {
+    console.log('📍 Lugar seleccionado:', prediction.description);
+    
+    hideSuggestions();
+    document.getElementById('locationInput').value = prediction.description;
+
+    // Si tiene place_id, obtener detalles
+    if (prediction.place_id && placesService) {
+        const request = {
+            placeId: prediction.place_id,
+            fields: ['name', 'geometry', 'formatted_address', 'rating', 'types']
+        };
+
+        placesService.getDetails(request, function(place, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                console.log('✅ Detalles del lugar obtenidos');
+                const location = place.geometry.location;
+                placeMarker(location);
+                map.setCenter(location);
+                map.setZoom(16);
+                updateLocationDisplayAdvanced(location, place);
+            } else {
+                console.warn('⚠️ No se pudieron obtener detalles, usando geocoding');
+                geocodeAndPlace(prediction.description);
+            }
+        });
+    } else {
+        // Fallback a geocoding
+        geocodeAndPlace(prediction.description);
+    }
+}
+
+// Geocodificar y colocar marcador
+function geocodeAndPlace(address) {
+    geocoder.geocode({ address: address }, function(results, status) {
+        if (status === 'OK' && results[0]) {
+            const location = results[0].geometry.location;
+            placeMarker(location);
+            map.setCenter(location);
+            map.setZoom(15);
+            updateLocationDisplay(location, results[0].formatted_address);
+        }
+    });
+}
+
+// Búsqueda directa mejorada
+function searchLocation() {
+    const query = document.getElementById('locationInput').value.trim();
+    
+    if (!query) {
+        alert('Por favor ingresa un lugar para buscar');
+        return;
+    }
+
+    console.log('🔍 Búsqueda directa:', query);
+    
+    // Intentar con Places API primero
+    if (autocompleteService) {
+        getPlacePredictions(query);
+    } else {
+        // Fallback directo a geocoding
+        fallbackToGeocoding(query);
+    }
+}
+
+// Obtener icono según tipo de lugar
+function getPlaceIcon(types) {
+    if (!types) return 'fas fa-map-marker-alt';
+    
+    if (types.includes('restaurant')) return 'fas fa-utensils';
+    if (types.includes('lodging')) return 'fas fa-bed';
+    if (types.includes('tourist_attraction')) return 'fas fa-camera';
+    if (types.includes('shopping_mall')) return 'fas fa-shopping-bag';
+    if (types.includes('park')) return 'fas fa-tree';
+    if (types.includes('locality')) return 'fas fa-city';
+    if (types.includes('country')) return 'fas fa-flag';
+    return 'fas fa-map-marker-alt';
+}
+
+// Funciones auxiliares
+function hideSuggestions() {
+    const dropdown = document.getElementById('suggestions-dropdown');
+    if (dropdown) {
+        dropdown.remove();
+    }
+}
+
+function placeMarker(location) {
+    if (marker) {
+        marker.setPosition(location);
+    }
+    if (map) {
+        map.setCenter(location);
+    }
+}
+
+function updateLocationDisplay(location, placeName = null) {
+    let lat, lng;
+    
+    if (typeof location.lat === 'function') {
+        lat = location.lat();
+        lng = location.lng();
+    } else {
+        lat = location.lat;
+        lng = location.lng;
+    }
+    
+    document.getElementById('latitude').value = lat;
+    document.getElementById('longitude').value = lng;
+    
+    const displayName = placeName || document.getElementById('locationInput').value.trim() || 'Ubicación seleccionada';
+    
+    const addressElement = document.getElementById('selectedAddress');
+    addressElement.innerHTML = `
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <strong>${displayName}</strong>
+            <br>
+            <small>Coordenadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}</small>
+        </div>
+    `;
+    
+    console.log('📍 Ubicación actualizada:', displayName, `(${lat}, ${lng})`);
+}
+
+function updateLocationDisplayAdvanced(location, place) {
+    updateLocationDisplay(location, place.formatted_address);
+    
+    if (infoWindow && marker) {
+        const rating = place.rating ? `⭐ ${place.rating}` : '';
+        infoWindow.setContent(`
+            <div style="padding: 10px; max-width: 300px;">
+                <strong>${place.name || place.formatted_address}</strong>
+                ${rating}<br>
+                <small>${place.formatted_address}</small>
+            </div>
+        `);
+        infoWindow.open(map, marker);
+    }
+}
+
+function showMapError(message) {
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+        mapElement.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Error de Google Maps:</strong> ${message}
+                <br><br>
+                <small>Posibles soluciones:</small>
+                <ul style="margin: 5px 0; padding-left: 20px;">
+                    <li>Verifica tu conexión a internet</li>
+                    <li>Recarga la página</li>
+                    <li>Contacta al administrador si el problema persiste</li>
+                </ul>
+            </div>
+        `;
+    }
+}
+
+// Hacer funciones globales
+window.loadGoogleMaps = loadGoogleMaps;
+window.initMap = initMap;
+window.searchLocation = searchLocation;
 
 // 📋 MOSTRAR SUGERENCIAS
 function showSuggestions(predictions) {
