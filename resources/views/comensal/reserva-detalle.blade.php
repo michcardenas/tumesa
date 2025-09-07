@@ -206,11 +206,31 @@
                     </button>
                     @endif
 
-                    @if($puedeCalificar)
+                   @if($reserva->resena)
+                    <!-- Mostrar calificación existente -->
+                    <div class="card border-warning mb-2">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Tu Calificación</h6>
+                            <div class="mb-2">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $reserva->resena->calificacion)
+                                        <i class="fas fa-star text-warning"></i>
+                                    @else
+                                        <i class="far fa-star text-muted"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                            @if($reserva->resena->comentario)
+                                <p class="card-text small">{{ $reserva->resena->comentario }}</p>
+                            @endif
+                        </div>
+                    </div>
+                @elseif($puedeCalificar)
+                    <!-- Mostrar botón para calificar -->
                     <button class="btn btn-warning w-100 mb-2" onclick="calificarCena({{ $reserva->id }})">
                         <i class="fas fa-star"></i> Calificar Experiencia
                     </button>
-                    @endif
+                @endif
 
                     @if($reserva->calificacion)
                     <div class="text-center mb-3">

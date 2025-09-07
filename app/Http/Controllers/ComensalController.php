@@ -103,12 +103,12 @@ public function verDetalleReserva(Reserva $reserva)
     }
 
     // Cargar relaciones necesarias
-    $reserva->load(['cena', 'cena.chef']);
+    $reserva->load(['cena', 'cena.chef', 'resena']); // Agregar la relación resena
 
     // Calcular información adicional
-    $puedeCalificar = $reserva->puede_calificar;
+    $puedeCalificar = $reserva->puede_calificar && !$reserva->resena; // Solo si no tiene reseña
     $puedeCancelar = $reserva->puede_cancelar;
-    
+
     // Estado de la cena
     $ahora = now();
     $fechaCena = $reserva->cena->datetime;
