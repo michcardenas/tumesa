@@ -61,18 +61,18 @@
                             <div class="mb-1">
                                 {{-- estrellas llenas --}}
                                 @for($i=0; $i<$stars; $i++)
-                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star text-warning"></i>
                                 @endfor
                                 {{-- media estrella --}}
                                 @if($half)
-                                    <i class="fas fa-star-half-alt"></i>
+                                    <i class="fas fa-star-half-alt text-warning"></i>
                                 @endif
                                 {{-- estrellas vacías --}}
                                 @for($i=0; $i<(5 - $stars - ($half ? 1 : 0)); $i++)
-                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star text-muted"></i>
                                 @endfor
                             </div>
-                            <span class="badge bg-comensal" style="background:#2563eb;">{{ number_format($rating, 1) }} / 5</span>
+                            <span class="badge bg-primary">{{ number_format($rating, 1) }} / 5</span>
                         </div>
 
                         <hr>
@@ -85,7 +85,7 @@
                             <div class="mb-3">
                                 <label class="form-label">URL de Avatar (opcional)</label>
                                 <input type="url" name="avatar_url" class="form-control" placeholder="https://..." value="{{ old('avatar_url') }}">
-                                <small class="text-muted">Si pegas una URL (por ejemplo, la de Google), tendrá prioridad sobre la imagen subida.</small>
+                                <small class="text-muted">Si pegas una URL, tendrá prioridad sobre la imagen subida.</small>
                             </div>
 
                             <div class="mb-3">
@@ -110,45 +110,77 @@
                             @csrf
                             @method('PUT')
 
+                            {{-- Información básica --}}
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="name" class="form-label">Nombre</label>
+                                    <label for="name" class="form-label">Nombre *</label>
                                     <input type="text" name="name" class="form-control"
                                            value="{{ old('name', $user->name) }}" required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Correo</label>
+                                    <label for="email" class="form-label">Correo *</label>
                                     <input type="email" name="email" class="form-control"
                                            value="{{ old('email', $user->email) }}" required>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="telefono" class="form-label">Teléfono</label>
-                                    <input type="text" name="telefono" class="form-control"
-                                           value="{{ old('telefono', $user->telefono) }}">
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="direccion" class="form-label">Dirección</label>
-                                    <input type="text" name="direccion" class="form-control"
-                                           value="{{ old('direccion', $user->direccion) }}">
-                                </div>
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="text" name="telefono" class="form-control"
+                                       value="{{ old('telefono', $user->telefono) }}" 
+                                       placeholder="Ej: +54 11 1234-5678">
                             </div>
 
                             <div class="mb-3">
                                 <label for="bio" class="form-label">Biografía</label>
-                                <textarea name="bio" class="form-control" rows="4">{{ old('bio', $user->bio) }}</textarea>
+                                <textarea name="bio" class="form-control" rows="4" 
+                                          placeholder="Cuéntanos algo sobre ti...">{{ old('bio', $user->bio) }}</textarea>
+                                <small class="text-muted">Describe tus gustos culinarios, experiencias gastronómicas favoritas, etc.</small>
                             </div>
 
                             <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-comensal">
+                                <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save me-1"></i> Guardar Cambios
                                 </button>
                                 <a href="{{ route('perfil.comensal') }}" class="btn btn-outline-secondary">Cancelar</a>
                             </div>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Sección para cambiar contraseña --}}
+                <div class="card shadow-sm mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-lock me-2"></i> Cambiar Contraseña
+                        </h5>
+                        
+                        <form action="{{ route('perfil.comensal.update-password') }}" method="POST">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="mb-3">
+                                <label for="current_password" class="form-label">Contraseña Actual *</label>
+                                <input type="password" name="current_password" class="form-control" required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">Nueva Contraseña *</label>
+                                    <input type="password" name="password" class="form-control" required minlength="8">
+                                    <small class="text-muted">Mínimo 8 caracteres</small>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="password_confirmation" class="form-label">Confirmar Nueva Contraseña *</label>
+                                    <input type="password" name="password_confirmation" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-key me-1"></i> Actualizar Contraseña
+                            </button>
                         </form>
                     </div>
                 </div>
