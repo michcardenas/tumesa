@@ -218,25 +218,7 @@
                             <i class="fas fa-info-circle me-2"></i>Información
                         </h5>
                         <div class="contact-info">
-                            @if($cena->user->telefono)
-                            <div class="contact-item">
-                                <i class="fas fa-phone text-primary"></i>
-                                <div class="contact-content">
-                                    <strong>Teléfono</strong>
-                                    <span>{{ $cena->user->telefono }}</span>
-                                </div>
-                            </div>
-                            @endif
-
-                            @if($cena->user->direccion)
-                            <div class="contact-item">
-                                <i class="fas fa-map-marker-alt text-primary"></i>
-                                <div class="contact-content">
-                                    <strong>Ubicación Base</strong>
-                                    <span>{{ Str::limit($cena->user->direccion, 50) }}</span>
-                                </div>
-                            </div>
-                            @endif
+                           
 
                             @if($cena->user->especialidad)
                             <div class="contact-item">
