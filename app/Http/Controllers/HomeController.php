@@ -18,11 +18,11 @@ public function index()
 {
     $data = $this->getWelcomeData();
     
-    // Obtener contenidos de páginas organizados por pagina_id
-    $contenidosPaginas = \App\Models\Pagina::all()->groupBy('pagina_id');
+    // Obtener contenidos específicos de la página 'experiencias' y organizarlos por clave
+    $contenidosExperiencias = \App\Models\Pagina::porPagina('experiencias')->get()->keyBy('clave');
     
     // Agregar contenidos al array de datos
-    $data['contenidos_paginas'] = $contenidosPaginas;
+    $data['contenidos'] = $contenidosExperiencias;
     
     return view('welcome', $data);
 }
