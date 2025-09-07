@@ -106,7 +106,7 @@
             <div class="col-md-8">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <form action="{{ route('perfil.comensal.update') }}" method="POST">
+                        <form action="{{ route('perfil.comensal.update') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <input type="hidden" name="update_type" value="profile">
@@ -138,6 +138,13 @@
                                 <textarea name="bio" class="form-control" rows="4" 
                                           placeholder="Cuéntanos algo sobre ti...">{{ old('bio', $user->bio) }}</textarea>
                                 <small class="text-muted">Describe tus gustos culinarios, experiencias gastronómicas favoritas, etc.</small>
+                            </div>
+
+                            {{-- Campos para el avatar --}}
+                            <div class="mb-3">
+                                <label class="form-label">Cambiar Foto de Perfil</label>
+                                <input type="file" name="avatar_file" class="form-control" accept="image/*" id="avatarFileInput">
+                                <small class="text-muted">JPG/PNG/WebP hasta 2MB (opcional)</small>
                             </div>
 
                             <div class="d-flex gap-2">
