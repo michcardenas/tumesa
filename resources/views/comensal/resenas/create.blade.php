@@ -53,7 +53,7 @@
 
                         <!-- Botones -->
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('comensal.reservas.show', $reserva->id) }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('comensal.dashboard') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Volver
                             </a>
                             <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" disabled>
