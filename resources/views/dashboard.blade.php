@@ -93,15 +93,15 @@
                                                     </button>
                                                     
                                                     @if($page['slug'] === 'experiencias')
-                                                        <a href="{{ route('admin.paginas.experiencias.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                        <a href="{{ route('admin.paginas.experiencias') }}" class="btn btn-sm btn-outline-success" title="Editar">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     @elseif($page['slug'] === 'ser-chef')
-                                                        <a href="{{ route('admin.paginas.ser-chef.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                        <a href="{{ route('admin.paginas.ser-chef') }}" class="btn btn-sm btn-outline-success" title="Editar">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     @elseif($page['slug'] === 'como-funciona')
-                                                        <a href="{{ route('admin.paginas.como-funciona.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                        <a href="{{ route('admin.paginas.como-funciona') }}" class="btn btn-sm btn-outline-success" title="Editar">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     @endif
