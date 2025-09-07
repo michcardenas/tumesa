@@ -28,13 +28,12 @@
                 Editar Perfil
             </a>
         </li>
-        <li class="menu-item">
-            <a href="#" class="menu-link disabled">
-                <i class="fas fa-star"></i>
-                Reseñas
-                <span class="coming-soon">Próximamente</span>
-            </a>
-        </li>
+   <li class="menu-item">
+    <a href="{{ route('resenas.index') }}" class="menu-link">
+        <i class="fas fa-star"></i>
+        Reseñas
+    </a>
+</li>
     </ul>
 </div>
 

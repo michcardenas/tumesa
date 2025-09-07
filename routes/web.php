@@ -151,7 +151,7 @@ Route::get('/perfil-comensal', [ProfileController::class, 'perfilComensal'])
     Route::put('/perfil-comensal', [ProfileController::class, 'updatecomensal'])->name('perfil.comensal.update');
     Route::get('/reservas/{reserva}', [ComensalController::class, 'verDetalleReserva'])
         ->name('reservas.detalle');
-
+Route::get('/resenas', [ResenaController::class, 'index'])->name('resenas.index');
 
 });
 Route::get('/experiencias', [ExperienciasController::class, 'index'])

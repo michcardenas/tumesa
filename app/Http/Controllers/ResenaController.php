@@ -32,4 +32,19 @@ public function store(Request $request)
         ->with('success', '¡Gracias por tu reseña!');
 }
 
+
+public function index()
+{
+    $chef = auth()->user(); // Chef autenticado
+    
+    // Obtener reseñas de las cenas del chef
+    $resenas = Reseña::whereHas('cena', function($query) use ($chef) {
+        $query->where('chef_id', $chef->id);
+    })
+    ->with(['cena', 'user', 'reserva'])
+    ->orderBy('created_at', 'desc')
+    ->get();
+    
+    return view('chef.resenas', compact('resenas'));
+}
 }
