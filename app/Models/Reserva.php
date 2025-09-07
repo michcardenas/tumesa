@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 use App\Models\Cena;
 use App\Models\User;
-use App\Models\Resena;
+use App\Models\Reseña;
 
 
 class Reserva extends Model
