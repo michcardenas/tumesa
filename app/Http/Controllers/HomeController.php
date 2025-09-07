@@ -14,26 +14,18 @@ class HomeController extends Controller
     /**
      * Página principal de la aplicación
      */
-    public function index()
-    {
-        // Si está autenticado, redirigir al dashboard correspondiente
-        // if (auth()->check()) {
-        //     $user = auth()->user();
-            
-        //     // Redirigir según el rol del usuario (solo Spatie)
-        //     if (method_exists($user, 'hasRole') && ($user->hasRole('chef') || $user->hasRole('chef_anfitrion'))) {
-        //         return redirect()->route('chef.dashboard');
-        //     }
-            
-        //     // Para otros usuarios, redirigir a un dashboard general
-        //     return redirect()->route('dashboard');
-        // }
-
-        // Si no está autenticado, mostrar página de bienvenida con datos
-        $data = $this->getWelcomeData();
-        
-        return view('welcome', $data);
-    }
+public function index()
+{
+    $data = $this->getWelcomeData();
+    
+    // Obtener contenidos de páginas organizados por pagina_id
+    $contenidosPaginas = \App\Models\Pagina::all()->groupBy('pagina_id');
+    
+    // Agregar contenidos al array de datos
+    $data['contenidos_paginas'] = $contenidosPaginas;
+    
+    return view('welcome', $data);
+}
 
     /**
      * Obtener datos para la página de bienvenida

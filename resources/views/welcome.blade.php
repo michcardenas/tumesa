@@ -9,17 +9,25 @@
             <div class="row align-items-center min-vh-100">
                 <div class="col-lg-6">
                     <div class="hero-content">
-                        <h1 class="hero-title">Descubre experiencias gastronómicas únicas en <span class="text-primary">hogares locales</span></h1>
-                        <p class="hero-subtitle">Conecta con chefs anfitriones apasionados y disfruta de cenas íntimas, auténticas y memorables en espacios privados únicos.</p>
+                        <h1 class="hero-title">
+                            {!! $contenidos['hero_titulo']->valor ?? 'Descubre experiencias gastronómicas únicas en <span class="text-primary">hogares locales</span>' !!}
+                        </h1>
+                        <p class="hero-subtitle">
+                            {{ $contenidos['hero_subtitulo']->valor ?? 'Conecta con chefs anfitriones apasionados y disfruta de cenas íntimas, auténticas y memorables en espacios privados únicos.' }}
+                        </p>
                         <div class="hero-buttons">
-                            <a href="#experiencias" class="btn btn-primary btn-lg me-3">Explorar Experiencias</a>
-                            <a href="#convertirse-chef" class="btn btn-outline-secondary btn-lg">Convertirse en Chef</a>
+                            <a href="#experiencias" class="btn btn-primary btn-lg me-3">
+                                {{ $contenidos['hero_boton1']->valor ?? 'Explorar Experiencias' }}
+                            </a>
+                            <a href="#convertirse-chef" class="btn btn-outline-secondary btn-lg">
+                                {{ $contenidos['hero_boton2']->valor ?? 'Convertirse en Chef' }}
+                            </a>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="hero-image">
-                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                        <img src="{{ $contenidos['hero_imagen']->valor ?? 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80' }}" 
                              alt="Experiencia gastronómica en hogar" class="img-fluid rounded-4 shadow-lg">
                     </div>
                 </div>
@@ -31,203 +39,213 @@
     <section id="por-que-elegir" class="py-5 bg-white">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="section-title">¿Por qué elegir TuMesa?</h2>
-                <p class="section-subtitle">Descubre lo que hace especial cada experiencia gastronómica</p>
+                <h2 class="section-title">
+                    {{ $contenidos['elegir_titulo']->valor ?? '¿Por qué elegir TuMesa?' }}
+                </h2>
+                <p class="section-subtitle">
+                    {{ $contenidos['elegir_subtitulo']->valor ?? 'Descubre lo que hace especial cada experiencia gastronómica' }}
+                </p>
             </div>
             <div class="row g-4">
+                <!-- Feature 1 -->
                 <div class="col-md-4">
                     <div class="feature-card text-center">
                         <div class="feature-icon">
-                            <i class="fas fa-utensils"></i>
+                            <i class="{{ $contenidos['feature1_icono']->valor ?? 'fas fa-utensils' }}"></i>
                         </div>
-                        <h4>Culinarias Auténticas</h4>
-                        <p>Experimenta sabores auténticos preparados por chefs locales apasionados con ingredientes frescos y recetas tradicionales.</p>
+                        <h4>{{ $contenidos['feature1_titulo']->valor ?? 'Culinarias Auténticas' }}</h4>
+                        <p>{{ $contenidos['feature1_descripcion']->valor ?? 'Experimenta sabores auténticos preparados por chefs locales apasionados con ingredientes frescos y recetas tradicionales.' }}</p>
                     </div>
                 </div>
+                <!-- Feature 2 -->
                 <div class="col-md-4">
                     <div class="feature-card text-center">
                         <div class="feature-icon">
-                            <i class="fas fa-users"></i>
+                            <i class="{{ $contenidos['feature2_icono']->valor ?? 'fas fa-users' }}"></i>
                         </div>
-                        <h4>Cocineros Todos</h4>
-                        <p>Conecta con una comunidad diversa de chefs anfitriones, cada uno con su propia historia y especialidad culinaria única.</p>
+                        <h4>{{ $contenidos['feature2_titulo']->valor ?? 'Cocineros Todos' }}</h4>
+                        <p>{{ $contenidos['feature2_descripcion']->valor ?? 'Conecta con una comunidad diversa de chefs anfitriones, cada uno con su propia historia y especialidad culinaria única.' }}</p>
                     </div>
                 </div>
+                <!-- Feature 3 -->
                 <div class="col-md-4">
                     <div class="feature-card text-center">
                         <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
+                            <i class="{{ $contenidos['feature3_icono']->valor ?? 'fas fa-shield-alt' }}"></i>
                         </div>
-                        <h4>Segura y Confiable</h4>
-                        <p>Todas nuestras experiencias están verificadas y nuestros chefs pasan por un proceso de selección riguroso para tu seguridad.</p>
+                        <h4>{{ $contenidos['feature3_titulo']->valor ?? 'Segura y Confiable' }}</h4>
+                        <p>{{ $contenidos['feature3_descripcion']->valor ?? 'Todas nuestras experiencias están verificadas y nuestros chefs pasan por un proceso de selección riguroso para tu seguridad.' }}</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-  <!-- Experiencias Destacadas -->
-<section id="experiencias" class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Experiencias Destacadas</h2>
-            <p class="section-subtitle">Las experiencias mejor valoradas por nuestros comensales</p>
-        </div>
-        
-        @if($cenas_destacadas->count() > 0)
-        <div class="row g-4">
-            @foreach($cenas_destacadas->take(6) as $cena)
-            <div class="col-md-6 col-lg-4">
-                <div class="experience-card">
-                    @if($cena['cover_image_url'])
-                        <img src="{{ $cena['cover_image_url'] }}" 
-                             alt="{{ $cena['title'] }}" 
-                             class="experience-image"
-                             loading="lazy">
-                    @else
-                        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
-                             alt="{{ $cena['title'] }}" 
-                             class="experience-image"
-                             loading="lazy">
-                    @endif
-                    
-                    <div class="experience-content">
-                        <h5>{{ $cena['title'] }}</h5>
-                        <p class="experience-chef">{{ $cena['chef_name'] }}</p>
+    <!-- Experiencias Destacadas - Esta sección mantiene la lógica de BD original -->
+    <section id="experiencias" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Experiencias Destacadas</h2>
+                <p class="section-subtitle">Las experiencias mejor valoradas por nuestros comensales</p>
+            </div>
+            
+            @if($cenas_destacadas->count() > 0)
+            <div class="row g-4">
+                @foreach($cenas_destacadas->take(6) as $cena)
+                <div class="col-md-6 col-lg-4">
+                    <div class="experience-card">
+                        @if($cena['cover_image_url'])
+                            <img src="{{ $cena['cover_image_url'] }}" 
+                                 alt="{{ $cena['title'] }}" 
+                                 class="experience-image"
+                                 loading="lazy">
+                        @else
+                            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                                 alt="{{ $cena['title'] }}" 
+                                 class="experience-image"
+                                 loading="lazy">
+                        @endif
                         
-                        {{-- CAMBIO PRINCIPAL: Preview limpio del menú --}}
-                        <div class="experience-description">
-                            @php
-                                // Limpiar HTML y crear preview
-                                $menuText = strip_tags($cena['menu_preview']);
-                                $menuText = preg_replace('/\s+/', ' ', $menuText); // Limpiar espacios extra
-                                $menuText = trim($menuText);
-                                
-                                // Si está vacío, usar un texto por defecto
-                                if (empty($menuText)) {
-                                    $menuText = 'Deliciosa experiencia culinaria preparada especialmente para ti.';
-                                }
-                                
-                                // Limitar a 100 caracteres para las tarjetas
-                                $preview = Str::limit($menuText, 100);
-                            @endphp
+                        <div class="experience-content">
+                            <h5>{{ $cena['title'] }}</h5>
+                            <p class="experience-chef">{{ $cena['chef_name'] }}</p>
                             
-                            <p class="menu-preview-text">{{ $preview }}</p>
-                        </div>
-                        
-                        <div class="experience-meta mb-2">
-                            <small class="text-muted">
-                                <i class="fas fa-calendar-alt me-1"></i>
-                                {{ $cena['formatted_date'] }}
-                            </small>
-                            <small class="text-muted ms-3">
-                                <i class="fas fa-map-marker-alt me-1"></i>
-                                {{ Str::limit($cena['location'], 20) }}
-                            </small>
-                        </div>
-                        
-                        <div class="experience-availability mb-2">
-                            @if($cena['available_spots'] > 0)
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check-circle me-1"></i>
-                                    {{ $cena['available_spots'] }} espacios disponibles
-                                </span>
-                            @else
-                                <span class="badge bg-warning">
-                                    <i class="fas fa-hourglass-half me-1"></i>
-                                    Lista de espera
-                                </span>
-                            @endif
-                        </div>
-                        
-                        <div class="experience-footer">
-                            <span class="experience-price">{{ $cena['formatted_price'] }}/persona</span>
-                            @if($cena['available_spots'] > 0)
-                                <a href="{{ route('cenas.show', $cena['id']) }}" class="btn btn-dark btn-sm">
-                                    Reservar
-                                </a>
-                            @else
-                                <a href="{{ route('cenas.show', $cena['id']) }}" class="btn btn-outline-dark btn-sm">
-                                    Ver Detalles
-                                </a>
-                            @endif
+                            <div class="experience-description">
+                                @php
+                                    $menuText = strip_tags($cena['menu_preview']);
+                                    $menuText = preg_replace('/\s+/', ' ', $menuText);
+                                    $menuText = trim($menuText);
+                                    
+                                    if (empty($menuText)) {
+                                        $menuText = 'Deliciosa experiencia culinaria preparada especialmente para ti.';
+                                    }
+                                    
+                                    $preview = Str::limit($menuText, 100);
+                                @endphp
+                                
+                                <p class="menu-preview-text">{{ $preview }}</p>
+                            </div>
+                            
+                            <div class="experience-meta mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    {{ $cena['formatted_date'] }}
+                                </small>
+                                <small class="text-muted ms-3">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ Str::limit($cena['location'], 20) }}
+                                </small>
+                            </div>
+                            
+                            <div class="experience-availability mb-2">
+                                @if($cena['available_spots'] > 0)
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        {{ $cena['available_spots'] }} espacios disponibles
+                                    </span>
+                                @else
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-hourglass-half me-1"></i>
+                                        Lista de espera
+                                    </span>
+                                @endif
+                            </div>
+                            
+                            <div class="experience-footer">
+                                <span class="experience-price">{{ $cena['formatted_price'] }}/persona</span>
+                                @if($cena['available_spots'] > 0)
+                                    <a href="{{ route('cenas.show', $cena['id']) }}" class="btn btn-dark btn-sm">
+                                        Reservar
+                                    </a>
+                                @else
+                                    <a href="{{ route('cenas.show', $cena['id']) }}" class="btn btn-outline-dark btn-sm">
+                                        Ver Detalles
+                                    </a>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
+                @endforeach
             </div>
-            @endforeach
-        </div>
-        @else
-        <!-- Estado vacío cuando no hay cenas -->
-        <div class="row">
-            <div class="col-12 text-center">
-                <div class="empty-state py-5">
-                    <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Próximamente nuevas experiencias</h4>
-                    <p class="text-muted">Nuestros chefs están preparando increíbles experiencias culinarias para ti.</p>
-                    <a href="{{ route('ser-chef') ?? '#' }}" class="btn btn-primary mt-3">
-                        <i class="fas fa-plus me-2"></i>Únete como Chef
-                    </a>
+            @else
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="empty-state py-5">
+                        <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Próximamente nuevas experiencias</h4>
+                        <p class="text-muted">Nuestros chefs están preparando increíbles experiencias culinarias para ti.</p>
+                        <a href="{{ route('ser-chef') ?? '#' }}" class="btn btn-primary mt-3">
+                            <i class="fas fa-plus me-2"></i>Únete como Chef
+                        </a>
+                    </div>
                 </div>
             </div>
+            @endif
+            
+            <div class="text-center mt-4">
+                <a href="{{ route('experiencias') ?? '#' }}" class="btn btn-link">
+                    Ver Todas las Experiencias
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
         </div>
-        @endif
-        
-        <div class="text-center mt-4">
-            <a href="{{ route('experiencias') ?? '#' }}" class="btn btn-link">
-                Ver Todas las Experiencias
-                <i class="fas fa-arrow-right ms-2"></i>
-            </a>
-        </div>
-    </div>
-</section>
+    </section>
 
     <!-- Como Funciona Section -->
     <section id="como-funciona" class="py-5 bg-white">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="section-title">Cómo Funciona</h2>
-                <p class="section-subtitle">Cuatro simples pasos para vivir una experiencia única</p>
+                <h2 class="section-title">
+                    {{ $contenidos['funciona_titulo']->valor ?? 'Cómo Funciona' }}
+                </h2>
+                <p class="section-subtitle">
+                    {{ $contenidos['funciona_subtitulo']->valor ?? 'Cuatro simples pasos para vivir una experiencia única' }}
+                </p>
             </div>
             <div class="row g-4">
+                <!-- Paso 1 -->
                 <div class="col-md-6 col-lg-3">
                     <div class="step-card text-center">
                         <div class="step-icon">
                             <span class="step-number">1</span>
-                            <i class="fas fa-search"></i>
+                            <i class="{{ $contenidos['paso1_icono']->valor ?? 'fas fa-search' }}"></i>
                         </div>
-                        <h5>Explora</h5>
-                        <p>Navega por cientos de experiencias gastronómicas únicas cerca de ti y encuentra la perfecta para tu ocasión.</p>
+                        <h5>{{ $contenidos['paso1_titulo']->valor ?? 'Explora' }}</h5>
+                        <p>{{ $contenidos['paso1_descripcion']->valor ?? 'Navega por cientos de experiencias gastronómicas únicas cerca de ti y encuentra la perfecta para tu ocasión.' }}</p>
                     </div>
                 </div>
+                <!-- Paso 2 -->
                 <div class="col-md-6 col-lg-3">
                     <div class="step-card text-center">
                         <div class="step-icon">
                             <span class="step-number">2</span>
-                            <i class="fas fa-calendar-check"></i>
+                            <i class="{{ $contenidos['paso2_icono']->valor ?? 'fas fa-calendar-check' }}"></i>
                         </div>
-                        <h5>Reserva</h5>
-                        <p>Selecciona la fecha y hora que mejor te convenga y confirma tu reserva de forma segura en nuestra plataforma.</p>
+                        <h5>{{ $contenidos['paso2_titulo']->valor ?? 'Reserva' }}</h5>
+                        <p>{{ $contenidos['paso2_descripcion']->valor ?? 'Selecciona la fecha y hora que mejor te convenga y confirma tu reserva de forma segura en nuestra plataforma.' }}</p>
                     </div>
                 </div>
+                <!-- Paso 3 -->
                 <div class="col-md-6 col-lg-3">
                     <div class="step-card text-center">
                         <div class="step-icon">
                             <span class="step-number">3</span>
-                            <i class="fas fa-utensils"></i>
+                            <i class="{{ $contenidos['paso3_icono']->valor ?? 'fas fa-utensils' }}"></i>
                         </div>
-                        <h5>Disfruta</h5>
-                        <p>Vive una experiencia gastronómica inolvidable y conecta con otros amantes de la buena comida y tu chef anfitrión.</p>
+                        <h5>{{ $contenidos['paso3_titulo']->valor ?? 'Disfruta' }}</h5>
+                        <p>{{ $contenidos['paso3_descripcion']->valor ?? 'Vive una experiencia gastronómica inolvidable y conecta con otros amantes de la buena comida y tu chef anfitrión.' }}</p>
                     </div>
                 </div>
+                <!-- Paso 4 -->
                 <div class="col-md-6 col-lg-3">
                     <div class="step-card text-center">
                         <div class="step-icon">
                             <span class="step-number">4</span>
-                            <i class="fas fa-heart"></i>
+                            <i class="{{ $contenidos['paso4_icono']->valor ?? 'fas fa-heart' }}"></i>
                         </div>
-                        <h5>Comparte</h5>
-                        <p>Deja tu reseña y comparte tu experiencia para ayudar a otros comensales a descubrir nuevos sabores.</p>
+                        <h5>{{ $contenidos['paso4_titulo']->valor ?? 'Comparte' }}</h5>
+                        <p>{{ $contenidos['paso4_descripcion']->valor ?? 'Deja tu reseña y comparte tu experiencia para ayudar a otros comensales a descubrir nuevos sabores.' }}</p>
                     </div>
                 </div>
             </div>
@@ -238,11 +256,19 @@
     <section class="py-5 cta-section">
         <div class="container">
             <div class="cta-card text-center">
-                <h2 class="text-white mb-3">¿Listo para tu próxima aventura gastronómica?</h2>
-                <p class="text-white lead mb-4">Únete a miles de comensales que ya han descubierto sabores únicos</p>
+                <h2 class="text-white mb-3">
+                    {{ $contenidos['cta_titulo']->valor ?? '¿Listo para tu próxima aventura gastronómica?' }}
+                </h2>
+                <p class="text-white lead mb-4">
+                    {{ $contenidos['cta_descripcion']->valor ?? 'Únete a miles de comensales que ya han descubierto sabores únicos' }}
+                </p>
                 <div class="cta-buttons">
-                    <a href="{{ route('register') ?? '#' }}" class="btn btn-light btn-lg me-3">Crear mi cuenta</a>
-                    <a href="#experiencias" class="btn btn-outline-light btn-lg">Explorar ahora</a>
+                    <a href="{{ route('register') ?? '#' }}" class="btn btn-light btn-lg me-3">
+                        {{ $contenidos['cta_boton1']->valor ?? 'Crear mi cuenta' }}
+                    </a>
+                    <a href="#experiencias" class="btn btn-outline-light btn-lg">
+                        {{ $contenidos['cta_boton2']->valor ?? 'Explorar ahora' }}
+                    </a>
                 </div>
             </div>
         </div>
