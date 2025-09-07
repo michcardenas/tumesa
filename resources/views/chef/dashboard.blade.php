@@ -256,9 +256,19 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
+                   <div class="mb-3">
                         <label class="form-label">Descripción del Menú</label>
-                        <textarea class="form-control" name="menu" rows="3" placeholder="Describe los platos que incluirás en esta cena..."></textarea>
+                        
+                        <!-- Editor Quill -->
+                        <div id="quill-editor" style="height: 200px; background: white;"></div>
+                        
+                        <!-- Campo oculto para guardar el contenido -->
+                        <input type="hidden" name="menu" id="menu-content">
+                        
+                        <!-- Texto de ayuda -->
+                        <div class="form-text">
+                            Puedes usar formato: <strong>negritas</strong>, <em>cursiva</em>, listas, títulos, etc.
+                        </div>
                     </div>
 
                     <div class="mb-4">
@@ -958,7 +968,8 @@ input[name="datetime"]:invalid {
     }
 }
 </style>
-
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <script>
 // ==================== VARIABLES GLOBALES ====================
 let map, marker, infoWindow, geocoder, autocompleteService, placesService;
@@ -973,6 +984,59 @@ document.addEventListener('DOMContentLoaded', function() {
     setupImageUploads();
     setupNavigation();
     setupModalEvents();
+
+     // Esperar a que el modal se abra para inicializar Quill
+    const newDinnerModal = document.getElementById('newDinnerModal');
+    let quill = null;
+    
+    if (newDinnerModal) {
+        newDinnerModal.addEventListener('shown.bs.modal', function() {
+            if (!quill) {
+                initializeQuillEditor();
+            }
+        });
+    } else {
+        // Si no hay modal, inicializar directamente
+        initializeQuillEditor();
+    }
+    
+    function initializeQuillEditor() {
+        const editorContainer = document.getElementById('quill-editor');
+        if (!editorContainer) return;
+        
+        // Configuración del editor
+        quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            placeholder: 'Describe los platos que incluirás en esta cena...\n\nEjemplo:\n🥗 Entrada: Ensalada de burrata con tomates cherry\n🍝 Plato principal: Risotto de hongos con trufa\n🍰 Postre: Tiramisú casero',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link'],
+                    ['clean']
+                ]
+            }
+        });
+        
+        // Sincronizar con el campo oculto
+        quill.on('text-change', function() {
+            const content = quill.root.innerHTML;
+            document.getElementById('menu-content').value = content;
+        });
+        
+        console.log('✅ Editor Quill inicializado');
+    }
+    
+    // Limpiar editor al cerrar modal
+    if (newDinnerModal) {
+        newDinnerModal.addEventListener('hidden.bs.modal', function() {
+            if (quill) {
+                quill.setContents([]);
+                document.getElementById('menu-content').value = '';
+            }
+        });
+    }
 });
 
 // ==================== NAVEGACIÓN DEL DASHBOARD ====================
