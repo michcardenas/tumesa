@@ -779,6 +779,8 @@ img, svg {
     color: white;
 }
 
+
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
     .chef-content {
