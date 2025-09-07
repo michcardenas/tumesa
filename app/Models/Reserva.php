@@ -107,11 +107,7 @@ class Reserva extends Model
     {
         return $query->where('estado', 'pendiente');
     }
-    // En el modelo Reserva
-public function resena()
-{
-    return $this->hasOne(Resena::class);
-}
+
     public function scopeConfirmadas($query)
     {
         return $query->where('estado', 'confirmada');
