@@ -76,13 +76,14 @@
             <!-- Información Principal -->
             <div class="col-lg-8">
                 <!-- Menú -->
-                <div class="content-card">
-                    <h3><i class="fas fa-utensils me-2"></i>Menú</h3>
-                    <div class="menu-content">
-                        <p>{{ $cenaData['menu'] }}</p>
-                    </div>
+            
+            <div class="content-card">
+                <h3><i class="fas fa-utensils me-2"></i>Menú</h3>
+                <div class="menu-content">
+                    {{-- CAMBIO PRINCIPAL: Quitar {{ }} y usar {!! !!} --}}
+                    {!! $cenaData['menu'] !!}
                 </div>
-
+            </div>
                 <!-- Detalles -->
                 <div class="content-card">
                     <h3><i class="fas fa-info-circle me-2"></i>Detalles</h3>
