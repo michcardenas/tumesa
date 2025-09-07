@@ -273,7 +273,7 @@
             </div>
         </div>
     </section>
-</div>
+</div> 
 
 <style>
 /* Hero Section */
