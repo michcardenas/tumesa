@@ -89,17 +89,9 @@ public function store(LoginRequest $request): RedirectResponse
     }
     
     switch ($efectiveRole) {
-        case 'admin':
-            Log::info('🔧 Caso ADMIN detectado - Redirigiendo a admin.dashboard');
-            
-            try {
-                $adminRoute = route('admin.dashboard');
-                Log::info('Ruta admin generada: ' . $adminRoute);
-                return redirect()->intended($adminRoute);
-            } catch (\Exception $e) {
-                Log::error('Error generando ruta admin.dashboard: ' . $e->getMessage());
-                return redirect('/dashboard')->with('error', 'Error de redirección admin');
-            }
+     case 'admin':
+    Log::info('🔧 Redirigiendo nuevo usuario admin');
+    return redirect('/')->with('success', 'Usuario admin creado correctamente'); // ✅ Redirección simple
             
         case 'chef_anfitrion':
             Log::info('👨‍🍳 Caso CHEF_ANFITRION detectado - Redirigiendo a chef.dashboard');
