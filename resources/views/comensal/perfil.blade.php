@@ -134,17 +134,16 @@
                             </div>
 
                             <div class="mb-3">
+                                <label class="form-label">Cambiar Foto de Perfil (opcional)</label>
+                                <input type="file" name="avatar_file" class="form-control" accept="image/*" id="avatarFileInput">
+                                <small class="text-muted">JPG/PNG/WebP hasta 2MB.</small>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="bio" class="form-label">Biografía</label>
                                 <textarea name="bio" class="form-control" rows="4" 
                                           placeholder="Cuéntanos algo sobre ti...">{{ old('bio', $user->bio) }}</textarea>
                                 <small class="text-muted">Describe tus gustos culinarios, experiencias gastronómicas favoritas, etc.</small>
-                            </div>
-
-                            {{-- Campos para el avatar --}}
-                            <div class="mb-3">
-                                <label class="form-label">Cambiar Foto de Perfil</label>
-                                <input type="file" name="avatar_file" class="form-control" accept="image/*" id="avatarFileInput">
-                                <small class="text-muted">JPG/PNG/WebP hasta 2MB (opcional)</small>
                             </div>
 
                             <div class="d-flex gap-2">
