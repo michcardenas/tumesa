@@ -59,6 +59,63 @@
             #map { height: 280px; border-radius: 12px; border:1px solid #e5e7eb; }
             .map-actions { display:flex; gap:8px; margin:8px 0 12px; }
             .btn.small { padding:8px 10px; font-size:13px; }
+            #quill-editor-edit .ql-editor {
+    min-height: 150px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+#quill-editor-edit .ql-toolbar {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: #f8f9fa;
+}
+
+#quill-editor-edit .ql-container {
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Ajustar si tienes estilos específicos del campo */
+.field {
+    margin-bottom: 1rem;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-text {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #quill-editor-edit {
+        height: 150px !important;
+    }
+    
+    #quill-editor-edit .ql-toolbar {
+        font-size: 14px;
+    }
+}
+
+/* Para que se vea bien en tu formulario existente */
+#quill-editor-edit {
+    margin-bottom: 0.5rem;
+}
         </style>
 
         <div class="grid-2">
@@ -98,11 +155,21 @@
                   
                 </div>
 
-                <div class="field">
-                    <label for="menu">Menú / descripción</label>
-                    <textarea id="menu" name="menu" rows="5" maxlength="2000" required>{{ old('menu', $cena->menu) }}</textarea>
+           
+            <div class="field">
+                <label for="menu">Menú / descripción</label>
+                
+                <!-- Editor Quill -->
+                <div id="quill-editor-edit" style="height: 200px; background: white;"></div>
+                
+                <!-- Campo oculto para guardar el contenido -->
+                <input type="hidden" name="menu" id="menu-content-edit" value="{{ old('menu', $cena->menu) }}" required>
+                
+                <!-- Texto de ayuda -->
+                <div class="form-text">
+                    Puedes usar formato: <strong>negritas</strong>, <em>cursiva</em>, listas, títulos, etc.
                 </div>
-
+            </div>
             
 
                 <div class="row-actions" style="margin-top: 8px;">
@@ -227,9 +294,101 @@
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
   crossorigin=""
 ></script>
-
-{{-- JS: validación cliente + previews + MAPA --}}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    initializeQuillEditForm();
+});
+
+function initializeQuillEditForm() {
+    const editorContainer = document.getElementById('quill-editor-edit');
+    const hiddenInput = document.getElementById('menu-content-edit');
+    
+    if (!editorContainer || !hiddenInput) {
+        console.error('Editor container o input oculto no encontrado');
+        return;
+    }
+    
+    // Obtener contenido existente
+    const existingContent = hiddenInput.value || '';
+    
+    // Configuración del editor
+    const quillEdit = new Quill('#quill-editor-edit', {
+        theme: 'snow',
+        placeholder: 'Describe los platos que incluirás en esta cena...\n\nEjemplo:\n🥗 Entrada: Ensalada de burrata con tomates cherry\n🍝 Plato principal: Risotto de hongos con trufa\n🍰 Postre: Tiramisú casero',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link'],
+                ['clean']
+            ]
+        }
+    });
+    
+    // Cargar contenido existente en el editor
+    if (existingContent) {
+        // Si el contenido es HTML, lo insertamos directamente
+        quillEdit.root.innerHTML = existingContent;
+    }
+    
+    // Sincronizar con el campo oculto
+    quillEdit.on('text-change', function() {
+        const content = quillEdit.root.innerHTML;
+        hiddenInput.value = content;
+    });
+    
+    // Sincronizar inicialmente
+    hiddenInput.value = quillEdit.root.innerHTML;
+    
+    console.log('✅ Editor Quill para edición inicializado');
+    
+    // Hacer el editor global para debugging
+    window.quillEdit = quillEdit;
+}
+
+// Función para validar contenido antes del envío
+function validateMenuContent() {
+    const hiddenInput = document.getElementById('menu-content-edit');
+    const content = hiddenInput.value.trim();
+    
+    // Eliminar tags HTML para verificar si hay contenido real
+    const textContent = content.replace(/<[^>]*>/g, '').trim();
+    
+    if (!textContent) {
+        // Si usas SweetAlert2
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Campo requerido',
+                text: 'Por favor describe el menú de la cena',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#dc3545'
+            });
+        } else {
+            alert('Por favor describe el menú de la cena');
+        }
+        return false;
+    }
+    
+    return true;
+}
+
+// Si tu formulario tiene un evento submit, agregar validación
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form'); // Ajusta el selector según tu formulario
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!validateMenuContent()) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    }
+});
 (function() {
     // ---- Helpers generales
     var tz = document.getElementById('timezone');
