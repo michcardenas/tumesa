@@ -346,19 +346,21 @@
                     </div>
 
                     <!-- 🌍 SECCIÓN DE UBICACIÓN SIMPLIFICADA -->
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-map-marker-alt"></i> Ubicación de la Cena
-                        </label>
-                        
-                        <!-- Un solo input con búsqueda inteligente -->
+                   <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-map-marker-alt"></i> Ubicación de la Cena
+                    </label>
+                    
+                    <!-- Contenedor específico para input y sugerencias -->
+                    <div class="location-search-container" style="position: relative;">
+                        <!-- Input con búsqueda inteligente -->
                         <div class="input-group mb-3">
                             <input type="text" 
-                                   id="locationInput" 
-                                   class="form-control" 
-                                   name="location" 
-                                   placeholder="🔍 Busca cualquier lugar: restaurantes, hoteles, ciudades, direcciones..."
-                                   autocomplete="off">
+                                id="locationInput" 
+                                class="form-control" 
+                                name="location" 
+                                placeholder="🔍 Busca cualquier lugar: restaurantes, hoteles, ciudades, direcciones..."
+                                autocomplete="off">
                             <button type="button" 
                                     id="myLocationBtn" 
                                     class="btn btn-outline-success" 
@@ -367,16 +369,20 @@
                             </button>
                         </div>
                         
-                        <!-- Mapa interactivo -->
-                        <div id="map" style="height: 400px; width: 100%; border-radius: 8px; border: 2px solid #e9ecef;"></div>
-                        
-                        <!-- Campos ocultos para guardar coordenadas -->
-                        <input type="hidden" id="latitude" name="latitude">
-                        <input type="hidden" id="longitude" name="longitude">
-                        
-                        <!-- Confirmación visual de la ubicación seleccionada -->
-                        <div id="selectedAddress" class="mt-2"></div>
+                        <!-- Aquí aparecerán las sugerencias -->
+                        <!-- El JavaScript insertará aquí el dropdown de sugerencias -->
                     </div>
+                    
+                    <!-- Mapa interactivo -->
+                    <div id="map" style="height: 400px; width: 100%; border-radius: 8px; border: 2px solid #e9ecef;"></div>
+                    
+                    <!-- Campos ocultos para guardar coordenadas -->
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    
+                    <!-- Confirmación visual de la ubicación seleccionada -->
+                    <div id="selectedAddress" class="mt-2"></div>
+                </div>
                 </form>
             </div>
             <div class="modal-footer">
