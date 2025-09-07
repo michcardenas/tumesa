@@ -120,7 +120,7 @@ Route::get('/como-funciona', function () {
 Route::get('/terminos-y-condiciones', [LegalController::class, 'terminos'])->name('terminos');
 
 
-Route::put('/admin/paginas/experiencias/update', [PaginaController::class, 'updateExperiencias'])->name('admin.paginas.experiencias.update');
+
 /*
 |--------------------------------------------------------------------------
 | Rutas de Usuario Autenticado
@@ -128,7 +128,7 @@ Route::put('/admin/paginas/experiencias/update', [PaginaController::class, 'upda
 */
 Route::middleware('auth')->group(function () {
 
-
+Route::put('/admin/paginas/experiencias/update', [PaginaController::class, 'updateExperiencias'])->name('admin.paginas.experiencias.update');
    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Perfil del usuario
