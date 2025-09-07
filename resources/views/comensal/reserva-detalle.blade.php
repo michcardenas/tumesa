@@ -117,7 +117,6 @@
             <div class="location-info mt-3">
                 <div class="row">
                     <div class="col-md-8">
-                        <p class="mb-1"><strong>Dirección:</strong> {{ $reserva->cena->location }}</p>
                         <p class="mb-1"><strong>Fecha y Hora:</strong> {{ $reserva->cena->datetime->format('d/m/Y H:i') }}</p>
                         <p class="mb-0"><strong>Tu Código de Reserva:</strong> <code>{{ $reserva->codigo_reserva }}</code></p>
                     </div>
