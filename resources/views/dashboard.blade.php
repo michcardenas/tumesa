@@ -80,28 +80,35 @@
                                     @endphp
 
                                     @foreach($pages as $page)
-                                    <tr>
-                                        <td>{{ $page['id'] }}</td>
-                                        <td>{{ $page['title'] }}</td>
-                                        <td>
-                                            <code>/{{ $page['slug'] }}</code>
-                                        </td>
-                                    
-                                        <td>
-                                            <div class="action-buttons">
-                                                <button class="btn btn-sm btn-outline-primary" title="Ver">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-success" title="Editar">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                        <tr>
+                                            <td>{{ $page['id'] }}</td>
+                                            <td>{{ $page['title'] }}</td>
+                                            <td>
+                                                <code>/{{ $page['slug'] }}</code>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm btn-outline-primary" title="Ver">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    
+                                                    @if($page['slug'] === 'experiencias')
+                                                        <a href="{{ route('admin.paginas.experiencias.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @elseif($page['slug'] === 'ser-chef')
+                                                        <a href="{{ route('admin.paginas.ser-chef.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @elseif($page['slug'] === 'como-funciona')
+                                                        <a href="{{ route('admin.paginas.como-funciona.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endforeach
                                 </tbody>
                             </table>
                         </div>

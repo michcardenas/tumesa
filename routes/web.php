@@ -15,7 +15,7 @@ use App\Http\Controllers\LegalController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\ComensalController;
 use App\Http\Controllers\ResenaController;
-
+use App\Http\Controllers\PaginaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -176,6 +176,13 @@ Route::middleware(['auth'])->prefix('chef')->name('chef.')->group(function () {
 | Rutas de Administrador
 |--------------------------------------------------------------------------
 */
+
+  Route::get('/paginas/experiencias', [PaginaController::class, 'editarExperiencias'])->name('paginas.experiencias');
+    Route::get('/paginas/ser-chef', [PaginaController::class, 'editarSerChef'])->name('paginas.ser-chef');
+    Route::get('/paginas/como-funciona', [PaginaController::class, 'editarComoFunciona'])->name('paginas.como-funciona');
+    
+    // Ruta para actualizar cualquier página
+    Route::put('/paginas/{paginaId}', [PaginaController::class, 'actualizar'])->name('paginas.actualizar');
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard principal del admin
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
