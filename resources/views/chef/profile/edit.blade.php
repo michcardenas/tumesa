@@ -270,19 +270,19 @@
             </form>
         </div>
         
-        <div class="profile-info-card mt-4">
+       <div class="profile-info-card mt-4">
             <h6>Información de la Cuenta</h6>
             <p><strong>Rol:</strong> {{ ucwords(str_replace('_', ' ', $user->role)) }}</p>
             <p><strong>Miembro desde:</strong> {{ $user->created_at->format('d/m/Y') }}</p>
             @if($user->email_verified_at)
-                <p><strong>Email verificado:</strong> 
+                <p><strong>Email verificado:</strong>
                     <span class="text-success">
                         <i class="fas fa-check-circle"></i> Verificado
                     </span>
                 </p>
             @endif
-            @if($user->rating)
-                <p><strong>Calificación:</strong> 
+            @if(isset($user->rating))
+                <p><strong>Calificación:</strong>
                     <span class="text-warning">
                         @for($i = 1; $i <= 5; $i++)
                             @if($i <= $user->rating)

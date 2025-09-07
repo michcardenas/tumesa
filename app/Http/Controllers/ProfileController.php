@@ -17,27 +17,36 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-   public function edit()
-    {
-        $user = Auth::user();
-        
-        // Verificación de permisos para chefs
-        $hasChefRole = false;
-        
-        if ($user->role === 'chef_anfitrion') {
+  public function edit()
+{
+    $user = Auth::user();
+    
+    // Verificación de permisos para chefs
+    $hasChefRole = false;
+    
+    if ($user->role === 'chef_anfitrion') {
+        $hasChefRole = true;
+    } elseif (method_exists($user, 'hasRole')) {
+        if ($user->hasRole('chef') || $user->hasRole('chef_anfitrion')) {
             $hasChefRole = true;
-        } elseif (method_exists($user, 'hasRole')) {
-            if ($user->hasRole('chef') || $user->hasRole('chef_anfitrion')) {
-                $hasChefRole = true;
-            }
         }
-        
-        if (!$hasChefRole) {
-            abort(403, 'No tienes acceso a esta sección.');
-        }
-
-        return view('chef.profile.edit', compact('user'));
     }
+    
+    if (!$hasChefRole) {
+        abort(403, 'No tienes acceso a esta sección.');
+    }
+
+    // Calcular rating del chef basado en sus reseñas
+    $resenas = \App\Models\Reseña::whereHas('cena', function($query) use ($user) {
+        $query->where('user_id', $user->id);
+    })->get();
+    
+    $user->rating = $resenas->count() > 0 ? $resenas->avg('rating') : 0;
+    $user->formatted_rating = number_format($user->rating, 1);
+
+    return view('chef.profile.edit', compact('user'));
+}
+
 
    public function update(Request $request)
 {
