@@ -1085,6 +1085,49 @@
                 justify-content: center;
             }
         }
+
+        #map {
+    height: 300px;
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+}
+
+.map-container {
+    position: relative;
+}
+
+/* Indicador de estado de ubicación */
+.location-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.location-exact {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
+    border: 1px solid #059669;
+}
+
+.location-approximate {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid #f59e0b;
+}
+
+@media (max-width: 768px) {
+    #map {
+        height: 250px;
+    }
+}
 </style>
 
 <script>
