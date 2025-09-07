@@ -179,7 +179,7 @@ Route::middleware(['auth'])->prefix('chef')->name('chef.')->group(function () {
 | Rutas de Administrador
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard principal del admin
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
