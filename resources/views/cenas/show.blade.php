@@ -327,13 +327,7 @@
                         <div class="contact-icon">
                             <i class="fas fa-phone"></i>
                         </div>
-                        <div class="contact-details">
-                            <strong>Teléfono</strong>
-                            <span>{{ $cena->user->telefono }}</span>
-                            <a href="tel:{{ $cena->user->telefono }}" class="btn btn-sm btn-outline-primary mt-2">
-                                <i class="fas fa-phone me-1"></i>Llamar
-                            </a>
-                        </div>
+                      
                     </div>
                     @endif
 
@@ -421,676 +415,676 @@
 </script>
 
 <style>
-:root {
-    --primary-color: #2563eb;
-    --primary-light: #3b82f6;
-    --primary-dark: #1d4ed8;
-    --text-primary: #111827;
-    --text-secondary: #6b7280;
-    --text-muted: #9ca3af;
-    --border-color: #e5e7eb;
-    --bg-light: #f9fafb;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-}
-
-body {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    color: var(--text-primary);
-}
-
-/* Hero Section */
-.hero-section {
-    position: relative;
-    height: 60vh;
-    min-height: 500px;
-    overflow: hidden;
-}
-
-.hero-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hero-placeholder {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-}
-
-.hero-content {
-    color: white;
-}
-
-.badge-status {
-    background: var(--success-color);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 1rem;
-}
-
-.badge-past {
-    background: var(--warning-color);
-}
-
-.hero-title {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 800;
-    margin-bottom: 1.5rem;
-    line-height: 1.1;
-}
-
-.hero-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 1.1rem;
-}
-
-.info-item i {
-    width: 20px;
-    color: var(--primary-light);
-}
-
-/* Price Card */
-.price-card {
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(10px);
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.price-display {
-    margin-bottom: 2rem;
-}
-
-.price {
-    display: block;
-    font-size: 3rem;
-    font-weight: 900;
-    color: var(--primary-color);
-    line-height: 1;
-}
-
-.per-person {
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-
-.btn-reserve {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 12px;
-    font-weight: 600;
-    width: 100%;
-    transition: all 0.3s ease;
-}
-
-.btn-reserve:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
-    color: white;
-}
-
-.btn-unavailable {
-    background: #6b7280;
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 12px;
-    font-weight: 600;
-    width: 100%;
-}
-
-.availability {
-    margin-top: 1rem;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Content Cards */
-.content-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    margin-bottom: 2rem;
-    border: 1px solid var(--border-color);
-}
-
-.content-card h3 {
-    color: var(--text-primary);
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.content-card h3 i {
-    color: var(--primary-color);
-}
-
-.menu-content {
-    background: var(--bg-light);
-    padding: 1.5rem;
-    border-radius: 8px;
-    border-left: 4px solid var(--primary-color);
-}
-
-.menu-content p {
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: var(--text-primary);
-}
-
-/* Details Grid */
-.details-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.detail-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--bg-light);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-
-.detail-item i {
-    font-size: 1.2rem;
-    margin-top: 0.25rem;
-}
-
-.detail-item div strong {
-    display: block;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.25rem;
-}
-
-.detail-item div span {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-/* Map */
-.map-container #map {
-    width: 100%;
-    height: 300px;
-    border-radius: 8px;
-}
-
-/* Chef Card */
-.chef-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    border: 1px solid var(--border-color);
-    position: sticky;
-    top: 2rem;
-}
-
-.chef-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.chef-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    position: relative;
-}
-
-.chef-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.avatar-placeholder {
-    width: 100%;
-    height: 100%;
-    background: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.8rem;
-}
-
-.chef-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    border: 2px solid white;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #b45309;
-    font-size: 0.75rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-.chef-info h4 {
-    margin: 0 0 0.25rem 0;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.chef-specialty {
-    margin: 0;
-    color: var(--primary-color);
-    font-weight: 600;
-    font-size: 1rem;
-}
-
-/* Chef Stats */
-.chef-stats {
-    margin-bottom: 2rem;
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background: var(--bg-light);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-
-.stat-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-}
-
-.stat-content {
-    flex: 1;
-}
-
-.stars {
-    display: flex;
-    gap: 0.25rem;
-    margin-bottom: 0.5rem;
-}
-
-.stars i {
-    color: #fbbf24;
-    font-size: 1rem;
-}
-
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-right: 0.5rem;
-}
-
-.stat-text {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-/* Chef Sections */
-.chef-section {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.chef-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.section-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-}
-
-.section-title i {
-    color: var(--primary-color);
-}
-
-.chef-bio p {
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin: 0;
-    font-size: 1rem;
-}
-
-/* Contact Info */
-.contact-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.contact-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--bg-light);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-
-.contact-item i {
-    font-size: 1.2rem;
-    margin-top: 0.25rem;
-}
-
-.contact-content {
-    flex: 1;
-}
-
-.contact-content strong {
-    display: block;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.25rem;
-}
-
-.contact-content span {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-/* Social Links Actualizadas */
-.chef-social {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.social-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
-
-.social-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    color: white;
-}
-
-.social-link:has(.fa-instagram) {
-    background: linear-gradient(45deg, #f09433, #dc2743);
-}
-
-.social-link:has(.fa-facebook) {
-    background: #1877f2;
-}
-
-.social-link:has(.fa-globe) {
-    background: #6b7280;
-}
-
-.social-link i {
-    font-size: 1.2rem;
-    width: 20px;
-    text-align: center;
-}
-
-/* Info Items para requisitos especiales */
-.info-item {
-    margin-bottom: 1rem;
-}
-
-.info-item:last-child {
-    margin-bottom: 0;
-}
-
-.info-item strong {
-    color: var(--text-primary);
-    font-weight: 600;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.info-item p {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0;
-}
-
-/* Modal de Contacto */
-.chef-contact-info {
-    padding: 1rem 0;
-}
-
-.chef-avatar-small {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin: 0 auto 1rem auto;
-    position: relative;
-}
-
-.chef-avatar-small img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.chef-avatar-small .avatar-placeholder {
-    font-size: 2rem;
-}
-
-.contact-options {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.contact-option {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
-    background: var(--bg-light);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-}
-
-.contact-icon {
-    width: 50px;
-    height: 50px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.3rem;
-    flex-shrink: 0;
-}
-
-.contact-details {
-    flex: 1;
-}
-
-.contact-details strong {
-    display: block;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.25rem;
-}
-
-.contact-details span {
-    display: block;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: 0.75rem;
-}
-
-/* Modal Styles */
-.modal-content {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-}
-
-.modal-header {
-    border-bottom: 1px solid var(--border-color);
-    padding: 1.5rem 2rem;
-}
-
-.modal-body {
-    padding: 2rem;
-}
-
-.modal-footer {
-    border-top: 1px solid var(--border-color);
-    padding: 1.5rem 2rem;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .hero-section {
-        height: 50vh;
-        min-height: 400px;
-    }
-    
-    .hero-info {
-        margin-top: 1rem;
-    }
-    
-    .price-card {
-        margin-top: 2rem;
-    }
-    
-    .content-card {
-        padding: 1.5rem;
-    }
-    
-    .chef-card {
-        position: static;
-        margin-top: 2rem;
-    }
-    
-    .details-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .hero-title {
-        font-size: 2rem;
-    }
-    
-    .price {
-        font-size: 2.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .content-card {
-        padding: 1rem;
-    }
-    
-    .chef-card {
-        padding: 1rem;
-    }
-    
-    .price-card {
-        padding: 1.5rem;
-    }
-    
-    .detail-item {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .chef-header {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .info-item {
-        justify-content: center;
-    }
-}
+        :root {
+            --primary-color: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --bg-light: #f9fafb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            height: 60vh;
+            min-height: 500px;
+            overflow: hidden;
+        }
+
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            color: white;
+        }
+
+        .badge-status {
+            background: var(--success-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .badge-past {
+            background: var(--warning-color);
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .info-item i {
+            width: 20px;
+            color: var(--primary-light);
+        }
+
+        /* Price Card */
+        .price-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .price-display {
+            margin-bottom: 2rem;
+        }
+
+        .price {
+            display: block;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .per-person {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .btn-reserve {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reserve:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+
+        .btn-unavailable {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .availability {
+            margin-top: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .content-card h3 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .content-card h3 i {
+            color: var(--primary-color);
+        }
+
+        .menu-content {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .menu-content p {
+            margin: 0;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-item i {
+            font-size: 1.2rem;
+            margin-top: 0.25rem;
+        }
+
+        .detail-item div strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item div span {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Map */
+        .map-container #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+        }
+
+        /* Chef Card */
+        .chef-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .chef-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .chef-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .chef-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .chef-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b45309;
+            font-size: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .chef-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .chef-specialty {
+            margin: 0;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Chef Stats */
+        .chef-stats {
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stars {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stars i {
+            color: #fbbf24;
+            font-size: 1rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .stat-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Chef Sections */
+        .chef-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chef-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .chef-bio p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* Contact Info */
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .contact-item i {
+            font-size: 1.2rem;
+            margin-top: 0.25rem;
+        }
+
+        .contact-content {
+            flex: 1;
+        }
+
+        .contact-content strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-content span {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Social Links Actualizadas */
+        .chef-social {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .social-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+
+        .social-link:has(.fa-instagram) {
+            background: linear-gradient(45deg, #f09433, #dc2743);
+        }
+
+        .social-link:has(.fa-facebook) {
+            background: #1877f2;
+        }
+
+        .social-link:has(.fa-globe) {
+            background: #6b7280;
+        }
+
+        .social-link i {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Info Items para requisitos especiales */
+        .info-item {
+            margin-bottom: 1rem;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-item strong {
+            color: var(--text-primary);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-item p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Modal de Contacto */
+        .chef-contact-info {
+            padding: 1rem 0;
+        }
+
+        .chef-avatar-small {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 1rem auto;
+            position: relative;
+        }
+
+        .chef-avatar-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chef-avatar-small .avatar-placeholder {
+            font-size: 2rem;
+        }
+
+        .contact-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .contact-details {
+            flex: 1;
+        }
+
+        .contact-details strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-details span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section {
+                height: 50vh;
+                min-height: 400px;
+            }
+            
+            .hero-info {
+                margin-top: 1rem;
+            }
+            
+            .price-card {
+                margin-top: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .chef-card {
+                position: static;
+                margin-top: 2rem;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .price {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content-card {
+                padding: 1rem;
+            }
+            
+            .chef-card {
+                padding: 1rem;
+            }
+            
+            .price-card {
+                padding: 1.5rem;
+            }
+            
+            .detail-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .chef-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .info-item {
+                justify-content: center;
+            }
+        }
 </style>
 
 <script>
@@ -1104,13 +1098,39 @@ function initMapCallback() {
 
 function initMap() {
     @if($cenaData['latitude'] && $cenaData['longitude'])
-        const lat = {{ $cenaData['latitude'] }};
-        const lng = {{ $cenaData['longitude'] }};
+        const exactLat = {{ $cenaData['latitude'] }};
+        const exactLng = {{ $cenaData['longitude'] }};
+        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
+        const now = new Date();
+        
+        // Calcular si faltan menos de 24 horas para la cena
+        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        const showExactLocation = hoursUntilCena <= 24;
+        
+        let displayLat, displayLng, zoom, markerTitle;
+        
+        if (showExactLocation) {
+            // Mostrar ubicación exacta
+            displayLat = exactLat;
+            displayLng = exactLng;
+            zoom = 16;
+            markerTitle = '{{ $cenaData["title"] }} - Ubicación exacta';
+        } else {
+            // Mostrar ubicación aproximada (agregar offset aleatorio de ~200-500 metros)
+            const offsetRange = 0.003; // Aproximadamente 300 metros
+            const randomOffsetLat = (Math.random() - 0.5) * offsetRange;
+            const randomOffsetLng = (Math.random() - 0.5) * offsetRange;
+            
+            displayLat = exactLat + randomOffsetLat;
+            displayLng = exactLng + randomOffsetLng;
+            zoom = 14;
+            markerTitle = '{{ $cenaData["title"] }} - Área aproximada';
+        }
         
         // Configuración del mapa
         map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: lat, lng: lng },
-            zoom: 15,
+            center: { lat: displayLat, lng: displayLng },
+            zoom: zoom,
             styles: [
                 {
                     featureType: 'poi',
@@ -1120,44 +1140,146 @@ function initMap() {
             ]
         });
         
-        // Marcador personalizado
-        const marker = new google.maps.Marker({
-            position: { lat: lat, lng: lng },
-            map: map,
-            title: '{{ $cenaData["title"] }}',
-            icon: {
-                path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-                scale: 6,
-                fillColor: '#2563eb',
-                fillOpacity: 1,
-                strokeColor: '#ffffff',
-                strokeWeight: 2
-            }
-        });
-        
-        // Info Window
-        const infoWindow = new google.maps.InfoWindow({
-            content: `
-                <div style="font-family: Inter, sans-serif; padding: 8px;">
-                    <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
-                    <small style="color: #6b7280; font-size: 14px;">{{ $cenaData['location'] }}</small><br>
-                    <small style="color: #2563eb; font-size: 13px;">{{ $cenaData['formatted_datetime'] }}</small>
-                </div>
-            `
-        });
-        
-        marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-        });
+        if (showExactLocation) {
+            // Marcador exacto
+            const exactMarker = new google.maps.Marker({
+                position: { lat: displayLat, lng: displayLng },
+                map: map,
+                title: markerTitle,
+                icon: {
+                    path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                    scale: 8,
+                    fillColor: '#059669',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2
+                }
+            });
+            
+            // Info Window para ubicación exacta
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 250px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <span style="background: #059669; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 8px;">
+                                UBICACIÓN EXACTA
+                            </span>
+                        </div>
+                        <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
+                        <div style="margin: 8px 0; padding: 8px; background: #f0fdf4; border-radius: 6px;">
+                            <small style="color: #059669; font-weight: 500;">
+                                <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
+                            </small>
+                        </div>
+                        <small style="color: #2563eb; font-size: 13px;">
+                            <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
+                        </small>
+                    </div>
+                `
+            });
+            
+            exactMarker.addListener('click', () => {
+                infoWindow.open(map, exactMarker);
+            });
+            
+        } else {
+            // Círculo para área aproximada
+            const approximateCircle = new google.maps.Circle({
+                strokeColor: '#f59e0b',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#f59e0b',
+                fillOpacity: 0.15,
+                map: map,
+                center: { lat: displayLat, lng: displayLng },
+                radius: 500 // 500 metros de radio
+            });
+            
+            // Marcador central para el área aproximada
+            const approximateMarker = new google.maps.Marker({
+                position: { lat: displayLat, lng: displayLng },
+                map: map,
+                title: markerTitle,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: '#f59e0b',
+                    fillOpacity: 0.8,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 3
+                }
+            });
+            
+            // Info Window para ubicación aproximada
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 280px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 8px;">
+                                ÁREA APROXIMADA
+                            </span>
+                        </div>
+                        <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
+                        <div style="margin: 8px 0; padding: 8px; background: #fffbeb; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                            <small style="color: #92400e; font-weight: 500;">
+                                <i class="fas fa-info-circle"></i> Ubicación exacta disponible 24h antes del evento
+                            </small>
+                        </div>
+                        <small style="color: #6b7280; font-size: 13px;">
+                            <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
+                        </small><br>
+                        <small style="color: #2563eb; font-size: 13px;">
+                            <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
+                        </small>
+                    </div>
+                `
+            });
+            
+            approximateMarker.addListener('click', () => {
+                infoWindow.open(map, approximateMarker);
+            });
+        }
     @endif
 }
 
 function openDirections() {
     @if($cenaData['latitude'] && $cenaData['longitude'])
-        const lat = {{ $cenaData['latitude'] }};
-        const lng = {{ $cenaData['longitude'] }};
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-        window.open(url, '_blank');
+        const exactLat = {{ $cenaData['latitude'] }};
+        const exactLng = {{ $cenaData['longitude'] }};
+        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
+        const now = new Date();
+        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        
+        if (hoursUntilCena <= 24) {
+            // Direcciones exactas disponibles
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${exactLat},${exactLng}`;
+            window.open(url, '_blank');
+        } else {
+            // Mostrar mensaje informativo
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Ubicación no disponible aún',
+                    html: `
+                        <div style="text-align: left;">
+                            <p>La ubicación exacta estará disponible <strong>24 horas antes</strong> del evento.</p>
+                            <p><small class="text-muted">Por seguridad y privacidad, revelamos los detalles exactos de ubicación solo cuando se acerca la fecha de la cena.</small></p>
+                            <hr>
+                            <p><strong>Mientras tanto:</strong></p>
+                            <ul style="text-align: left; padding-left: 20px;">
+                                <li>Puedes confirmar tu asistencia</li>
+                                <li>Prepararte para la experiencia culinaria</li>
+                                <li>Contactar al chef si tienes preguntas</li>
+                            </ul>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#2563eb'
+                });
+            } else {
+                alert('La ubicación exacta estará disponible 24 horas antes del evento.');
+            }
+        }
     @endif
 }
 
@@ -1167,8 +1289,23 @@ function showContactModal() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // El mapa se inicializa automáticamente cuando se carga el script de Google Maps
-    // mediante la función callback initMapCallback
+    // Actualizar el botón de direcciones según disponibilidad
+    @if($cenaData['latitude'] && $cenaData['longitude'])
+        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
+        const now = new Date();
+        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        
+        const directionsBtn = document.querySelector('button[onclick="openDirections()"]');
+        if (directionsBtn) {
+            if (hoursUntilCena <= 24) {
+                directionsBtn.innerHTML = '<i class="fas fa-directions me-1"></i>Cómo llegar';
+                directionsBtn.className = 'btn btn-sm btn-success mt-3';
+            } else {
+                directionsBtn.innerHTML = '<i class="fas fa-clock me-1"></i>Ubicación en ' + Math.ceil(hoursUntilCena) + 'h';
+                directionsBtn.className = 'btn btn-sm btn-outline-warning mt-3';
+            }
+        }
+    @endif
 });
 </script>
 @endsection
