@@ -75,10 +75,9 @@
                                 <tbody>
                                     @php
                                         $pages = [
-                                            ['id' => 1, 'title' => 'Acerca de Nosotros', 'slug' => 'acerca-de', 'status' => 'Publicada'],
-                                            ['id' => 2, 'title' => 'Términos y Condiciones', 'slug' => 'terminos', 'status' => 'Publicada'],
-                                            ['id' => 3, 'title' => 'Política de Privacidad', 'slug' => 'privacidad', 'status' => 'Borrador'],
-                                            ['id' => 4, 'title' => 'Preguntas Frecuentes', 'slug' => 'faq', 'status' => 'Publicada'],
+                                            ['id' => 1, 'title' => 'Experiencias', 'slug' => 'experiencias', 'status' => 'Publicada'],
+                                            ['id' => 2, 'title' => 'Ser Chef Anfitrión', 'slug' => 'ser-chef', 'status' => 'Publicada'],
+                                            ['id' => 3, 'title' => 'Cómo Funciona', 'slug' => 'como-funciona', 'status' => 'Borrador'],
                                         ];
                                     @endphp
 
