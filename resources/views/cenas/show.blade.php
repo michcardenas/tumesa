@@ -1085,6 +1085,49 @@
                 justify-content: center;
             }
         }
+
+        #map {
+    height: 300px;
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+}
+
+.map-container {
+    position: relative;
+}
+
+/* Indicador de estado de ubicación */
+.location-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.location-exact {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
+    border: 1px solid #059669;
+}
+
+.location-approximate {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid #f59e0b;
+}
+
+@media (max-width: 768px) {
+    #map {
+        height: 250px;
+    }
+}
 </style>
 
 <script>
@@ -1098,13 +1141,39 @@ function initMapCallback() {
 
 function initMap() {
     @if($cenaData['latitude'] && $cenaData['longitude'])
-        const lat = {{ $cenaData['latitude'] }};
-        const lng = {{ $cenaData['longitude'] }};
+        const exactLat = {{ $cenaData['latitude'] }};
+        const exactLng = {{ $cenaData['longitude'] }};
+        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
+        const now = new Date();
+        
+        // Calcular si faltan menos de 24 horas para la cena
+        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        const showExactLocation = hoursUntilCena <= 24;
+        
+        let displayLat, displayLng, zoom, markerTitle;
+        
+        if (showExactLocation) {
+            // Mostrar ubicación exacta
+            displayLat = exactLat;
+            displayLng = exactLng;
+            zoom = 16;
+            markerTitle = '{{ $cenaData["title"] }} - Ubicación exacta';
+        } else {
+            // Mostrar ubicación aproximada (agregar offset aleatorio de ~200-500 metros)
+            const offsetRange = 0.003; // Aproximadamente 300 metros
+            const randomOffsetLat = (Math.random() - 0.5) * offsetRange;
+            const randomOffsetLng = (Math.random() - 0.5) * offsetRange;
+            
+            displayLat = exactLat + randomOffsetLat;
+            displayLng = exactLng + randomOffsetLng;
+            zoom = 14;
+            markerTitle = '{{ $cenaData["title"] }} - Área aproximada';
+        }
         
         // Configuración del mapa
         map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: lat, lng: lng },
-            zoom: 15,
+            center: { lat: displayLat, lng: displayLng },
+            zoom: zoom,
             styles: [
                 {
                     featureType: 'poi',
@@ -1114,44 +1183,146 @@ function initMap() {
             ]
         });
         
-        // Marcador personalizado
-        const marker = new google.maps.Marker({
-            position: { lat: lat, lng: lng },
-            map: map,
-            title: '{{ $cenaData["title"] }}',
-            icon: {
-                path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-                scale: 6,
-                fillColor: '#2563eb',
-                fillOpacity: 1,
-                strokeColor: '#ffffff',
-                strokeWeight: 2
-            }
-        });
-        
-        // Info Window
-        const infoWindow = new google.maps.InfoWindow({
-            content: `
-                <div style="font-family: Inter, sans-serif; padding: 8px;">
-                    <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
-                    <small style="color: #6b7280; font-size: 14px;">{{ $cenaData['location'] }}</small><br>
-                    <small style="color: #2563eb; font-size: 13px;">{{ $cenaData['formatted_datetime'] }}</small>
-                </div>
-            `
-        });
-        
-        marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-        });
+        if (showExactLocation) {
+            // Marcador exacto
+            const exactMarker = new google.maps.Marker({
+                position: { lat: displayLat, lng: displayLng },
+                map: map,
+                title: markerTitle,
+                icon: {
+                    path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                    scale: 8,
+                    fillColor: '#059669',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2
+                }
+            });
+            
+            // Info Window para ubicación exacta
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 250px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <span style="background: #059669; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 8px;">
+                                UBICACIÓN EXACTA
+                            </span>
+                        </div>
+                        <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
+                        <div style="margin: 8px 0; padding: 8px; background: #f0fdf4; border-radius: 6px;">
+                            <small style="color: #059669; font-weight: 500;">
+                                <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
+                            </small>
+                        </div>
+                        <small style="color: #2563eb; font-size: 13px;">
+                            <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
+                        </small>
+                    </div>
+                `
+            });
+            
+            exactMarker.addListener('click', () => {
+                infoWindow.open(map, exactMarker);
+            });
+            
+        } else {
+            // Círculo para área aproximada
+            const approximateCircle = new google.maps.Circle({
+                strokeColor: '#f59e0b',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#f59e0b',
+                fillOpacity: 0.15,
+                map: map,
+                center: { lat: displayLat, lng: displayLng },
+                radius: 500 // 500 metros de radio
+            });
+            
+            // Marcador central para el área aproximada
+            const approximateMarker = new google.maps.Marker({
+                position: { lat: displayLat, lng: displayLng },
+                map: map,
+                title: markerTitle,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: '#f59e0b',
+                    fillOpacity: 0.8,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 3
+                }
+            });
+            
+            // Info Window para ubicación aproximada
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 280px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-right: 8px;">
+                                ÁREA APROXIMADA
+                            </span>
+                        </div>
+                        <strong style="color: #111827; font-size: 16px;">{{ $cenaData['title'] }}</strong><br>
+                        <div style="margin: 8px 0; padding: 8px; background: #fffbeb; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                            <small style="color: #92400e; font-weight: 500;">
+                                <i class="fas fa-info-circle"></i> Ubicación exacta disponible 24h antes del evento
+                            </small>
+                        </div>
+                        <small style="color: #6b7280; font-size: 13px;">
+                            <i class="fas fa-map-marker-alt"></i> {{ $cenaData['location'] }}
+                        </small><br>
+                        <small style="color: #2563eb; font-size: 13px;">
+                            <i class="fas fa-calendar"></i> {{ $cenaData['formatted_datetime'] }}
+                        </small>
+                    </div>
+                `
+            });
+            
+            approximateMarker.addListener('click', () => {
+                infoWindow.open(map, approximateMarker);
+            });
+        }
     @endif
 }
 
 function openDirections() {
     @if($cenaData['latitude'] && $cenaData['longitude'])
-        const lat = {{ $cenaData['latitude'] }};
-        const lng = {{ $cenaData['longitude'] }};
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-        window.open(url, '_blank');
+        const exactLat = {{ $cenaData['latitude'] }};
+        const exactLng = {{ $cenaData['longitude'] }};
+        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
+        const now = new Date();
+        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        
+        if (hoursUntilCena <= 24) {
+            // Direcciones exactas disponibles
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${exactLat},${exactLng}`;
+            window.open(url, '_blank');
+        } else {
+            // Mostrar mensaje informativo
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Ubicación no disponible aún',
+                    html: `
+                        <div style="text-align: left;">
+                            <p>La ubicación exacta estará disponible <strong>24 horas antes</strong> del evento.</p>
+                            <p><small class="text-muted">Por seguridad y privacidad, revelamos los detalles exactos de ubicación solo cuando se acerca la fecha de la cena.</small></p>
+                            <hr>
+                            <p><strong>Mientras tanto:</strong></p>
+                            <ul style="text-align: left; padding-left: 20px;">
+                                <li>Puedes confirmar tu asistencia</li>
+                                <li>Prepararte para la experiencia culinaria</li>
+                                <li>Contactar al chef si tienes preguntas</li>
+                            </ul>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#2563eb'
+                });
+            } else {
+                alert('La ubicación exacta estará disponible 24 horas antes del evento.');
+            }
+        }
     @endif
 }
 
@@ -1161,8 +1332,23 @@ function showContactModal() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // El mapa se inicializa automáticamente cuando se carga el script de Google Maps
-    // mediante la función callback initMapCallback
+    // Actualizar el botón de direcciones según disponibilidad
+    @if($cenaData['latitude'] && $cenaData['longitude'])
+        const cenaDateTime = new Date('{{ $cenaData['datetime'] }}');
+        const now = new Date();
+        const hoursUntilCena = (cenaDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        
+        const directionsBtn = document.querySelector('button[onclick="openDirections()"]');
+        if (directionsBtn) {
+            if (hoursUntilCena <= 24) {
+                directionsBtn.innerHTML = '<i class="fas fa-directions me-1"></i>Cómo llegar';
+                directionsBtn.className = 'btn btn-sm btn-success mt-3';
+            } else {
+                directionsBtn.innerHTML = '<i class="fas fa-clock me-1"></i>Ubicación en ' + Math.ceil(hoursUntilCena) + 'h';
+                directionsBtn.className = 'btn btn-sm btn-outline-warning mt-3';
+            }
+        }
+    @endif
 });
 </script>
 @endsection
