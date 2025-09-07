@@ -26,10 +26,25 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="hero-image">
-                        <img src="{{ $contenidos['hero_imagen']->valor ?? 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80' }}" 
-                             alt="Experiencia gastronómica en hogar" class="img-fluid rounded-4 shadow-lg">
-                    </div>
+                 <div class="hero-image">
+                    @php
+                        $heroImg = $contenidos['hero_imagen']->valor ?? null;
+                        $defaultImg = 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80';
+                        
+                        if ($heroImg) {
+                            if (Str::startsWith($heroImg, ['http://', 'https://'])) {
+                                $imageUrl = $heroImg; // URL externa
+                            } else {
+                                $imageUrl = asset('storage/' . $heroImg); // Archivo local
+                            }
+                        } else {
+                            $imageUrl = $defaultImg;
+                        }
+                    @endphp
+                    
+                    <img src="{{ $imageUrl }}" 
+                        alt="Experiencia gastronómica en hogar" class="img-fluid rounded-4 shadow-lg">
+                </div>
                 </div>
             </div>
         </div>

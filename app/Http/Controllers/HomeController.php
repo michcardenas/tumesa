@@ -26,11 +26,7 @@ public function index()
         $valor = $contenidosExperiencias['hero_imagen']->valor;
         $urlConstruida = asset('storage/' . $valor);
         
-        dd([
-            'valor_bd' => $valor,
-            'url_construida' => $urlConstruida,
-            'should_be' => 'https://tumesa.ar/storage/paginas/hero/SvrXQxEXf1JOhPK4E6I7y1YsGEaIMFzNTy13p7Nc.jpg'
-        ]);
+       
     }
     
     $data['contenidos'] = $contenidosExperiencias;
