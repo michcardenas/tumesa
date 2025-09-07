@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\Pagina;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PaginaController extends Controller
 {
@@ -32,13 +34,18 @@ class PaginaController extends Controller
         return view('admin.paginas.como-funciona', compact('contenidos'));
     }
 
-    public function updateExperiencias(Request $request)
+   public function updateExperiencias(Request $request)
 {
-    $pagina_id = 'experiencias'; // o usa 1 si prefieres el ID numérico
+    // Validación para la imagen
+    $request->validate([
+        'hero_imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    ]);
+
+    $pagina_id = 'experiencias';
     
-    // Lista de todos los campos editables
+    // Lista de campos de texto (SIN hero_imagen)
     $campos = [
-        'hero_titulo', 'hero_subtitulo', 'hero_boton1', 'hero_boton2', 'hero_imagen',
+        'hero_titulo', 'hero_subtitulo', 'hero_boton1', 'hero_boton2',
         'elegir_titulo', 'elegir_subtitulo',
         'feature1_icono', 'feature1_titulo', 'feature1_descripcion',
         'feature2_icono', 'feature2_titulo', 'feature2_descripcion',
@@ -51,6 +58,7 @@ class PaginaController extends Controller
         'cta_titulo', 'cta_descripcion', 'cta_boton1', 'cta_boton2'
     ];
     
+    // Guardar campos de texto
     foreach ($campos as $campo) {
         if ($request->has($campo)) {
             Pagina::updateOrCreate([
@@ -60,6 +68,31 @@ class PaginaController extends Controller
                 'valor' => $request->input($campo)
             ]);
         }
+    }
+    
+    // Manejar imagen hero por separado
+    if ($request->hasFile('hero_imagen')) {
+        // Obtener imagen anterior para eliminarla
+        $imagenAnterior = Pagina::where('pagina_id', $pagina_id)
+                               ->where('clave', 'hero_imagen')
+                               ->first();
+        
+        // Eliminar imagen anterior si existe y no es URL externa
+        if ($imagenAnterior && $imagenAnterior->valor && 
+            !Str::startsWith($imagenAnterior->valor, ['http://', 'https://'])) {
+            Storage::disk('public')->delete($imagenAnterior->valor);
+        }
+        
+        // Guardar nueva imagen en storage/app/public/paginas/hero/
+        $rutaImagen = $request->file('hero_imagen')->store('paginas/hero', 'public');
+        
+        // Actualizar en base de datos
+        Pagina::updateOrCreate([
+            'pagina_id' => $pagina_id,
+            'clave' => 'hero_imagen'
+        ], [
+            'valor' => $rutaImagen
+        ]);
     }
     
     return redirect()->back()->with('success', 'Contenido actualizado correctamente');
