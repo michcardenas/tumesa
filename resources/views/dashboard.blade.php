@@ -23,11 +23,10 @@
                                 Gestión de Páginas
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link disabled">
+                      <li class="menu-item">
+                            <a href="{{ route('admin.usuarios') }}" class="menu-link">
                                 <i class="fas fa-users"></i>
                                 Usuarios
-                                <span class="coming-soon">Próximamente</span>
                             </a>
                         </li>
                         <li class="menu-item">

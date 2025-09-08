@@ -185,4 +185,30 @@ public function updatecomensal(Request $request)
 
     return redirect()->route('perfil.comensal')->with('success', 'Perfil actualizado correctamente.');
 }
+
+
+
+
+public function gestionUsuarios()
+{
+    $usuarios = User::with('roles')->paginate(20);
+    $roles = Role::all();
+    
+    return view('admin.usuarios.index', compact('usuarios', 'roles'));
+}
+
+public function updateUserRole(Request $request, User $user)
+{
+    $request->validate([
+        'role' => 'required|exists:roles,name'
+    ]);
+    
+    // Limpiar roles existentes y asignar el nuevo
+    $user->syncRoles([$request->role]);
+    
+    // También actualizar el campo role en la tabla users si lo usas
+    $user->update(['role' => $request->role]);
+    
+    return redirect()->back()->with('success', 'Rol actualizado correctamente');
+}
 }
