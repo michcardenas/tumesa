@@ -16,6 +16,7 @@ use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\ComensalController;
 use App\Http\Controllers\ResenaController;
 use App\Http\Controllers\PaginaController;
+use App\Http\Controllers\SeoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,7 +77,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->name('chef.reservas.resetear-asistencia');
    
 });
-
+// Rutas SEO (sin middleware)
+// En routes/web.php, agrega esta ruta:
+Route::put('/admin/seo/update', [SeoController::class, 'update'])->name('admin.seo.update');
+Route::put('/admin/seo/update', [SeoController::class, 'update'])->name('admin.seo.update');
 
 // En routes/web.php
 Route::get('/admin/paginas/experiencias/edit', [PaginaController::class, 'editExperiencias'])->name('admin.paginas.experiencias.edit');

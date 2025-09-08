@@ -87,24 +87,22 @@
                                                 <code>/{{ $page['slug'] }}</code>
                                             </td>
                                             <td>
-                                                <div class="action-buttons">
-                                                    <button class="btn btn-sm btn-outline-primary" title="Ver">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
+                                              <div class="action-buttons">
+                                                  
                                                     
-                                                @if($page['slug'] === 'experiencias')
-                                                            <a href="{{ route('admin.paginas.experiencias.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                        @elseif($page['slug'] === 'ser-chef')
-                                                            <a href="{{ route('admin.paginas.ser-chef.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                        @elseif($page['slug'] === 'como-funciona')
-                                                            <a href="{{ route('admin.paginas.como-funciona.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                        @endif
+                                                    @if($page['slug'] === 'experiencias')
+                                                        <a href="{{ route('home') }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    @elseif($page['slug'] === 'ser-chef')
+                                                        <a href="{{ route('ser-chef') }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    @elseif($page['slug'] === 'como-funciona')
+                                                        <a href="{{ route('como-funciona') }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
