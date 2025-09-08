@@ -137,4 +137,57 @@ public function updateSerChef(Request $request)
     
     return redirect()->back()->with('success', 'Contenido actualizado correctamente');
 }
+
+public function updateComoFunciona(Request $request)
+{
+    $pagina_id = 'como-funciona';
+    
+    // Lista de todos los campos editables
+    $campos = [
+        'hero_titulo', 'hero_descripcion', 'hero_boton1', 'hero_boton2',
+        'tabs_titulo', 'tabs_subtitulo', 'tab1_texto', 'tab2_texto',
+        
+        // Invitados
+        'guest_paso1_titulo', 'guest_paso1_descripcion', 'guest_paso2_titulo', 'guest_paso2_descripcion',
+        'guest_paso3_titulo', 'guest_paso3_descripcion', 'guest_paso4_titulo', 'guest_paso4_descripcion',
+        'guest_timeline_titulo', 'guest_timeline_subtitulo',
+        'guest_timeline1_titulo', 'guest_timeline1_descripcion', 'guest_timeline2_titulo', 'guest_timeline2_descripcion',
+        'guest_timeline3_titulo', 'guest_timeline3_descripcion', 'guest_timeline4_titulo', 'guest_timeline4_descripcion',
+        'guest_timeline5_titulo', 'guest_timeline5_descripcion',
+        
+        // Chefs
+        'chef_paso1_titulo', 'chef_paso1_descripcion', 'chef_paso2_titulo', 'chef_paso2_descripcion',
+        'chef_paso3_titulo', 'chef_paso3_descripcion', 'chef_paso4_titulo', 'chef_paso4_descripcion',
+        'chef_timeline_titulo', 'chef_timeline_subtitulo',
+        'chef_timeline1_titulo', 'chef_timeline1_descripcion', 'chef_timeline2_titulo', 'chef_timeline2_descripcion',
+        'chef_timeline3_titulo', 'chef_timeline3_descripcion', 'chef_timeline4_titulo', 'chef_timeline4_descripcion',
+        'chef_timeline5_titulo', 'chef_timeline5_descripcion',
+        
+        // Pagos
+        'pagos_titulo', 'pagos_subtitulo',
+        'pagos_card1_titulo', 'pagos_card1_descripcion', 'pagos_card1_badge', 'pagos_card1_badge_texto',
+        'pagos_card2_titulo', 'pagos_card2_descripcion', 'pagos_card2_badge', 'pagos_card2_badge_texto',
+        'pagos_card3_titulo', 'pagos_card3_descripcion', 'pagos_card3_badge', 'pagos_card3_badge_texto',
+        
+        // FAQ
+        'faq_titulo', 'faq1_pregunta', 'faq1_respuesta', 'faq2_pregunta', 'faq2_respuesta',
+        'faq3_pregunta', 'faq3_respuesta', 'faq4_pregunta', 'faq4_respuesta',
+        
+        // CTA
+        'cta_boton1', 'cta_boton2', 'cta_texto_ayuda'
+    ];
+    
+    foreach ($campos as $campo) {
+        if ($request->has($campo)) {
+            Pagina::updateOrCreate([
+                'pagina_id' => $pagina_id,
+                'clave' => $campo
+            ], [
+                'valor' => $request->input($campo)
+            ]);
+        }
+    }
+    
+    return redirect()->back()->with('success', 'Contenido actualizado correctamente');
+}
 }
