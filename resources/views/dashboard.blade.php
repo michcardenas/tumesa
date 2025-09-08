@@ -91,16 +91,25 @@
                                                   
                                                     
                                                     @if($page['slug'] === 'experiencias')
-                                                        <a href="{{ route('home') }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver">
-                                                            <i class="fas fa-eye"></i>
+                                                        <a href="{{ route('admin.paginas.experiencias.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{{ route('admin.seo.experiencias') }}" class="btn btn-sm btn-outline-info" title="SEO">
+                                                            <i class="fas fa-search"></i>
                                                         </a>
                                                     @elseif($page['slug'] === 'ser-chef')
-                                                        <a href="{{ route('ser-chef') }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver">
-                                                            <i class="fas fa-eye"></i>
+                                                        <a href="{{ route('admin.paginas.ser-chef.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{{ route('admin.seo.ser-chef') }}" class="btn btn-sm btn-outline-info" title="SEO">
+                                                            <i class="fas fa-search"></i>
                                                         </a>
                                                     @elseif($page['slug'] === 'como-funciona')
-                                                        <a href="{{ route('como-funciona') }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver">
-                                                            <i class="fas fa-eye"></i>
+                                                        <a href="{{ route('admin.paginas.como-funciona.edit') }}" class="btn btn-sm btn-outline-success" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{{ route('admin.seo.como-funciona') }}" class="btn btn-sm btn-outline-info" title="SEO">
+                                                            <i class="fas fa-search"></i>
                                                         </a>
                                                     @endif
                                                 </div>

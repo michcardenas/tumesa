@@ -78,9 +78,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
    
 });
 // Rutas SEO (sin middleware)
-// En routes/web.php, agrega esta ruta:
+Route::get('/admin/seo/experiencias', [SeoController::class, 'experiencias'])->name('admin.seo.experiencias');
+Route::get('/admin/seo/ser-chef', [SeoController::class, 'serChef'])->name('admin.seo.ser-chef');
+Route::get('/admin/seo/como-funciona', [SeoController::class, 'comoFunciona'])->name('admin.seo.como-funciona');
 Route::put('/admin/seo/update', [SeoController::class, 'update'])->name('admin.seo.update');
-Route::put('/admin/seo/update', [SeoController::class, 'update'])->name('admin.seo.update');
+
 
 // En routes/web.php
 Route::get('/admin/paginas/experiencias/edit', [PaginaController::class, 'editExperiencias'])->name('admin.paginas.experiencias.edit');
