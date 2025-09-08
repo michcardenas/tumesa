@@ -19,334 +19,152 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-    .navbar-custom {
-        background-color: #ffffff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        padding: 0.8rem 0;
-        z-index: 1050;
-    }
-    
-    .navbar-brand {
-        font-weight: 700;
-        font-size: 1.5rem;
-        color: #2563eb !important;
-        text-decoration: none;
-    }
-    
-    .navbar-nav .nav-link {
-        color: #64748b !important;
-        font-weight: 500;
-        margin: 0 0.5rem;
-        transition: color 0.3s ease;
-        text-decoration: none;
-    }
-    
-    .navbar-nav .nav-link:hover {
-        color: #2563eb !important;
-    }
-    
-    .navbar-nav .nav-link.active {
-        color: #2563eb !important;
-        font-weight: 600;
-    }
-    
-    .logo-icon {
-        height: 32px;
-        width: auto;
-        margin-right: 0.5rem;
-    }
-    
-    /* Estilos para botones de autenticación */
-    .auth-buttons {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .btn-login {
-        color: #64748b;
-        border: none;
-        background: none;
-        font-weight: 500;
-        padding: 0.5rem 1rem;
-        transition: color 0.3s ease;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-    }
-    
-    .btn-login:hover {
-        color: #2563eb;
-    }
-    
-    .btn-login:focus {
-        outline: none;
-        box-shadow: none;
-    }
-    
-    .btn-register {
-        background-color: #1e293b;
-        color: white;
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 500;
-        transition: background-color 0.3s ease;
-        text-decoration: none;
-    }
-    
-    .btn-register:hover {
-        background-color: #0f172a;
-        color: white;
-    }
-    
-    /* Estilos para dropdown de usuario comensal */
-    .user-dropdown .user-button {
-        background: none;
-        border: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #64748b;
-        font-weight: 500;
-        padding: 0.5rem 1rem;
-        transition: color 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .user-dropdown .user-button:hover {
-        color: #2563eb;
-    }
-    
-    .user-dropdown .user-button:focus {
-        outline: none;
-        box-shadow: none;
-    }
-    
-    .user-avatar {
-        width: 32px;
-        height: 32px;
-        background: #2563eb;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 0.9rem;
-        flex-shrink: 0;
-    }
-    
-    /* Navbar toggler styles - IMPORTANTE PARA MÓVILES */
-    .navbar-toggler {
-        border: none !important;
-        padding: 0.25rem 0.5rem;
-        background: none;
-        cursor: pointer;
-        position: relative;
-        z-index: 1051;
-    }
-    
-    .navbar-toggler:focus {
-        box-shadow: none !important;
-        outline: none !important;
-    }
-    
-    .navbar-toggler-icon {
-        display: block;
-        width: 1.5em;
-        height: 1.5em;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 100%;
-    }
-    
-    /* Dropdown styles */
-    .dropdown-menu {
-        z-index: 1060;
-        border: 1px solid #e9ecef;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        min-width: 250px;
-    }
-    
-    .dropdown-header {
-        font-size: 0.9rem;
-        color: #2563eb;
-    }
-    
-    .dropdown-item {
-        display: flex;
-        align-items: center;
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-    
-    .dropdown-item i {
-        width: 20px;
-    }
-    
-    .dropdown-toggle::after {
-        margin-left: 0.5rem;
-    }
-    
-    /* IMPORTANTE: Mostrar siempre el menú en pantallas grandes */
-    @media (min-width: 992px) {
-        .navbar-collapse {
-            display: flex !important;
-            visibility: visible !important;
-        }
-    }
-    
-    /* ESTILOS MÓVILES CORREGIDOS */
-    @media (max-width: 991.98px) {
-        /* Ocultar el collapse por defecto en móviles */
-        .navbar-collapse {
-            display: none;
-            background: #ffffff;
-            margin-top: 1rem;
-            padding: 1rem;
-            border-top: 1px solid #e9ecef;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+
+    <!-- Custom Styles -->
+    <style>
+        .navbar-custom {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0.8rem 0;
+            z-index: 1050;
         }
         
-        /* Mostrar el collapse cuando tiene la clase 'show' */
-        .navbar-collapse.show {
-            display: block !important;
-        }
-        
-        /* Estilos para el contenido del navbar en móviles */
-        .navbar-nav {
-            text-align: center;
-            margin-bottom: 1rem;
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #2563eb !important;
+            text-decoration: none;
         }
         
         .navbar-nav .nav-link {
-            padding: 0.75rem 1rem;
-            margin: 0.25rem 0;
-            border-radius: 0.375rem;
-            border: 1px solid transparent;
+            color: #64748b !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: color 0.3s ease;
+            text-decoration: none;
         }
         
         .navbar-nav .nav-link:hover {
-            background-color: #f8fafc;
-            border-color: #e2e8f0;
+            color: #2563eb !important;
         }
         
-        /* Estilos para los botones de auth en móviles */
-        .auth-buttons {
-            justify-content: center;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-            width: 100%;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e9ecef;
-        }
-        
-        .btn-login,
-        .btn-register {
-            width: 200px;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 0.375rem;
+        .navbar-nav .nav-link.active {
+            color: #2563eb !important;
+            font-weight: 600;
         }
         
         .btn-login {
-            border: 1px solid #e2e8f0;
-            background-color: #f8fafc;
+            color: #64748b;
+            border: none;
+            background: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            transition: color 0.3s ease;
+            text-decoration: none;
         }
         
-        /* Dropdown en móviles */
-        .user-dropdown {
-            width: 100%;
-            display: flex;
-            justify-content: center;
+        .btn-login:hover {
+            color: #2563eb;
         }
         
-        .user-dropdown .user-button {
-            width: 200px;
-            justify-content: center;
-            border: 1px solid #e2e8f0;
-            background-color: #f8fafc;
-            border-radius: 0.375rem;
+        .btn-register {
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
         }
         
-        .dropdown-menu {
-            min-width: 200px;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            position: absolute !important;
-            margin-top: 0.5rem;
-        }
-        
-        /* Asegurar que los dropdowns se muestren correctamente */
-        .dropdown.show .dropdown-menu {
-            display: block;
-        }
-        
-        /* Mejorar la visibilidad del toggler en móviles */
-        .navbar-toggler {
-            border: 2px solid #e2e8f0 !important;
-            border-radius: 0.375rem;
-            background-color: #f8fafc;
-        }
-        
-        .navbar-toggler:hover {
-            background-color: #e2e8f0;
-        }
-    }
-    
-    /* Para pantallas muy pequeñas */
-    @media (max-width: 576px) {
-        .navbar-brand {
-            font-size: 1.3rem;
+        .btn-register:hover {
+            background-color: #0f172a;
+            color: white;
         }
         
         .logo-icon {
-            height: 28px;
+            height: 32px;
+            width: auto;
+            margin-right: 0.5rem;
         }
         
-        .btn-login,
-        .btn-register,
-        .user-dropdown .user-button {
-            width: 180px;
-            font-size: 0.9rem;
+        /* Navbar toggler styles */
+        .navbar-toggler {
+            border: none;
+            padding: 0.25rem 0.5rem;
+            background: none;
+            cursor: pointer;
         }
         
+        .navbar-toggler:focus {
+            box-shadow: none;
+            outline: none;
+        }
+        
+        .navbar-toggler-icon {
+            display: block;
+            width: 1.5em;
+            height: 1.5em;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100%;
+        }
+        
+        /* IMPORTANTE: Mostrar siempre el menú en pantallas grandes */
+        @media (min-width: 992px) {
+            .navbar-collapse {
+                display: flex !important;
+                visibility: visible !important;
+            }
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                display: none;
+            }
+            
+            .navbar-collapse.show {
+                display: block !important;
+            }
+            
+            .navbar-nav {
+                text-align: center;
+                margin-top: 1rem;
+            }
+            
+            .auth-buttons {
+                justify-content: center !important;
+                margin-top: 1rem;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .navbar-collapse {
+                border-top: 1px solid #e9ecef;
+                margin-top: 1rem;
+                padding-top: 1rem;
+            }
+            
+            .btn-login,
+            .btn-register {
+                width: 200px;
+                margin: 0.25rem 0;
+                text-align: center;
+                display: block;
+            }
+        }
+        
+        /* Dropdown styles */
         .dropdown-menu {
-            min-width: 180px;
+            z-index: 1060;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
-        
-        .navbar-collapse {
-            margin: 0.5rem;
-            padding: 0.75rem;
-        }
-    }
-    
-    /* Estilos adicionales para mejorar UX */
-    .navbar-collapse.collapsing {
-        transition: height 0.35s ease;
-    }
-    
-    /* Asegurar que el navbar funcione correctamente */
-    .navbar {
-        position: relative;
-    }
-
-    /* Footer styles (mantener como están) */
-    .footer-main {
+        .footer-main {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         color: #e2e8f0;
         padding: 4rem 0 1.5rem;
@@ -618,7 +436,7 @@
             justify-content: center;
         }
     }
-</style>
+    </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -626,7 +444,6 @@
     <div id="app">
         <!-- Navigation -->
      
-
 <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
     <div class="container">
         <!-- Brand -->
@@ -660,7 +477,7 @@
             </ul>
 
             <!-- Right side authentication buttons -->
-            <div class="auth-buttons">
+            <div class="d-flex auth-buttons">
                 @auth
                     @if(Auth::user()->hasRole('chef_anfitrion'))
                         <!-- CHEF DROPDOWN -->
@@ -668,8 +485,7 @@
                             <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-chef-hat me-1"></i>
-                                <span class="d-none d-sm-inline">{{ Str::limit(Auth::user()->name, 15) }}</span>
-                                <span class="d-inline d-sm-none">{{ Str::limit(Auth::user()->name, 10) }}</span>
+                                {{ Auth::user()->name }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -684,14 +500,15 @@
                                 <li><a class="dropdown-item" href="{{ route('chef.profile.edit') }}">
                                     <i class="fas fa-user-edit me-2"></i>Mi Perfil
                                 </a></li>
+                             
                                 <li><a class="dropdown-item" href="{{ route('chef.ingresos') }}">
                                     <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                    <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">
+                                        <button type="submit" class="dropdown-item text-danger">
                                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                                         </button>
                                     </form>
@@ -707,8 +524,7 @@
                                 <div class="user-avatar">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                 </div>
-                                <span class="d-none d-sm-inline">{{ Str::limit(Auth::user()->name, 15) }}</span>
-                                <span class="d-inline d-sm-none">{{ Str::limit(Auth::user()->name, 10) }}</span>
+                                <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -729,9 +545,9 @@
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                    <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">
+                                        <button type="submit" class="dropdown-item text-danger">
                                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                                         </button>
                                     </form>
@@ -740,13 +556,12 @@
                         </div>
 
                     @else
-                        <!-- USUARIO SIN ROL ESPECÍFICO -->
+                        <!-- USUARIO SIN ROL ESPECÍFICO (Fallback) -->
                         <div class="dropdown">
                             <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-user me-1"></i>
-                                <span class="d-none d-sm-inline">{{ Str::limit(Auth::user()->name, 15) }}</span>
-                                <span class="d-inline d-sm-none">{{ Str::limit(Auth::user()->name, 10) }}</span>
+                                {{ Auth::user()->name }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -757,9 +572,9 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                    <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">
+                                        <button type="submit" class="dropdown-item">
                                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                                         </button>
                                     </form>
@@ -768,7 +583,7 @@
                         </div>
                     @endif
                 @else
-                    <!-- Usuario no logueado -->
+                    <!-- User is not logged in -->
                     <a href="{{ route('login') }}" class="btn btn-login">Iniciar Sesión</a>
                     <a href="{{ route('register') }}" class="btn btn-register">Registrarse</a>
                 @endauth
@@ -776,6 +591,7 @@
         </div>
     </div>
 </nav>
+
         <!-- Main content -->
         <main style="margin-top: 80px;">
             @yield('content')
@@ -868,6 +684,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     @stack('scripts')
-    
 </body>
 </html>
