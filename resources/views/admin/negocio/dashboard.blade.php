@@ -224,46 +224,7 @@
                         </div>
                     </div>
 
-                    <!-- Acciones Rápidas -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-bolt me-2"></i>Acciones Rápidas
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-3 mb-3">
-                                            <a href="{{ route('chef.experiencias.create') ?? '#' }}" class="btn btn-primary w-100">
-                                                <i class="fas fa-plus me-2"></i>
-                                                Nueva Experiencia
-                                            </a>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <a href="{{ route('chef.reservas') ?? '#' }}" class="btn btn-outline-primary w-100">
-                                                <i class="fas fa-list me-2"></i>
-                                                Ver Reservas
-                                            </a>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <a href="{{ route('chef.experiencias') ?? '#' }}" class="btn btn-outline-secondary w-100">
-                                                <i class="fas fa-utensils me-2"></i>
-                                                Mis Experiencias
-                                            </a>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <a href="{{ route('chef.perfil') ?? '#' }}" class="btn btn-outline-secondary w-100">
-                                                <i class="fas fa-user me-2"></i>
-                                                Mi Perfil
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  
                 </div>
             </div>
         </div>
