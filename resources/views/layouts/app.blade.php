@@ -19,152 +19,289 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Custom Styles -->
-    <style>
-        .navbar-custom {
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 0.8rem 0;
-            z-index: 1050;
+<style>
+    .navbar-custom {
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 0.8rem 0;
+        z-index: 1050;
+    }
+    
+    .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: #2563eb !important;
+        text-decoration: none;
+    }
+    
+    .navbar-nav .nav-link {
+        color: #64748b !important;
+        font-weight: 500;
+        margin: 0 0.5rem;
+        transition: color 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .navbar-nav .nav-link:hover {
+        color: #2563eb !important;
+    }
+    
+    .navbar-nav .nav-link.active {
+        color: #2563eb !important;
+        font-weight: 600;
+    }
+    
+    .logo-icon {
+        height: 32px;
+        width: auto;
+        margin-right: 0.5rem;
+    }
+    
+    /* Estilos para botones de autenticación */
+    .auth-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-login {
+        color: #64748b;
+        border: none;
+        background: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: color 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .btn-login:hover {
+        color: #2563eb;
+    }
+    
+    .btn-login:focus {
+        outline: none;
+        box-shadow: none;
+    }
+    
+    .btn-register {
+        background-color: #1e293b;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-register:hover {
+        background-color: #0f172a;
+        color: white;
+    }
+    
+    /* Estilos para dropdown de usuario comensal */
+    .user-dropdown .user-button {
+        background: none;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #64748b;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: color 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .user-dropdown .user-button:hover {
+        color: #2563eb;
+    }
+    
+    .user-dropdown .user-button:focus {
+        outline: none;
+        box-shadow: none;
+    }
+    
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        background: #2563eb;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+    
+    /* Navbar toggler styles */
+    .navbar-toggler {
+        border: none;
+        padding: 0.25rem 0.5rem;
+        background: none;
+        cursor: pointer;
+    }
+    
+    .navbar-toggler:focus {
+        box-shadow: none;
+        outline: none;
+    }
+    
+    .navbar-toggler-icon {
+        display: block;
+        width: 1.5em;
+        height: 1.5em;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100%;
+    }
+    
+    /* Dropdown styles */
+    .dropdown-menu {
+        z-index: 1060;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        min-width: 250px;
+    }
+    
+    .dropdown-header {
+        font-size: 0.9rem;
+        color: #2563eb;
+    }
+    
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .dropdown-item i {
+        width: 20px;
+    }
+    
+    .dropdown-toggle::after {
+        margin-left: 0.5rem;
+    }
+    
+    /* IMPORTANTE: Mostrar siempre el menú en pantallas grandes */
+    @media (min-width: 992px) {
+        .navbar-collapse {
+            display: flex !important;
+            visibility: visible !important;
+        }
+    }
+    
+    /* Mobile styles */
+    @media (max-width: 991.98px) {
+        .navbar-collapse {
+            display: none;
+            background: #ffffff;
+            margin-top: 1rem;
+            padding: 1rem 0;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0.5rem;
         }
         
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: #2563eb !important;
-            text-decoration: none;
+        .navbar-collapse.show {
+            display: block !important;
+        }
+        
+        .navbar-nav {
+            text-align: center;
+            margin-bottom: 1rem;
         }
         
         .navbar-nav .nav-link {
-            color: #64748b !important;
-            font-weight: 500;
-            margin: 0 0.5rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            border-bottom: 1px solid #f1f5f9;
         }
         
-        .navbar-nav .nav-link:hover {
-            color: #2563eb !important;
+        .navbar-nav .nav-link:last-child {
+            border-bottom: none;
         }
         
-        .navbar-nav .nav-link.active {
-            color: #2563eb !important;
-            font-weight: 600;
+        .auth-buttons {
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
         }
         
-        .btn-login {
-            color: #64748b;
-            border: none;
-            background: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            margin-right: 0.5rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-        
-        .btn-login:hover {
-            color: #2563eb;
-        }
-        
+        .btn-login,
         .btn-register {
-            background-color: #1e293b;
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
+            width: 200px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
-        .btn-register:hover {
-            background-color: #0f172a;
-            color: white;
+        /* Dropdown en móviles */
+        .user-dropdown {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .user-dropdown .user-button {
+            width: 200px;
+            justify-content: center;
+        }
+        
+        .dropdown-menu {
+            min-width: 200px;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            position: absolute !important;
+        }
+        
+        /* Asegurar que los dropdowns se muestren correctamente */
+        .dropdown.show .dropdown-menu {
+            display: block;
+        }
+    }
+    
+    /* Para pantallas muy pequeñas */
+    @media (max-width: 576px) {
+        .navbar-brand {
+            font-size: 1.3rem;
         }
         
         .logo-icon {
-            height: 32px;
-            width: auto;
-            margin-right: 0.5rem;
+            height: 28px;
         }
         
-        /* Navbar toggler styles */
-        .navbar-toggler {
-            border: none;
-            padding: 0.25rem 0.5rem;
-            background: none;
-            cursor: pointer;
+        .btn-login,
+        .btn-register,
+        .user-dropdown .user-button {
+            width: 180px;
+            font-size: 0.9rem;
         }
         
-        .navbar-toggler:focus {
-            box-shadow: none;
-            outline: none;
-        }
-        
-        .navbar-toggler-icon {
-            display: block;
-            width: 1.5em;
-            height: 1.5em;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 100%;
-        }
-        
-        /* IMPORTANTE: Mostrar siempre el menú en pantallas grandes */
-        @media (min-width: 992px) {
-            .navbar-collapse {
-                display: flex !important;
-                visibility: visible !important;
-            }
-        }
-        
-        /* Mobile styles */
-        @media (max-width: 991.98px) {
-            .navbar-collapse {
-                display: none;
-            }
-            
-            .navbar-collapse.show {
-                display: block !important;
-            }
-            
-            .navbar-nav {
-                text-align: center;
-                margin-top: 1rem;
-            }
-            
-            .auth-buttons {
-                justify-content: center !important;
-                margin-top: 1rem;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .navbar-collapse {
-                border-top: 1px solid #e9ecef;
-                margin-top: 1rem;
-                padding-top: 1rem;
-            }
-            
-            .btn-login,
-            .btn-register {
-                width: 200px;
-                margin: 0.25rem 0;
-                text-align: center;
-                display: block;
-            }
-        }
-        
-        /* Dropdown styles */
         .dropdown-menu {
-            z-index: 1060;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            min-width: 180px;
         }
-        .footer-main {
+    }
+    
+    /* Estilos adicionales para mejorar UX */
+    .navbar-collapse.collapsing {
+        transition: height 0.35s ease;
+    }
+
+    /* Footer styles */
+    .footer-main {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         color: #e2e8f0;
         padding: 4rem 0 1.5rem;
@@ -436,7 +573,7 @@
             justify-content: center;
         }
     }
-    </style>
+</style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -444,6 +581,7 @@
     <div id="app">
         <!-- Navigation -->
      
+
 <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
     <div class="container">
         <!-- Brand -->
@@ -477,7 +615,7 @@
             </ul>
 
             <!-- Right side authentication buttons -->
-            <div class="d-flex auth-buttons">
+            <div class="auth-buttons">
                 @auth
                     @if(Auth::user()->hasRole('chef_anfitrion'))
                         <!-- CHEF DROPDOWN -->
@@ -485,7 +623,8 @@
                             <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-chef-hat me-1"></i>
-                                {{ Auth::user()->name }}
+                                <span class="d-none d-sm-inline">{{ Str::limit(Auth::user()->name, 15) }}</span>
+                                <span class="d-inline d-sm-none">{{ Str::limit(Auth::user()->name, 10) }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -500,15 +639,14 @@
                                 <li><a class="dropdown-item" href="{{ route('chef.profile.edit') }}">
                                     <i class="fas fa-user-edit me-2"></i>Mi Perfil
                                 </a></li>
-                             
                                 <li><a class="dropdown-item" href="{{ route('chef.ingresos') }}">
                                     <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
                                         @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
+                                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">
                                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                                         </button>
                                     </form>
@@ -524,7 +662,8 @@
                                 <div class="user-avatar">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                 </div>
-                                <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
+                                <span class="d-none d-sm-inline">{{ Str::limit(Auth::user()->name, 15) }}</span>
+                                <span class="d-inline d-sm-none">{{ Str::limit(Auth::user()->name, 10) }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -545,9 +684,9 @@
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
                                         @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
+                                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">
                                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                                         </button>
                                     </form>
@@ -556,12 +695,13 @@
                         </div>
 
                     @else
-                        <!-- USUARIO SIN ROL ESPECÍFICO (Fallback) -->
+                        <!-- USUARIO SIN ROL ESPECÍFICO -->
                         <div class="dropdown">
                             <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-user me-1"></i>
-                                {{ Auth::user()->name }}
+                                <span class="d-none d-sm-inline">{{ Str::limit(Auth::user()->name, 15) }}</span>
+                                <span class="d-inline d-sm-none">{{ Str::limit(Auth::user()->name, 10) }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -572,9 +712,9 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
                                         @csrf
-                                        <button type="submit" class="dropdown-item">
+                                        <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">
                                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                                         </button>
                                     </form>
@@ -583,7 +723,7 @@
                         </div>
                     @endif
                 @else
-                    <!-- User is not logged in -->
+                    <!-- Usuario no logueado -->
                     <a href="{{ route('login') }}" class="btn btn-login">Iniciar Sesión</a>
                     <a href="{{ route('register') }}" class="btn btn-register">Registrarse</a>
                 @endauth
@@ -591,7 +731,6 @@
         </div>
     </div>
 </nav>
-
         <!-- Main content -->
         <main style="margin-top: 80px;">
             @yield('content')
