@@ -474,37 +474,7 @@ details[open] .chev {
       </div>
     </div>
 
-    <h3 class="section-title">{{ $contenidos['guest_timeline_titulo']->valor ?? 'Tu recorrido como invitado' }}</h3>
-    <div class="section-sub">{{ $contenidos['guest_timeline_subtitulo']->valor ?? 'Así se ve de principio a fin.' }}</div>
-    <div class="timeline">
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['guest_timeline1_titulo']->valor ?? 'Buscar' }}</strong>
-        <p class="muted">{{ $contenidos['guest_timeline1_descripcion']->valor ?? 'Usa filtros inteligentes' }}</p>
-      </div>
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['guest_timeline2_titulo']->valor ?? 'Seleccionar' }}</strong>
-        <p class="muted">{{ $contenidos['guest_timeline2_descripcion']->valor ?? 'Lee menú y políticas' }}</p>
-      </div>
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['guest_timeline3_titulo']->valor ?? 'Reservar' }}</strong>
-        <p class="muted">{{ $contenidos['guest_timeline3_descripcion']->valor ?? 'Pago seguro' }}</p>
-      </div>
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['guest_timeline4_titulo']->valor ?? 'Asistir' }}</strong>
-        <p class="muted">{{ $contenidos['guest_timeline4_descripcion']->valor ?? 'Llega puntualmente' }}</p>
-      </div>
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['guest_timeline5_titulo']->valor ?? 'Calificar' }}</strong>
-        <p class="muted">{{ $contenidos['guest_timeline5_descripcion']->valor ?? 'Comparte tu opinión' }}</p>
-      </div>
-    </div>
-  </section>
-
+    
   {{-- PARA CHEFS --}}
   <section data-section="chef" class="hidden">
     <div class="grid-4 steps">
