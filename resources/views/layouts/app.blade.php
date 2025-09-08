@@ -498,7 +498,7 @@
                                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                 </a></li>
                                 <li><a class="dropdown-item" href="{{ route('chef.profile.edit') }}">
-                                    <i class="fas fa-user-edit me-2"></i>Mi Perfil de Chef
+                                    <i class="fas fa-user-edit me-2"></i>Mi Perfil
                                 </a></li>
                              
                                 <li><a class="dropdown-item" href="{{ route('chef.ingresos') }}">
