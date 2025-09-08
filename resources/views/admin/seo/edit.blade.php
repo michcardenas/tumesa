@@ -49,50 +49,50 @@
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">Meta Title</label>
                                         <input type="text" name="meta_title" class="form-control" maxlength="60"
-                                               value="{{ old('meta_title', $seoData->meta_title ?? '') }}"
+                                               value="{{ old('meta_title', $seoData ? $seoData->meta_title : '') }}"
                                                placeholder="Título que aparece en Google (máx. 60 caracteres)">
                                         <div class="form-text">
-                                            <span id="meta-title-count">{{ strlen($seoData->meta_title ?? '') }}</span>/60 caracteres
+                                            <span id="meta-title-count">{{ $seoData ? strlen($seoData->meta_title ?? '') : 0 }}</span>/60 caracteres
                                         </div>
                                     </div>
 
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">Meta Description</label>
                                         <textarea name="meta_description" class="form-control" rows="3" maxlength="160"
-                                                  placeholder="Descripción que aparece en Google (máx. 160 caracteres)">{{ old('meta_description', $seoData->meta_description ?? '') }}</textarea>
+                                                  placeholder="Descripción que aparece en Google (máx. 160 caracteres)">{{ old('meta_description', $seoData ? $seoData->meta_description : '') }}</textarea>
                                         <div class="form-text">
-                                            <span id="meta-desc-count">{{ strlen($seoData->meta_description ?? '') }}</span>/160 caracteres
+                                            <span id="meta-desc-count">{{ $seoData ? strlen($seoData->meta_description ?? '') : 0 }}</span>/160 caracteres
                                         </div>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Palabra Clave Principal</label>
                                         <input type="text" name="focus_keyword" class="form-control"
-                                               value="{{ old('focus_keyword', $seoData->focus_keyword ?? '') }}"
+                                               value="{{ old('focus_keyword', $seoData ? $seoData->focus_keyword : '') }}"
                                                placeholder="chef, experiencias gastronómicas">
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Meta Keywords</label>
                                         <input type="text" name="meta_keywords" class="form-control"
-                                               value="{{ old('meta_keywords', $seoData->meta_keywords ?? '') }}"
+                                               value="{{ old('meta_keywords', $seoData ? $seoData->meta_keywords : '') }}"
                                                placeholder="chef, cocina, experiencias, gastronomía">
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">URL Canónica</label>
                                         <input type="url" name="canonical_url" class="form-control"
-                                               value="{{ old('canonical_url', $seoData->canonical_url ?? $pageInfo['url_publica']) }}"
+                                               value="{{ old('canonical_url', $seoData ? $seoData->canonical_url : $pageInfo['url_publica']) }}"
                                                placeholder="https://tumesa.ar/experiencias">
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Robots</label>
                                         <select name="robots" class="form-control">
-                                            <option value="index,follow" {{ ($seoData->robots ?? 'index,follow') == 'index,follow' ? 'selected' : '' }}>index,follow</option>
-                                            <option value="noindex,follow" {{ ($seoData->robots ?? '') == 'noindex,follow' ? 'selected' : '' }}>noindex,follow</option>
-                                            <option value="index,nofollow" {{ ($seoData->robots ?? '') == 'index,nofollow' ? 'selected' : '' }}>index,nofollow</option>
-                                            <option value="noindex,nofollow" {{ ($seoData->robots ?? '') == 'noindex,nofollow' ? 'selected' : '' }}>noindex,nofollow</option>
+                                            <option value="index,follow" {{ ($seoData && $seoData->robots == 'index,follow') ? 'selected' : '' }}>index,follow</option>
+                                            <option value="noindex,follow" {{ ($seoData && $seoData->robots == 'noindex,follow') ? 'selected' : '' }}>noindex,follow</option>
+                                            <option value="index,nofollow" {{ ($seoData && $seoData->robots == 'index,nofollow') ? 'selected' : '' }}>index,nofollow</option>
+                                            <option value="noindex,nofollow" {{ ($seoData && $seoData->robots == 'noindex,nofollow') ? 'selected' : '' }}>noindex,nofollow</option>
                                         </select>
                                     </div>
                                 </div>
@@ -109,35 +109,35 @@
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">OG Title</label>
                                         <input type="text" name="og_title" class="form-control" maxlength="60"
-                                               value="{{ old('og_title', $seoData->og_title ?? '') }}"
+                                               value="{{ old('og_title', $seoData ? $seoData->og_title : '') }}"
                                                placeholder="Título para redes sociales">
                                         <div class="form-text">
-                                            <span id="og-title-count">{{ strlen($seoData->og_title ?? '') }}</span>/60 caracteres
+                                            <span id="og-title-count">{{ $seoData ? strlen($seoData->og_title ?? '') : 0 }}</span>/60 caracteres
                                         </div>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">OG Type</label>
                                         <select name="og_type" class="form-control">
-                                            <option value="website" {{ ($seoData->og_type ?? 'website') == 'website' ? 'selected' : '' }}>website</option>
-                                            <option value="article" {{ ($seoData->og_type ?? '') == 'article' ? 'selected' : '' }}>article</option>
-                                            <option value="product" {{ ($seoData->og_type ?? '') == 'product' ? 'selected' : '' }}>product</option>
+                                            <option value="website" {{ ($seoData && $seoData->og_type == 'website') ? 'selected' : '' }}>website</option>
+                                            <option value="article" {{ ($seoData && $seoData->og_type == 'article') ? 'selected' : '' }}>article</option>
+                                            <option value="product" {{ ($seoData && $seoData->og_type == 'product') ? 'selected' : '' }}>product</option>
                                         </select>
                                     </div>
 
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">OG Description</label>
                                         <textarea name="og_description" class="form-control" rows="2" maxlength="160"
-                                                  placeholder="Descripción para redes sociales">{{ old('og_description', $seoData->og_description ?? '') }}</textarea>
+                                                  placeholder="Descripción para redes sociales">{{ old('og_description', $seoData ? $seoData->og_description : '') }}</textarea>
                                         <div class="form-text">
-                                            <span id="og-desc-count">{{ strlen($seoData->og_description ?? '') }}</span>/160 caracteres
+                                            <span id="og-desc-count">{{ $seoData ? strlen($seoData->og_description ?? '') : 0 }}</span>/160 caracteres
                                         </div>
                                     </div>
 
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">OG Image</label>
                                         <input type="url" name="og_image" class="form-control"
-                                               value="{{ old('og_image', $seoData->og_image ?? '') }}"
+                                               value="{{ old('og_image', $seoData ? $seoData->og_image : '') }}"
                                                placeholder="https://tumesa.ar/imagen-social.jpg">
                                         <small class="text-muted">Recomendado: 1200x630px</small>
                                     </div>
@@ -155,26 +155,26 @@
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">Twitter Title</label>
                                         <input type="text" name="twitter_title" class="form-control" maxlength="60"
-                                               value="{{ old('twitter_title', $seoData->twitter_title ?? '') }}"
+                                               value="{{ old('twitter_title', $seoData ? $seoData->twitter_title : '') }}"
                                                placeholder="Título para Twitter">
                                         <div class="form-text">
-                                            <span id="twitter-title-count">{{ strlen($seoData->twitter_title ?? '') }}</span>/60 caracteres
+                                            <span id="twitter-title-count">{{ $seoData ? strlen($seoData->twitter_title ?? '') : 0 }}</span>/60 caracteres
                                         </div>
                                     </div>
 
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">Twitter Description</label>
                                         <textarea name="twitter_description" class="form-control" rows="2" maxlength="160"
-                                                  placeholder="Descripción para Twitter">{{ old('twitter_description', $seoData->twitter_description ?? '') }}</textarea>
+                                                  placeholder="Descripción para Twitter">{{ old('twitter_description', $seoData ? $seoData->twitter_description : '') }}</textarea>
                                         <div class="form-text">
-                                            <span id="twitter-desc-count">{{ strlen($seoData->twitter_description ?? '') }}</span>/160 caracteres
+                                            <span id="twitter-desc-count">{{ $seoData ? strlen($seoData->twitter_description ?? '') : 0 }}</span>/160 caracteres
                                         </div>
                                     </div>
 
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">Twitter Image</label>
                                         <input type="url" name="twitter_image" class="form-control"
-                                               value="{{ old('twitter_image', $seoData->twitter_image ?? '') }}"
+                                               value="{{ old('twitter_image', $seoData ? $seoData->twitter_image : '') }}"
                                                placeholder="https://tumesa.ar/imagen-twitter.jpg">
                                         <small class="text-muted">Recomendado: 1200x600px</small>
                                     </div>
@@ -191,7 +191,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">JSON-LD Schema</label>
                                     <textarea name="schema_markup" class="form-control" rows="8"
-                                              placeholder='{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "TuMesa"}'>{!! old('schema_markup', $seoData->schema_markup ? json_encode($seoData->schema_markup, JSON_PRETTY_PRINT) : '') !!}</textarea>
+                                              placeholder='{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "TuMesa"}'>{{ old('schema_markup', $seoData && $seoData->schema_markup ? json_encode($seoData->schema_markup, JSON_PRETTY_PRINT) : '') }}</textarea>
                                     <small class="text-muted">Formato JSON válido para datos estructurados</small>
                                 </div>
                             </div>
@@ -206,10 +206,10 @@
                                 <div id="google-preview" class="border p-3 bg-light">
                                     <div class="preview-url text-success">{{ $pageInfo['url_publica'] }}</div>
                                     <div class="preview-title text-primary fs-5" id="preview-title">
-                                        {{ $seoData->meta_title ?? 'Título de la página' }}
+                                        {{ $seoData && $seoData->meta_title ? $seoData->meta_title : 'Título de la página' }}
                                     </div>
                                     <div class="preview-description text-muted" id="preview-description">
-                                        {{ $seoData->meta_description ?? 'Descripción de la página que aparece en los resultados de búsqueda...' }}
+                                        {{ $seoData && $seoData->meta_description ? $seoData->meta_description : 'Descripción de la página que aparece en los resultados de búsqueda...' }}
                                     </div>
                                 </div>
                             </div>
