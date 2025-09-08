@@ -436,6 +436,27 @@
             justify-content: center;
         }
     }
+    .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.dropdown-header {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -443,75 +464,172 @@
 <body class="bg-light">
     <div id="app">
         <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
-            <div class="container">
-                <!-- Brand -->
-                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                    <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" class="logo-icon">
-                    TuMesa
-                </a>
+     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+            <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" class="logo-icon">
+            TuMesa
+        </a>
 
-                <!-- Mobile toggle button -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+        <!-- Mobile toggle button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                <!-- Navigation items -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <!-- Center navigation links -->
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}" 
-                               href="{{ route('experiencias') ?? '#' }}">Experiencias</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}" 
-                               href="{{ route('ser-chef') ?? '#' }}">Ser Chef Anfitrión</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('como-funciona') ? 'active' : '' }}" 
-                               href="{{ route('como-funciona') ?? '#' }}">Cómo Funciona</a>
-                        </li>
-                    </ul>
+        <!-- Navigation items -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Center navigation links -->
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}" 
+                       href="{{ route('experiencias') ?? '#' }}">Experiencias</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}" 
+                       href="{{ route('ser-chef') ?? '#' }}">Ser Chef Anfitrión</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('como-funciona') ? 'active' : '' }}" 
+                       href="{{ route('como-funciona') ?? '#' }}">Cómo Funciona</a>
+                </li>
+            </ul>
 
-                    <!-- Right side authentication buttons -->
-                    <div class="d-flex auth-buttons">
-                        @auth
-                            <!-- User is logged in -->
-                            <div class="dropdown">
-                                <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user me-1"></i>
-                                    {{ Auth::user()->name }}
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="{{ route('profile') ?? '#' }}">
-                                        <i class="fas fa-user me-2"></i>Mi Perfil
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="{{ route('reservas.historial') ?? '#' }}">
-                                        <i class="fas fa-calendar me-2"></i>Mis Reservas
-                                    </a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item">
-                                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        @else
-                            <!-- User is not logged in -->
-                            <a href="{{ route('login') }}" class="btn btn-login">Iniciar Sesión</a>
-                            <a href="{{ route('register') }}" class="btn btn-register">Registrarse</a>
-                        @endauth
-                    </div>
-                </div>
+            <!-- Right side authentication buttons -->
+            <div class="d-flex auth-buttons">
+                @auth
+                    @if(Auth::user()->hasRole('chef_anfitrion'))
+                        <!-- Chef Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-1"></i>
+                                {{ Auth::user()->name }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ route('perfil.chef') ?? '#' }}">
+                                    <i class="fas fa-user me-2"></i>Mi Perfil
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('chef.dashboard') ?? '#' }}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('chef.experiencias') ?? '#' }}">
+                                    <i class="fas fa-utensils me-2"></i>Mis Experiencias
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('chef.reservas') ?? '#' }}">
+                                    <i class="fas fa-calendar me-2"></i>Mis Reservas
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+
+                    @elseif(Auth::user()->hasRole('comensal'))
+                        <!-- Comensal Dropdown -->
+                        <div class="dropdown user-dropdown">
+                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-avatar me-2">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                                <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        <i class="fas fa-user me-2"></i>{{ Auth::user()->name }}
+                                        <br><small class="text-muted">{{ Auth::user()->email }}</small>
+                                    </h6>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('comensal.dashboard') ?? '#' }}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('perfil.comensal.edit') ?? '#' }}">
+                                    <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ route('reservas.historial') ?? '#' }}">
+                                    <i class="fas fa-calendar me-2"></i>Mis Reservas
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+
+                    @elseif(Auth::user()->hasRole('admin'))
+                        <!-- Admin Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-shield me-1"></i>
+                                {{ Auth::user()->name }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') ?? '#' }}">
+                                    <i class="fas fa-cog me-2"></i>Panel Admin
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+
+                    @else
+                        <!-- Usuario sin rol definido o rol desconocido -->
+                        <div class="dropdown">
+                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-1"></i>
+                                {{ Auth::user()->name }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ route('profile') ?? '#' }}">
+                                    <i class="fas fa-user me-2"></i>Mi Perfil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @endif
+
+                @else
+                    <!-- User is not logged in -->
+                    <a href="{{ route('login') }}" class="btn btn-login">Iniciar Sesión</a>
+                    <a href="{{ route('register') }}" class="btn btn-register">Registrarse</a>
+                @endauth
             </div>
-        </nav>
+        </div>
+    </div>
+</nav>
+
 
         <!-- Main content -->
         <main style="margin-top: 80px;">
