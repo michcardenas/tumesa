@@ -500,9 +500,7 @@
                                 <li><a class="dropdown-item" href="{{ route('chef.profile.edit') }}">
                                     <i class="fas fa-user-edit me-2"></i>Mi Perfil de Chef
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('chef.dinners.store') }}">
-                                    <i class="fas fa-plus-circle me-2"></i>Crear Experiencia
-                                </a></li>
+                             
                                 <li><a class="dropdown-item" href="{{ route('chef.ingresos') }}">
                                     <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
                                 </a></li>
@@ -566,13 +564,6 @@
                                 {{ Auth::user()->name }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ route('profile') }}">
-                                    <i class="fas fa-user me-2"></i>Mi Perfil
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ route('reservas.historial') }}">
-                                    <i class="fas fa-calendar me-2"></i>Mis Reservas
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <span class="dropdown-item-text text-muted">
                                         <i class="fas fa-info-circle me-2"></i>
