@@ -97,6 +97,112 @@
 .results-count { color: #6b7280; font-size: 14px; margin-bottom: 16px; }
 .no-results { text-align: center; padding: 40px 20px; }
 .no-results i { font-size: 48px; color: #d1d5db; margin-bottom: 16px; }
+/* ========== Estilos para el Filtro de Precio Mejorado ========== */
+.price-range-container {
+    margin: 15px 0;
+}
+
+.price-range-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.price-range-header i {
+    color: #6b7280;
+    margin-right: 4px;
+}
+
+.range-slider {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    margin: 20px 0;
+}
+
+.range-track {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.range-track-active {
+    position: absolute;
+    height: 5px;
+    background: linear-gradient(90deg, #60a5fa, #2563eb);
+    border-radius: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+
+.range-input {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background: transparent;
+    pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #2563eb;
+    cursor: pointer;
+    pointer-events: all;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.range-input::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #2563eb;
+    cursor: pointer;
+    pointer-events: all;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    border: none;
+}
+
+.range-values-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+}
+
+.range-value {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.range-value.min {
+    color: #6b7280;
+}
+
+.range-value.max {
+    color: #2563eb;
+}
 </style>
 
 <div class="page-wrap">
@@ -133,27 +239,45 @@
             </div>
 
             {{-- Rango de precio --}}
-            <div class="field">
-                <label class="label">
-<span style="color: #6b7280; margin-right: 4px;">AR$</span>                    Precio por persona
-                </label>
-                <div class="range-wrap">
-                    <div class="range-double">
-                        <input type="range" id="price_min" name="price_min"
-                               min="{{ $minPrice }}" max="{{ $maxPrice }}"
-                               value="{{ $filters['price_min'] ?? $minPrice }}"
-                               oninput="syncRanges()" />
-                        <input type="range" id="price_max" name="price_max"
-                               min="{{ $minPrice }}" max="{{ $maxPrice }}"
-                               value="{{ $filters['price_max'] ?? $maxPrice }}"
-                               oninput="syncRanges()" />
-                    </div>
-                    <div class="range-values">
-                        <span id="lblMin">${{ number_format($filters['price_min'] ?? $minPrice, 0, ',', '.') }}</span>
-                        <span id="lblMax">${{ number_format($filters['price_max'] ?? $maxPrice, 0, ',', '.') }}</span>
-                    </div>
-                </div>
+            {{-- Rango de precio mejorado --}}
+<div class="field">
+    <label class="label">
+        <span style="color: #6b7280; margin-right: 4px;">AR$</span>
+        Precio por persona
+    </label>
+    
+    <div class="price-range-container">
+        <div class="range-slider">
+            <div class="range-track"></div>
+            <div class="range-track-active" id="rangeTrackActive"></div>
+            
+            <input type="range" 
+                   class="range-input" 
+                   id="price_min" 
+                   name="price_min"
+                   min="{{ $minPrice }}" 
+                   max="{{ $maxPrice }}" 
+                   value="{{ $filters['price_min'] ?? $minPrice }}">
+            
+            <input type="range" 
+                   class="range-input" 
+                   id="price_max" 
+                   name="price_max"
+                   min="{{ $minPrice }}" 
+                   max="{{ $maxPrice }}" 
+                   value="{{ $filters['price_max'] ?? $maxPrice }}">
+        </div>
+        
+        <div class="range-values-display">
+            <div class="range-value min">
+                Mín: <span id="lblMin">${{ number_format($filters['price_min'] ?? $minPrice, 0, ',', '.') }}</span>
             </div>
+            <div class="range-value max">
+                Máx: <span id="lblMax">${{ number_format($filters['price_max'] ?? $maxPrice, 0, ',', '.') }}</span>
+            </div>
+        </div>
+    </div>
+</div>
 
             <div class="field">
                 <label class="label" for="guests">
@@ -343,28 +467,58 @@
 </div>
 
 <script>
-function syncRanges(){
-    var min = document.getElementById('price_min');
-    var max = document.getElementById('price_max');
-    if (!min || !max) return;
-
-    var minV = parseInt(min.value);
-    var maxV = parseInt(max.value);
-
-    // Evitar cruce
-    if (minV > maxV) {
-        max.value = minV;
-        maxV = minV;
+function syncRanges() {
+    const priceMin = document.getElementById('price_min');
+    const priceMax = document.getElementById('price_max');
+    const rangeTrackActive = document.getElementById('rangeTrackActive');
+    const lblMin = document.getElementById('lblMin');
+    const lblMax = document.getElementById('lblMax');
+    
+    if (!priceMin || !priceMax) return;
+    
+    let minVal = parseInt(priceMin.value);
+    let maxVal = parseInt(priceMax.value);
+    
+    // Evitar cruce de valores
+    if (minVal > maxVal - 1000) {
+        if (event && event.target === priceMin) {
+            priceMax.value = minVal + 1000;
+            maxVal = minVal + 1000;
+        } else {
+            priceMin.value = maxVal - 1000;
+            minVal = maxVal - 1000;
+        }
     }
-
-    // Actualizar etiquetas
-    var fmt = function(n){ return n.toLocaleString('es-AR'); };
-    var lblMin = document.getElementById('lblMin');
-    var lblMax = document.getElementById('lblMax');
-    if (lblMin) lblMin.textContent = '$' + fmt(minV);
-    if (lblMax) lblMax.textContent = '$' + fmt(maxV);
+    
+    // Calcular porcentajes para la barra activa
+    const minPercent = ((minVal - priceMin.min) / (priceMin.max - priceMin.min)) * 100;
+    const maxPercent = ((maxVal - priceMin.min) / (priceMax.max - priceMin.min)) * 100;
+    
+    // Actualizar barra activa
+    if (rangeTrackActive) {
+        rangeTrackActive.style.left = minPercent + '%';
+        rangeTrackActive.style.width = (maxPercent - minPercent) + '%';
+    }
+    
+    // Formatear y actualizar labels
+    const fmt = function(n) { 
+        return n.toLocaleString('es-AR'); 
+    };
+    
+    if (lblMin) lblMin.textContent = '$' + fmt(minVal);
+    if (lblMax) lblMax.textContent = '$' + fmt(maxVal);
 }
 
-document.addEventListener('DOMContentLoaded', syncRanges);
+// Inicializar al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    const priceMin = document.getElementById('price_min');
+    const priceMax = document.getElementById('price_max');
+    
+    if (priceMin && priceMax) {
+        priceMin.addEventListener('input', syncRanges);
+        priceMax.addEventListener('input', syncRanges);
+        syncRanges();
+    }
+});
 </script>
 @endsection
