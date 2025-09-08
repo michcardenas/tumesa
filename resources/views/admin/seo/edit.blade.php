@@ -159,20 +159,7 @@
                             </div>
                         </div>
 
-                      <!-- Schema Markup -->
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Schema Markup (JSON-LD)</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label class="form-label">JSON-LD Schema</label>
-                                        <textarea name="schema_markup" class="form-control" rows="8"
-                                                placeholder='{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "TuMesa"}'>@if($seoData && $seoData->schema_markup){!! json_encode($seoData->schema_markup, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}@endif</textarea>
-                                        <small class="text-muted">Formato JSON válido para datos estructurados</small>
-                                    </div>
-                                </div>
-                            </div>
+                     
 
                         <!-- Botones -->
                         <div class="d-flex gap-2 justify-content-end">
