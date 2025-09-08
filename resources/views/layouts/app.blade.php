@@ -436,27 +436,6 @@
             justify-content: center;
         }
     }
-    .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.dropdown-header {
-    padding: 0.75rem 1rem;
-    margin-bottom: 0;
-}
-
-.text-danger {
-    color: #dc3545 !important;
-}
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -464,7 +443,8 @@
 <body class="bg-light">
     <div id="app">
         <!-- Navigation -->
-     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+     
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
     <div class="container">
         <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
@@ -500,31 +480,37 @@
             <div class="d-flex auth-buttons">
                 @auth
                     @if(Auth::user()->hasRole('chef_anfitrion'))
-                        <!-- Chef Dropdown -->
+                        <!-- CHEF DROPDOWN -->
                         <div class="dropdown">
-                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
+                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown"
                                     data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user me-1"></i>
+                                <i class="fas fa-chef-hat me-1"></i>
                                 {{ Auth::user()->name }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ route('perfil.chef') ?? '#' }}">
-                                    <i class="fas fa-user me-2"></i>Mi Perfil
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        <i class="fas fa-chef-hat me-2"></i>Panel de Chef
+                                    </h6>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('chef.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('chef.dashboard') ?? '#' }}">
-                                    <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
+                                <li><a class="dropdown-item" href="{{ route('chef.profile.edit') }}">
+                                    <i class="fas fa-user-edit me-2"></i>Mi Perfil de Chef
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('chef.experiencias') ?? '#' }}">
-                                    <i class="fas fa-utensils me-2"></i>Mis Experiencias
+                                <li><a class="dropdown-item" href="{{ route('chef.dinners.store') }}">
+                                    <i class="fas fa-plus-circle me-2"></i>Crear Experiencia
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('chef.reservas') ?? '#' }}">
-                                    <i class="fas fa-calendar me-2"></i>Mis Reservas
+                                <li><a class="dropdown-item" href="{{ route('chef.ingresos') }}">
+                                    <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="dropdown-item">
+                                        <button type="submit" class="dropdown-item text-danger">
                                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                                         </button>
                                     </form>
@@ -533,11 +519,11 @@
                         </div>
 
                     @elseif(Auth::user()->hasRole('comensal'))
-                        <!-- Comensal Dropdown -->
+                        <!-- COMENSAL DROPDOWN -->
                         <div class="dropdown user-dropdown">
-                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown"
+                            <button class="user-button dropdown-toggle" type="button" id="userDropdown"
                                     data-bs-toggle="dropdown" aria-expanded="false">
-                                <div class="user-avatar me-2">
+                                <div class="user-avatar">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                 </div>
                                 <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
@@ -550,13 +536,13 @@
                                     </h6>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('comensal.dashboard') ?? '#' }}">
+                                <li><a class="dropdown-item" href="{{ route('comensal.dashboard') }}">
                                     <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('perfil.comensal.edit') ?? '#' }}">
+                                <li><a class="dropdown-item" href="{{ route('perfil.comensal') }}">
                                     <i class="fas fa-user-edit me-2"></i>Editar Perfil
                                 </a></li>
-                                <li><a class="dropdown-item" href="{{ route('reservas.historial') ?? '#' }}">
+                                <li><a class="dropdown-item" href="{{ route('reservas.historial') }}">
                                     <i class="fas fa-calendar me-2"></i>Mis Reservas
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
@@ -571,32 +557,8 @@
                             </ul>
                         </div>
 
-                    @elseif(Auth::user()->hasRole('admin'))
-                        <!-- Admin Dropdown -->
-                        <div class="dropdown">
-                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-shield me-1"></i>
-                                {{ Auth::user()->name }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') ?? '#' }}">
-                                    <i class="fas fa-cog me-2"></i>Panel Admin
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-
                     @else
-                        <!-- Usuario sin rol definido o rol desconocido -->
+                        <!-- USUARIO SIN ROL ESPECÍFICO (Fallback) -->
                         <div class="dropdown">
                             <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
                                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -604,9 +566,19 @@
                                 {{ Auth::user()->name }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ route('profile') ?? '#' }}">
+                                <li><a class="dropdown-item" href="{{ route('profile') }}">
                                     <i class="fas fa-user me-2"></i>Mi Perfil
                                 </a></li>
+                                <li><a class="dropdown-item" href="{{ route('reservas.historial') }}">
+                                    <i class="fas fa-calendar me-2"></i>Mis Reservas
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <span class="dropdown-item-text text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <small>Completa tu perfil para acceder a todas las funciones</small>
+                                    </span>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
@@ -619,7 +591,6 @@
                             </ul>
                         </div>
                     @endif
-
                 @else
                     <!-- User is not logged in -->
                     <a href="{{ route('login') }}" class="btn btn-login">Iniciar Sesión</a>
@@ -629,7 +600,6 @@
         </div>
     </div>
 </nav>
-
 
         <!-- Main content -->
         <main style="margin-top: 80px;">

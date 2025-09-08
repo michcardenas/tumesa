@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Admin\PageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Chef\ChefController;
 use App\Http\Controllers\HomeController;
@@ -204,7 +203,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
     // Gestión de Páginas (CRUD completo)
-    Route::resource('pages', PageController::class);
 });
 Route::get('/ser-chef', [ExperienciasController::class, 'serChef'])
     ->name('ser-chef');
