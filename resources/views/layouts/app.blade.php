@@ -818,7 +818,7 @@
                         <li>
                             <a href="{{ route('ser-chef') ?? '#' }}" 
                                class="nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}">
-                                Ser Chef Anfitrión
+                                Ser Anfitrión
                             </a>
                         </li>
                         <li>
