@@ -97,4 +97,44 @@ class PaginaController extends Controller
     
     return redirect()->back()->with('success', 'Contenido actualizado correctamente');
 }
+
+
+public function updateSerChef(Request $request)
+{
+    $pagina_id = 'ser-chef';
+    
+    // Lista de todos los campos editables
+    $campos = [
+        'hero_titulo', 'hero_descripcion', 'hero_boton',
+        'beneficios_titulo',
+        'beneficio1_icono', 'beneficio1_titulo', 'beneficio1_descripcion',
+        'beneficio2_icono', 'beneficio2_titulo', 'beneficio2_descripcion',
+        'beneficio3_icono', 'beneficio3_titulo', 'beneficio3_descripcion',
+        'beneficio4_icono', 'beneficio4_titulo', 'beneficio4_descripcion',
+        'pasos_titulo', 'pasos_subtitulo',
+        'paso1_titulo', 'paso1_descripcion',
+        'paso2_titulo', 'paso2_descripcion',
+        'paso3_titulo', 'paso3_descripcion',
+        'paso4_titulo', 'paso4_descripcion',
+        'faq_titulo',
+        'faq1_pregunta', 'faq1_respuesta',
+        'faq2_pregunta', 'faq2_respuesta',
+        'faq3_pregunta', 'faq3_respuesta',
+        'faq4_pregunta', 'faq4_respuesta',
+        'cta_boton_final'
+    ];
+    
+    foreach ($campos as $campo) {
+        if ($request->has($campo)) {
+            Pagina::updateOrCreate([
+                'pagina_id' => $pagina_id,
+                'clave' => $campo
+            ], [
+                'valor' => $request->input($campo)
+            ]);
+        }
+    }
+    
+    return redirect()->back()->with('success', 'Contenido actualizado correctamente');
+}
 }

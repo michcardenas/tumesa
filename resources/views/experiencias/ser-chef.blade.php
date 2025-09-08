@@ -532,31 +532,7 @@ body {
     </article>
   </section>
 
-  <!-- {{-- HISTORIAS DE ÉXITO --}}
-  <h2 class="section-title">Historias de Éxito</h2>
-  <section class="grid-3">
-    <article class="story fade-in" style="animation-delay: 0.1s">
-      <div class="avatar">MG</div>
-      <h6>María González</h6>
-      <div class="loc">📍 Palermo</div>
-      <div class="earn">$400.000/mes</div>
-      <p>"TuMesa me permitió convertir mi amor por la cocina española en una experiencia increíble, conociendo personas maravillosas de todo el mundo."</p>
-    </article>
-    <article class="story fade-in" style="animation-delay: 0.2s">
-      <div class="avatar">GR</div>
-      <h6>Giuseppe Romano</h6>
-      <div class="loc">📍 San Telmo</div>
-      <div class="earn">$270.000/mes</div>
-      <p>"Como chef italiano, puedo compartir las recetas auténticas de mi nonna y crear momentos únicos mientras genero ingresos adicionales."</p>
-    </article>
-    <article class="story fade-in" style="animation-delay: 0.3s">
-      <div class="avatar">AM</div>
-      <h6>Ana Martín</h6>
-      <div class="loc">📍 Recoleta</div>
-      <div class="earn">$200.000/mes</div>
-      <p>"Lo que comenzó como un hobby se convirtió en mi segunda fuente de ingresos. Cada experiencia culinaria es mágica y gratificante."</p>
-    </article>
-  </section> -->
+
 
   {{-- FAQ --}}
   <h2 class="section-title">Preguntas Frecuentes</h2>
@@ -592,9 +568,7 @@ body {
     <a class="btn" href="{{ auth()->check() ? route('chef.dashboard') : (Route::has('register') ? route('register') : '#') }}">
       <span>🍳</span> Crear mi perfil de Chef
     </a>
-    <!-- <a class="btn secondary" href="{{ route('experiencias') }}">
-      <span>👀</span> Ver experiencias
-    </a> -->
+   
   </div>
 </div>
 
