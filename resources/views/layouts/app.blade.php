@@ -20,7 +20,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
- .navbar-custom {
+    .navbar-custom {
         background-color: #ffffff;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         padding: 0.8rem 0;
@@ -868,42 +868,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     @stack('scripts')
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Asegurar que el navbar toggle funcione correctamente
-    const navbarToggler = document.querySelector('.navbar-toggler');
-    const navbarCollapse = document.querySelector('.navbar-collapse');
     
-    if (navbarToggler && navbarCollapse) {
-        navbarToggler.addEventListener('click', function() {
-            // Forzar toggle si Bootstrap no está funcionando
-            if (!navbarCollapse.classList.contains('show')) {
-                navbarCollapse.classList.add('show');
-            } else {
-                navbarCollapse.classList.remove('show');
-            }
-        });
-    }
-    
-    // Cerrar navbar al hacer click en un enlace (solo en móviles)
-    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (window.innerWidth < 992) {
-                navbarCollapse.classList.remove('show');
-            }
-        });
-    });
-    
-    // Cerrar navbar al hacer click fuera del menú
-    document.addEventListener('click', function(event) {
-        if (window.innerWidth < 992) {
-            if (!navbarToggler.contains(event.target) && !navbarCollapse.contains(event.target)) {
-                navbarCollapse.classList.remove('show');
-            }
-        }
-    });
-});
-</script>
 </body>
 </html>
