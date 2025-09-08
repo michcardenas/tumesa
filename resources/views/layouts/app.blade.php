@@ -273,6 +273,14 @@
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2837, 99, 235, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M6 6L24 24M6 24L24 6'/%3e%3c/svg%3e");
         }
 
+        /* ========== Fix para el problema del navbar que aparece/desaparece ========== */
+        @media (min-width: 992px) {
+            .navbar-collapse {
+                display: flex !important;
+                visibility: visible !important;
+            }
+        }
+
         /* ========== Responsive Design ========== */
         @media (max-width: 991.98px) {
             /* Mobile Navigation */
@@ -687,6 +695,8 @@
 
     <!-- Bootstrap JS Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script adicional para mejorar la experiencia -->
     <script>
         // Cerrar el menú móvil al hacer clic en un enlace
         document.addEventListener('DOMContentLoaded', function() {
