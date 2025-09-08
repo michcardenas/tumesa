@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cena;
-
+use App\Models\Pagina;
 
 class ExperienciasController extends Controller
 {
@@ -95,12 +95,13 @@ class ExperienciasController extends Controller
         ]);
     }
 
-    public function serChef()
-    {
-        // Luego crearás esta vista:
-        // resources/views/experiencias/ser-chef.blade.php
-        return view('experiencias.ser-chef');
-    }  
+  public function serChef()
+{
+    // Obtener contenidos específicos de la página 'ser-chef'
+    $contenidosSerChef = \App\Models\Pagina::porPagina('ser-chef')->get()->keyBy('clave');
+    
+    return view('experiencias.ser-chef', ['contenidos' => $contenidosSerChef]);
+}
 
     public function comoFunciona()
 {

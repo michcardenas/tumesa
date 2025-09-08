@@ -473,92 +473,90 @@ body {
   {{-- HERO --}}
   <section class="hero fade-in">
     <div class="hero-content">
-      <h1>Conviértete en Chef Anfitrión</h1>
-      <p>Comparte tu pasión por la cocina, conoce gente nueva y gana dinero extra ofreciendo experiencias gastronómicas únicas en tu hogar.</p>
+      <h1>{{ $contenidos['hero_titulo']->valor ?? 'Conviértete en Chef Anfitrión' }}</h1>
+      <p>{{ $contenidos['hero_descripcion']->valor ?? 'Comparte tu pasión por la cocina, conoce gente nueva y gana dinero extra ofreciendo experiencias gastronómicas únicas en tu hogar.' }}</p>
       <a class="btn" href="{{ auth()->check() ? route('chef.dashboard') : (Route::has('register') ? route('register') : '#') }}">
-        <span>✨</span> Comenzar Ahora
+        <span>✨</span> {{ $contenidos['hero_boton']->valor ?? 'Comenzar Ahora' }}
       </a>
     </div>
   </section>
 
   {{-- BENEFICIOS --}}
-  <h2 class="section-title">¿Por qué ser Chef Anfitrión?</h2>
+  <h2 class="section-title">{{ $contenidos['beneficios_titulo']->valor ?? '¿Por qué ser Chef Anfitrión?' }}</h2>
   <section class="grid-4">
     <article class="card fade-in" style="animation-delay: 0.1s">
-      <div class="icon">💰</div>
-      <h4>Gana dinero extra</h4>
-      <p>Los chefs anfitriones ganan en promedio $70.000–$170.000 por experiencia, dependiendo de la ciudad y demanda del mercado.</p>
+      <div class="icon">{{ $contenidos['beneficio1_icono']->valor ?? '💰' }}</div>
+      <h4>{{ $contenidos['beneficio1_titulo']->valor ?? 'Gana dinero extra' }}</h4>
+      <p>{{ $contenidos['beneficio1_descripcion']->valor ?? 'Los chefs anfitriones ganan en promedio $70.000–$170.000 por experiencia, dependiendo de la ciudad y demanda del mercado.' }}</p>
     </article>
     <article class="card fade-in" style="animation-delay: 0.2s">
-      <div class="icon">🤝</div>
-      <h4>Conoce gente nueva</h4>
-      <p>Conecta con personas de todo el mundo que comparten tu pasión por la gastronomía y crea vínculos únicos.</p>
+      <div class="icon">{{ $contenidos['beneficio2_icono']->valor ?? '🤝' }}</div>
+      <h4>{{ $contenidos['beneficio2_titulo']->valor ?? 'Conoce gente nueva' }}</h4>
+      <p>{{ $contenidos['beneficio2_descripcion']->valor ?? 'Conecta con personas de todo el mundo que comparten tu pasión por la gastronomía y crea vínculos únicos.' }}</p>
     </article>
     <article class="card fade-in" style="animation-delay: 0.3s">
-      <div class="icon">⭐</div>
-      <h4>Comparte tu talento</h4>
-      <p>Enseña tus recetas favoritas, técnicas culinarias únicas y transmite tu amor por la cocina a otros.</p>
+      <div class="icon">{{ $contenidos['beneficio3_icono']->valor ?? '⭐' }}</div>
+      <h4>{{ $contenidos['beneficio3_titulo']->valor ?? 'Comparte tu talento' }}</h4>
+      <p>{{ $contenidos['beneficio3_descripcion']->valor ?? 'Enseña tus recetas favoritas, técnicas culinarias únicas y transmite tu amor por la cocina a otros.' }}</p>
     </article>
     <article class="card fade-in" style="animation-delay: 0.4s">
-      <div class="icon">🛡️</div>
-      <h4>Protección total</h4>
-      <p>Disfruta de soporte 24/7 y pólizas integrales que te respaldan durante cada experiencia gastronómica.</p>
+      <div class="icon">{{ $contenidos['beneficio4_icono']->valor ?? '🛡️' }}</div>
+      <h4>{{ $contenidos['beneficio4_titulo']->valor ?? 'Protección total' }}</h4>
+      <p>{{ $contenidos['beneficio4_descripcion']->valor ?? 'Disfruta de soporte 24/7 y pólizas integrales que te respaldan durante cada experiencia gastronómica.' }}</p>
     </article>
   </section>
 
   {{-- PASOS --}}
-  <h2 class="section-title" id="apply">Solicitud para Chef Anfitrión</h2>
-  <p style="text-align:center;color:var(--muted);margin:-2rem 0 3rem;font-size:1.125rem;">Completa tu perfil en 4 pasos sencillos</p>
+  <h2 class="section-title" id="apply">{{ $contenidos['pasos_titulo']->valor ?? 'Solicitud para Chef Anfitrión' }}</h2>
+  <p style="text-align:center;color:var(--muted);margin:-2rem 0 3rem;font-size:1.125rem;">{{ $contenidos['pasos_subtitulo']->valor ?? 'Completa tu perfil en 4 pasos sencillos' }}</p>
   <section class="steps">
     <article class="step fade-in" style="animation-delay: 0.1s">
       <div class="n">1</div>
-      <h5>Información Personal</h5>
-      <p>Cuéntanos sobre ti, tu experiencia culinaria y tu pasión por la gastronomía.</p>
+      <h5>{{ $contenidos['paso1_titulo']->valor ?? 'Información Personal' }}</h5>
+      <p>{{ $contenidos['paso1_descripcion']->valor ?? 'Cuéntanos sobre ti, tu experiencia culinaria y tu pasión por la gastronomía.' }}</p>
     </article>
     <article class="step fade-in" style="animation-delay: 0.2s">
       <div class="n">2</div>
-      <h5>Tu Espacio</h5>
-      <p>Describe tu cocina equipada y el ambiente acogedor para recibir a tus invitados.</p>
+      <h5>{{ $contenidos['paso2_titulo']->valor ?? 'Tu Espacio' }}</h5>
+      <p>{{ $contenidos['paso2_descripcion']->valor ?? 'Describe tu cocina equipada y el ambiente acogedor para recibir a tus invitados.' }}</p>
     </article>
     <article class="step fade-in" style="animation-delay: 0.3s">
       <div class="n">3</div>
-      <h5>Experiencia Culinaria</h5>
-      <p>Detalla tu menú especial y el tipo de experiencia gastronómica única que ofrecerás.</p>
+      <h5>{{ $contenidos['paso3_titulo']->valor ?? 'Experiencia Culinaria' }}</h5>
+      <p>{{ $contenidos['paso3_descripcion']->valor ?? 'Detalla tu menú especial y el tipo de experiencia gastronómica única que ofrecerás.' }}</p>
     </article>
     <article class="step fade-in" style="animation-delay: 0.4s">
       <div class="n">4</div>
-      <h5>Precios y Disponibilidad</h5>
-      <p>Establece precios competitivos por persona y define tus horarios disponibles.</p>
+      <h5>{{ $contenidos['paso4_titulo']->valor ?? 'Precios y Disponibilidad' }}</h5>
+      <p>{{ $contenidos['paso4_descripcion']->valor ?? 'Establece precios competitivos por persona y define tus horarios disponibles.' }}</p>
     </article>
   </section>
 
-
-
   {{-- FAQ --}}
-  <h2 class="section-title">Preguntas Frecuentes</h2>
+  <h2 class="section-title">{{ $contenidos['faq_titulo']->valor ?? 'Preguntas Frecuentes' }}</h2>
   <section class="faq">
     <div class="faq-item">
-      <button class="faq-q" type="button">¿Cuánto puedo ganar como chef anfitrión?</button>
+      <button class="faq-q" type="button">{{ $contenidos['faq1_pregunta']->valor ?? '¿Cuánto puedo ganar como chef anfitrión?' }}</button>
       <div class="faq-a">
-        Los ingresos varían según tu ubicación, estrategia de precios y frecuencia de eventos. La mayoría de nuestros chefs ganan entre $70.000 y $170.000 por experiencia, con algunos superando estas cifras en ubicaciones premium.
+        {{ $contenidos['faq1_respuesta']->valor ?? 'Los ingresos varían según tu ubicación, estrategia de precios y frecuencia de eventos. La mayoría de nuestros chefs ganan entre $70.000 y $170.000 por experiencia, con algunos superando estas cifras en ubicaciones premium.' }}
       </div>
     </div>
     <div class="faq-item">
-      <button class="faq-q" type="button">¿Qué requisitos necesito para comenzar?</button>
+      <button class="faq-q" type="button">{{ $contenidos['faq2_pregunta']->valor ?? '¿Qué requisitos necesito para comenzar?' }}</button>
       <div class="faq-a">
-        Necesitas ser mayor de edad, contar con un espacio limpio y seguro, cumplir con normas básicas de higiene alimentaria, y completar nuestro proceso de verificación de identidad y antecedentes.
+        {{ $contenidos['faq2_respuesta']->valor ?? 'Necesitas ser mayor de edad, contar con un espacio limpio y seguro, cumplir con normas básicas de higiene alimentaria, y completar nuestro proceso de verificación de identidad y antecedentes.' }}
       </div>
     </div>
     <div class="faq-item">
-      <button class="faq-q" type="button">¿Cómo manejo las reservas y pagos?</button>
+      <button class="faq-q" type="button">{{ $contenidos['faq3_pregunta']->valor ?? '¿Cómo manejo las reservas y pagos?' }}</button>
       <div class="faq-a">
-        Todo se gestiona desde tu panel de control personalizado. Las reservas se confirman automáticamente y los pagos se procesan de forma segura, liquidándose según la política de pagos que establecemos juntos.
+        {{ $contenidos['faq3_respuesta']->valor ?? 'Todo se gestiona desde tu panel de control personalizado. Las reservas se confirman automáticamente y los pagos se procesan de forma segura, liquidándose según la política de pagos que establecemos juntos.' }}
       </div>
     </div>
     <div class="faq-item">
-      <button class="faq-q" type="button">¿Qué incluye la protección ofrecida?</button>
+      <button class="faq-q" type="button">{{ $contenidos['faq4_pregunta']->valor ?? '¿Qué incluye la protección ofrecida?' }}</button>
       <div class="faq-a">
-        Ofrecemos cobertura integral para daños accidentales, asistencia 24/7 durante los eventos, y soporte completo para cualquier situación imprevista. Los detalles específicos se proporcionan al activar tu perfil de chef.
+        {{ $contenidos['faq4_respuesta']->valor ?? 'Ofrecemos cobertura integral para daños accidentales, asistencia 24/7 durante los eventos, y soporte completo para cualquier situación imprevista. Los detalles específicos se proporcionan al activar tu perfil de chef.' }}
       </div>
     </div>
   </section>
@@ -566,12 +564,10 @@ body {
   {{-- CTA final --}}
   <div class="cta-bottom">
     <a class="btn" href="{{ auth()->check() ? route('chef.dashboard') : (Route::has('register') ? route('register') : '#') }}">
-      <span>🍳</span> Crear mi perfil de Chef
+      <span>🍳</span> {{ $contenidos['cta_boton_final']->valor ?? 'Crear mi perfil de Chef' }}
     </a>
-   
   </div>
 </div>
-
 <script>
 // FAQ toggle with smooth animations
 document.querySelectorAll('.faq-item .faq-q').forEach(function(btn){
