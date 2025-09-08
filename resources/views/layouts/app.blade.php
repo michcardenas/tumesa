@@ -15,13 +15,13 @@
     <!-- icono de carga -->
     <link rel="icon" type="image/x-icon" href="{{ asset('img/logo-tumesa.png') }}">
 
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS (solo para utilidades, no para el navbar) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom Styles Mejorados -->
+    <!-- Custom Styles para Navbar Fullscreen Mobile -->
     <style>
         /* ========== Variables CSS ========== */
         :root {
@@ -35,34 +35,57 @@
             --transition: all 0.3s ease;
         }
 
-        /* ========== Body con padding para navbar fixed ========== */
+        /* ========== Reset y Base ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             padding-top: var(--navbar-height);
+            font-family: 'Figtree', sans-serif;
+            overflow-x: hidden;
+        }
+
+        body.menu-open {
+            overflow: hidden;
         }
 
         /* ========== Navbar Principal ========== */
         .navbar-custom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             background-color: #ffffff;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            padding: 0.8rem 0;
-            z-index: 1050;
-            min-height: var(--navbar-height);
+            z-index: 1000;
+            height: var(--navbar-height);
+            display: flex;
+            align-items: center;
             transition: var(--transition);
+        }
+
+        .navbar-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         /* ========== Brand/Logo ========== */
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            color: var(--primary-color) !important;
+            color: var(--primary-color);
             text-decoration: none;
             display: flex;
             align-items: center;
-            transition: var(--transition);
-        }
-
-        .navbar-brand:hover {
-            transform: scale(1.05);
+            z-index: 1002;
         }
 
         .logo-icon {
@@ -71,18 +94,33 @@
             margin-right: 0.5rem;
         }
 
-        /* ========== Navigation Links ========== */
-        .navbar-nav .nav-link {
-            color: var(--text-gray) !important;
-            font-weight: 500;
-            margin: 0 0.5rem;
-            position: relative;
-            padding: 0.5rem 0.75rem;
-            transition: var(--transition);
-            text-decoration: none;
+        /* ========== Desktop Navigation ========== */
+        .navbar-desktop {
+            display: none;
+            flex: 1;
+            align-items: center;
+            justify-content: space-between;
+            margin-left: 3rem;
         }
 
-        .navbar-nav .nav-link::after {
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-link {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .nav-link::after {
             content: '';
             position: absolute;
             bottom: 0;
@@ -94,36 +132,31 @@
             transform: translateX(-50%);
         }
 
-        .navbar-nav .nav-link:hover {
-            color: var(--primary-color) !important;
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color);
         }
 
-        .navbar-nav .nav-link:hover::after,
-        .navbar-nav .nav-link.active::after {
+        .nav-link:hover::after,
+        .nav-link.active::after {
             width: 80%;
         }
 
-        .navbar-nav .nav-link.active {
-            color: var(--primary-color) !important;
-            font-weight: 600;
-        }
-
-        /* ========== Authentication Buttons ========== */
-        .auth-buttons {
+        /* ========== Auth Buttons Desktop ========== */
+        .auth-buttons-desktop {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .btn-login {
             color: var(--text-gray);
-            border: 2px solid transparent;
-            background: none;
+            text-decoration: none;
             font-weight: 500;
             padding: 0.5rem 1.2rem;
+            border: 2px solid transparent;
             border-radius: 0.5rem;
             transition: var(--transition);
-            text-decoration: none;
         }
 
         .btn-login:hover {
@@ -135,23 +168,260 @@
         .btn-register {
             background-color: var(--secondary-color);
             color: white;
-            border: 2px solid var(--secondary-color);
+            text-decoration: none;
             padding: 0.5rem 1.5rem;
             border-radius: 0.5rem;
             font-weight: 500;
             transition: var(--transition);
-            text-decoration: none;
         }
 
         .btn-register:hover {
             background-color: var(--secondary-dark);
-            border-color: var(--secondary-dark);
-            color: white;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(30, 41, 59, 0.3);
         }
 
-        /* ========== User Dropdown Styles ========== */
+        /* ========== Mobile Menu Button ========== */
+        .menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1002;
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background-color: var(--secondary-color);
+            margin: 5px auto;
+            transition: var(--transition);
+            transform-origin: center;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* ========== Mobile Fullscreen Menu ========== */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--navbar-height);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        .mobile-menu-content {
+            padding: 2rem 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem 0;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 1.25rem;
+            font-weight: 500;
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+            border-radius: 0.75rem;
+            transition: var(--transition);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .mobile-nav-link i {
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* ========== Mobile Auth Section ========== */
+        .mobile-auth {
+            padding-top: 2rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .mobile-auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .mobile-btn {
+            padding: 1rem;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+
+        .mobile-btn-login {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .mobile-btn-login:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .mobile-btn-register {
+            background: var(--secondary-color);
+            color: white;
+            border: 2px solid var(--secondary-color);
+        }
+
+        .mobile-btn-register:hover {
+            background: var(--secondary-dark);
+            border-color: var(--secondary-dark);
+        }
+
+        /* ========== User Profile Mobile ========== */
+        .mobile-user-profile {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .mobile-user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .mobile-user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .mobile-user-details h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+
+        .mobile-user-details p {
+            margin: 0;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .mobile-user-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mobile-user-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-gray);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: var(--transition);
+            margin: 0.25rem 0;
+        }
+
+        .mobile-user-menu-item:hover {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .mobile-user-menu-item i {
+            margin-right: 0.75rem;
+            width: 20px;
+        }
+
+        .mobile-user-menu-item.logout {
+            color: #ef4444;
+            margin-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+        }
+
+        /* ========== Responsive Breakpoints ========== */
+        @media (min-width: 992px) {
+            .navbar-desktop {
+                display: flex;
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: none;
+            }
+        }
+
+        @media (max-width: 991px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+        }
+
+        /* ========== User Dropdown Desktop ========== */
         .user-dropdown {
             position: relative;
         }
@@ -175,7 +445,7 @@
             background-color: rgba(37, 99, 235, 0.05);
         }
 
-        .user-avatar {
+        .user-avatar-small {
             width: 32px;
             height: 32px;
             border-radius: 50%;
@@ -188,422 +458,264 @@
             font-size: 0.9rem;
         }
 
-        /* ========== Dropdown Menu ========== */
         .dropdown-menu {
-            border: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
             border-radius: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
             padding: 0.5rem;
             margin-top: 0.5rem;
-            animation: dropdownFade 0.3s ease;
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
         }
 
-        @keyframes dropdownFade {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
         .dropdown-item {
-            border-radius: 0.5rem;
+            display: block;
             padding: 0.6rem 1rem;
+            color: var(--text-gray);
+            text-decoration: none;
+            border-radius: 0.5rem;
             transition: var(--transition);
-            font-size: 0.95rem;
         }
 
         .dropdown-item:hover {
             background-color: rgba(37, 99, 235, 0.1);
             color: var(--primary-color);
-            transform: translateX(5px);
-        }
-
-        .dropdown-item i {
-            width: 20px;
-            text-align: center;
         }
 
         .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
             margin: 0.5rem 0;
         }
 
-        .dropdown-header {
-            font-size: 0.85rem;
-            color: var(--text-gray);
-            padding: 0.5rem 1rem;
-        }
-
-        /* ========== Mobile Toggle Button ========== */
-        .navbar-toggler {
-            border: 2px solid transparent;
-            padding: 0.25rem 0.5rem;
-            background: transparent;
-            cursor: pointer;
-            transition: var(--transition);
-            border-radius: 0.5rem;
-        }
-
-        .navbar-toggler:hover {
-            background-color: rgba(37, 99, 235, 0.05);
-            border-color: var(--primary-color);
-        }
-
-        .navbar-toggler:focus {
-            box-shadow: none;
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .navbar-toggler-icon {
-            display: block;
-            width: 1.5em;
-            height: 1.5em;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 100%;
+        /* ========== Overlay para cerrar el menú ========== */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
             transition: var(--transition);
         }
 
-        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2837, 99, 235, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M6 6L24 24M6 24L24 6'/%3e%3c/svg%3e");
-        }
-
-        /* ========== Fix para el problema del navbar que aparece/desaparece ========== */
-        @media (min-width: 992px) {
-            .navbar-collapse {
-                display: flex !important;
-                visibility: visible !important;
-            }
-        }
-
-        /* ========== Responsive Design ========== */
-        @media (max-width: 991.98px) {
-            /* Mobile Navigation */
-            .navbar-collapse {
-                background-color: white;
-                border-radius: 0.75rem;
-                margin-top: 1rem;
-                padding: 1rem;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            }
-
-            .navbar-nav {
-                padding: 1rem 0;
-            }
-
-            .navbar-nav .nav-link {
-                padding: 0.75rem 1rem;
-                margin: 0.25rem 0;
-                border-radius: 0.5rem;
-                font-size: 1rem;
-            }
-
-            .navbar-nav .nav-link:hover {
-                background-color: rgba(37, 99, 235, 0.05);
-            }
-
-            .navbar-nav .nav-link.active {
-                background-color: rgba(37, 99, 235, 0.1);
-            }
-
-            .navbar-nav .nav-link::after {
-                display: none;
-            }
-
-            /* Mobile Auth Buttons */
-            .auth-buttons {
-                flex-direction: column;
-                width: 100%;
-                padding-top: 1rem;
-                border-top: 1px solid #e2e8f0;
-                margin-top: 1rem;
-            }
-
-            .btn-login,
-            .btn-register {
-                width: 100%;
-                text-align: center;
-                margin: 0.25rem 0;
-            }
-
-            /* Mobile User Dropdown */
-            .user-dropdown {
-                width: 100%;
-            }
-
-            .user-button {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .dropdown-menu {
-                width: calc(100% - 2rem);
-                margin: 0.5rem 1rem;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            /* Extra small devices */
-            .navbar-brand {
-                font-size: 1.2rem;
-            }
-
-            .logo-icon {
-                height: 28px;
-            }
-
-            body {
-                padding-top: 60px;
-            }
-
-            .navbar-custom {
-                min-height: 60px;
-                padding: 0.5rem 0;
-            }
-        }
-
-        /* ========== Animaciones adicionales ========== */
-        @media (prefers-reduced-motion: no-preference) {
-            .navbar-collapse.collapsing {
-                transition: height 0.35s ease;
-            }
-
-            .navbar-collapse.show {
-                animation: slideDown 0.35s ease;
-            }
-
-            @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        }
-
-        /* ========== Dark mode support (opcional) ========== */
-        @media (prefers-color-scheme: dark) {
-            .navbar-custom {
-                background-color: var(--secondary-color);
-                color: white;
-            }
-
-            .navbar-nav .nav-link {
-                color: #e2e8f0 !important;
-            }
-
-            .navbar-nav .nav-link:hover,
-            .navbar-nav .nav-link.active {
-                color: var(--primary-color) !important;
-            }
-
-            .dropdown-menu {
-                background-color: var(--secondary-color);
-                color: white;
-            }
-
-            .dropdown-item {
-                color: #e2e8f0;
-            }
-
-            .dropdown-item:hover {
-                background-color: rgba(255, 255, 255, 0.1);
-                color: white;
-            }
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-light">
+<body>
     <div id="app">
-        <!-- Navigation Mejorada -->
-        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
-            <div class="container">
+        <!-- Navbar -->
+        <nav class="navbar-custom">
+            <div class="navbar-container">
                 <!-- Brand -->
-                <a class="navbar-brand" href="{{ url('/') }}">
+                <a href="{{ url('/') }}" class="navbar-brand">
                     <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" class="logo-icon">
                     <span>TuMesa</span>
                 </a>
 
-                <!-- Mobile toggle button -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Navigation items -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <!-- Center navigation links -->
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}" 
-                               href="{{ route('experiencias') ?? '#' }}">
-                               <i class="fas fa-utensils d-lg-none me-2"></i>
-                               Experiencias
+                <!-- Desktop Navigation -->
+                <div class="navbar-desktop">
+                    <ul class="nav-links">
+                        <li>
+                            <a href="{{ route('experiencias') ?? '#' }}" 
+                               class="nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}">
+                                Experiencias
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}" 
-                               href="{{ route('ser-chef') ?? '#' }}">
-                               <i class="fas fa-chef-hat d-lg-none me-2"></i>
-                               Ser Chef Anfitrión
+                        <li>
+                            <a href="{{ route('ser-chef') ?? '#' }}" 
+                               class="nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}">
+                                Ser Chef Anfitrión
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('como-funciona') ? 'active' : '' }}" 
-                               href="{{ route('como-funciona') ?? '#' }}">
-                               <i class="fas fa-info-circle d-lg-none me-2"></i>
-                               Cómo Funciona
+                        <li>
+                            <a href="{{ route('como-funciona') ?? '#' }}" 
+                               class="nav-link {{ request()->routeIs('como-funciona') ? 'active' : '' }}">
+                                Cómo Funciona
                             </a>
                         </li>
                     </ul>
 
-                    <!-- Right side authentication buttons -->
-                    <div class="auth-buttons">
+                    <!-- Desktop Auth -->
+                    <div class="auth-buttons-desktop">
                         @auth
-                            @if(Auth::user()->hasRole('chef_anfitrion'))
-                                <!-- CHEF DROPDOWN -->
-                                <div class="dropdown user-dropdown">
-                                    <button class="user-button dropdown-toggle" type="button" id="chefDropdown"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        <div class="user-avatar">
+                            <div class="user-dropdown">
+                                <button class="user-button" onclick="toggleDropdown(event)">
+                                    <div class="user-avatar-small">
+                                        @if(Auth::user()->hasRole('chef_anfitrion'))
                                             <i class="fas fa-chef-hat"></i>
-                                        </div>
-                                        <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chefDropdown">
-                                        <li>
-                                            <h6 class="dropdown-header">
-                                                <i class="fas fa-chef-hat me-2"></i>Panel de Chef
-                                                <br><small>{{ Auth::user()->email }}</small>
-                                            </h6>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('chef.dashboard') }}">
-                                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('chef.profile.edit') }}">
-                                                <i class="fas fa-user-edit me-2"></i>Mi Perfil
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('chef.ingresos') }}">
-                                                <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form method="POST" action="{{ route('logout') }}">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item text-danger">
-                                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                            @elseif(Auth::user()->hasRole('comensal'))
-                                <!-- COMENSAL DROPDOWN -->
-                                <div class="dropdown user-dropdown">
-                                    <button class="user-button dropdown-toggle" type="button" id="comensalDropdown"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        <div class="user-avatar">
+                                        @else
                                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                        </div>
-                                        <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="comensalDropdown">
-                                        <li>
-                                            <h6 class="dropdown-header">
-                                                <i class="fas fa-user me-2"></i>{{ Auth::user()->name }}
-                                                <br><small>{{ Auth::user()->email }}</small>
-                                            </h6>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('comensal.dashboard') }}">
-                                                <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('perfil.comensal') }}">
-                                                <i class="fas fa-user-edit me-2"></i>Editar Perfil
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('reservas.historial') }}">
-                                                <i class="fas fa-calendar me-2"></i>Mis Reservas
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form method="POST" action="{{ route('logout') }}">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item text-danger">
-                                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
+                                        @endif
+                                    </div>
+                                    <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="dropdown-menu" id="userDropdown">
+                                    @if(Auth::user()->hasRole('chef_anfitrion'))
+                                        <a href="{{ route('chef.dashboard') }}" class="dropdown-item">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </a>
+                                        <a href="{{ route('chef.profile.edit') }}" class="dropdown-item">
+                                            <i class="fas fa-user-edit me-2"></i>Mi Perfil
+                                        </a>
+                                        <a href="{{ route('chef.ingresos') }}" class="dropdown-item">
+                                            <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
+                                        </a>
+                                    @elseif(Auth::user()->hasRole('comensal'))
+                                        <a href="{{ route('comensal.dashboard') }}" class="dropdown-item">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
+                                        </a>
+                                        <a href="{{ route('perfil.comensal') }}" class="dropdown-item">
+                                            <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                                        </a>
+                                        <a href="{{ route('reservas.historial') }}" class="dropdown-item">
+                                            <i class="fas fa-calendar me-2"></i>Mis Reservas
+                                        </a>
+                                    @endif
+                                    <div class="dropdown-divider"></div>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item" style="color: #ef4444;">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                        </button>
+                                    </form>
                                 </div>
-
-                            @else
-                                <!-- USUARIO SIN ROL ESPECÍFICO -->
-                                <div class="dropdown user-dropdown">
-                                    <button class="user-button dropdown-toggle" type="button" id="userDropdown" 
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        <div class="user-avatar">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                        <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                        <li>
-                                            <div class="dropdown-header">
-                                                <i class="fas fa-info-circle me-2"></i>
-                                                <small>Completa tu perfil para acceder a todas las funciones</small>
-                                            </div>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form method="POST" action="{{ route('logout') }}">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item text-danger">
-                                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
-                            @endif
+                            </div>
                         @else
-                            <!-- Usuario no autenticado -->
-                            <a href="{{ route('login') }}" class="btn btn-login">
-                                <i class="fas fa-sign-in-alt d-lg-none me-2"></i>
-                                Iniciar Sesión
-                            </a>
-                            <a href="{{ route('register') }}" class="btn btn-register">
-                                <i class="fas fa-user-plus d-lg-none me-2"></i>
-                                Registrarse
-                            </a>
+                            <a href="{{ route('login') }}" class="btn-login">Iniciar Sesión</a>
+                            <a href="{{ route('register') }}" class="btn-register">Registrarse</a>
                         @endauth
                     </div>
                 </div>
+
+                <!-- Mobile Menu Toggle -->
+                <button class="menu-toggle" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </nav>
+
+        <!-- Mobile Fullscreen Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <div class="mobile-menu-content">
+                @auth
+                    <!-- User Profile Section -->
+                    <div class="mobile-user-profile">
+                        <div class="mobile-user-info">
+                            <div class="mobile-user-avatar">
+                                @if(Auth::user()->hasRole('chef_anfitrion'))
+                                    <i class="fas fa-chef-hat"></i>
+                                @else
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                @endif
+                            </div>
+                            <div class="mobile-user-details">
+                                <h3>{{ Auth::user()->name }}</h3>
+                                <p>{{ Auth::user()->email }}</p>
+                            </div>
+                        </div>
+                        <nav class="mobile-user-menu">
+                            @if(Auth::user()->hasRole('chef_anfitrion'))
+                                <a href="{{ route('chef.dashboard') }}" class="mobile-user-menu-item">
+                                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                                </a>
+                                <a href="{{ route('chef.profile.edit') }}" class="mobile-user-menu-item">
+                                    <i class="fas fa-user-edit"></i>Mi Perfil
+                                </a>
+                                <a href="{{ route('chef.ingresos') }}" class="mobile-user-menu-item">
+                                    <i class="fas fa-dollar-sign"></i>Mis Ingresos
+                                </a>
+                            @elseif(Auth::user()->hasRole('comensal'))
+                                <a href="{{ route('comensal.dashboard') }}" class="mobile-user-menu-item">
+                                    <i class="fas fa-tachometer-alt"></i>Mi Dashboard
+                                </a>
+                                <a href="{{ route('perfil.comensal') }}" class="mobile-user-menu-item">
+                                    <i class="fas fa-user-edit"></i>Editar Perfil
+                                </a>
+                                <a href="{{ route('reservas.historial') }}" class="mobile-user-menu-item">
+                                    <i class="fas fa-calendar"></i>Mis Reservas
+                                </a>
+                            @endif
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="mobile-user-menu-item logout">
+                                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+                                </button>
+                            </form>
+                        </nav>
+                    </div>
+                @endauth
+
+                <!-- Navigation Links -->
+                <nav>
+                    <ul class="mobile-nav-links">
+                        <li>
+                            <a href="{{ route('experiencias') ?? '#' }}" 
+                               class="mobile-nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}">
+                                <i class="fas fa-utensils"></i>
+                                Experiencias
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('ser-chef') ?? '#' }}" 
+                               class="mobile-nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}">
+                                <i class="fas fa-chef-hat"></i>
+                                Ser Chef Anfitrión
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('como-funciona') ?? '#' }}" 
+                               class="mobile-nav-link {{ request()->routeIs('como-funciona') ? 'active' : '' }}">
+                                <i class="fas fa-info-circle"></i>
+                                Cómo Funciona
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                @guest
+                    <!-- Auth Buttons for Guests -->
+                    <div class="mobile-auth">
+                        <div class="mobile-auth-buttons">
+                            <a href="{{ route('login') }}" class="mobile-btn mobile-btn-login">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Iniciar Sesión
+                            </a>
+                            <a href="{{ route('register') }}" class="mobile-btn mobile-btn-register">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Registrarse
+                            </a>
+                        </div>
+                    </div>
+                @endguest
+            </div>
+        </div>
+
+        <!-- Overlay -->
+        <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
 
         <!-- Main content -->
         <main style="margin-top: 80px;">
@@ -695,40 +807,61 @@
 
     <!-- Bootstrap JS Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Script adicional para mejorar la experiencia -->
+     <!-- Scripts -->
     <script>
-        // Cerrar el menú móvil al hacer clic en un enlace
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
-            const navbarCollapse = document.querySelector('.navbar-collapse');
-            const navbarToggler = document.querySelector('.navbar-toggler');
-            
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 992) {
-                        const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                        if (bsCollapse) {
-                            bsCollapse.hide();
-                        }
-                    }
-                });
-            });
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('menuOverlay');
+            const toggle = document.querySelector('.menu-toggle');
+            const body = document.body;
 
-            // Cambiar el navbar al hacer scroll (opcional)
-            let lastScroll = 0;
-            window.addEventListener('scroll', () => {
-                const navbar = document.querySelector('.navbar-custom');
-                const currentScroll = window.pageYOffset;
-                
-                if (currentScroll > 100) {
-                    navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
-                } else {
-                    navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)';
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            toggle.classList.toggle('active');
+            body.classList.toggle('menu-open');
+        }
+
+        // Toggle Desktop Dropdown
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && !event.target.closest('.user-dropdown')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.mobile-nav-link, .mobile-user-menu-item').forEach(link => {
+            link.addEventListener('click', function() {
+                const menu = document.getElementById('mobileMenu');
+                const overlay = document.getElementById('menuOverlay');
+                const toggle = document.querySelector('.menu-toggle');
+                const body = document.body;
+
+                if (menu.classList.contains('active')) {
+                    menu.classList.remove('active');
+                    overlay.classList.remove('active');
+                    toggle.classList.remove('active');
+                    body.classList.remove('menu-open');
                 }
-                
-                lastScroll = currentScroll;
             });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-custom');
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
+            } else {
+                navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)';
+            }
         });
     </script>
     @stack('scripts')
