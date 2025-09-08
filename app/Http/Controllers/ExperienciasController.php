@@ -103,11 +103,12 @@ class ExperienciasController extends Controller
     return view('experiencias.ser-chef', ['contenidos' => $contenidosSerChef]);
 }
 
-    public function comoFunciona()
+public function comoFunciona()
 {
-    // Luego crearás la vista:
-    // resources/views/experiencias/como-funciona.blade.php
-    return view('experiencias.como-funciona');
+    // Obtener contenidos específicos de la página 'como-funciona'
+    $contenidosComoFunciona = \App\Models\Pagina::porPagina('como-funciona')->get()->keyBy('clave');
+    
+    return view('experiencias.como-funciona', ['contenidos' => $contenidosComoFunciona]);
 }
 
 }

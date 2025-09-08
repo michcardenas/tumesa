@@ -433,20 +433,20 @@ details[open] .chev {
 <div class="page">
   {{-- HERO --}}
   <section class="hero">
-    <h1>Cómo Funciona TuMesa</h1>
-    <p>Descubre el flujo completo: desde encontrar una experiencia hasta realizar la reserva y compartir tu comida con personas increíbles. Simple, seguro y pensado para ti.</p>
+    <h1>{{ $contenidos['hero_titulo']->valor ?? 'Cómo Funciona TuMesa' }}</h1>
+    <p>{{ $contenidos['hero_descripcion']->valor ?? 'Descubre el flujo completo: desde encontrar una experiencia hasta realizar la reserva y compartir tu comida con personas increíbles. Simple, seguro y pensado para ti.' }}</p>
     <div class="actions">
-      <a class="btn primary" href="{{ route('experiencias') }}">Ver Experiencias</a>
-      <a class="btn ghost" href="{{ route('ser-chef') }}">Ser Chef Anfitrión</a>
+      <a class="btn primary" href="{{ route('experiencias') }}">{{ $contenidos['hero_boton1']->valor ?? 'Ver Experiencias' }}</a>
+      <a class="btn ghost" href="{{ route('ser-chef') }}">{{ $contenidos['hero_boton2']->valor ?? 'Ser Chef Anfitrión' }}</a>
     </div>
   </section>
 
   {{-- TABS --}}
-  <h2 class="section-title">Elige tu camino</h2>
-  <p class="section-sub">Te mostramos el proceso paso a paso.</p>
+  <h2 class="section-title">{{ $contenidos['tabs_titulo']->valor ?? 'Elige tu camino' }}</h2>
+  <p class="section-sub">{{ $contenidos['tabs_subtitulo']->valor ?? 'Te mostramos el proceso paso a paso.' }}</p>
   <div class="tabs">
-    <button type="button" class="tab active" data-flow="guest">Para Invitados</button>
-    <button type="button" class="tab" data-flow="chef">Para Chefs Anfitriones</button>
+    <button type="button" class="tab active" data-flow="guest">{{ $contenidos['tab1_texto']->valor ?? 'Para Invitados' }}</button>
+    <button type="button" class="tab" data-flow="chef">{{ $contenidos['tab2_texto']->valor ?? 'Para Chefs Anfitriones' }}</button>
   </div>
 
   {{-- PARA INVITADOS --}}
@@ -454,53 +454,53 @@ details[open] .chev {
     <div class="grid-4 steps">
       <div class="step">
         <div class="n">1</div>
-        <h5>Explora experiencias</h5>
-        <p>Filtra por ciudad, precio y fecha. Revisa fotos, menú y reseñas del chef.</p>
+        <h5>{{ $contenidos['guest_paso1_titulo']->valor ?? 'Explora experiencias' }}</h5>
+        <p>{{ $contenidos['guest_paso1_descripcion']->valor ?? 'Filtra por ciudad, precio y fecha. Revisa fotos, menú y reseñas del chef.' }}</p>
       </div>
       <div class="step">
         <div class="n">2</div>
-        <h5>Reserva tu lugar</h5>
-        <p>Elige cantidad de personas y confirma con un pago seguro.</p>
+        <h5>{{ $contenidos['guest_paso2_titulo']->valor ?? 'Reserva tu lugar' }}</h5>
+        <p>{{ $contenidos['guest_paso2_descripcion']->valor ?? 'Elige cantidad de personas y confirma con un pago seguro.' }}</p>
       </div>
       <div class="step">
         <div class="n">3</div>
-        <h5>Confirmación inmediata</h5>
-        <p>Recibes los detalles por email y tu panel. El chef se prepara para recibirte.</p>
+        <h5>{{ $contenidos['guest_paso3_titulo']->valor ?? 'Confirmación inmediata' }}</h5>
+        <p>{{ $contenidos['guest_paso3_descripcion']->valor ?? 'Recibes los detalles por email y tu panel. El chef se prepara para recibirte.' }}</p>
       </div>
       <div class="step">
         <div class="n">4</div>
-        <h5>Disfruta y califica</h5>
-        <p>Vive la experiencia, deja una reseña y ayuda a otros a elegir.</p>
+        <h5>{{ $contenidos['guest_paso4_titulo']->valor ?? 'Disfruta y califica' }}</h5>
+        <p>{{ $contenidos['guest_paso4_descripcion']->valor ?? 'Vive la experiencia, deja una reseña y ayuda a otros a elegir.' }}</p>
       </div>
     </div>
 
-    <h3 class="section-title">Tu recorrido como invitado</h3>
-    <div class="section-sub">Así se ve de principio a fin.</div>
+    <h3 class="section-title">{{ $contenidos['guest_timeline_titulo']->valor ?? 'Tu recorrido como invitado' }}</h3>
+    <div class="section-sub">{{ $contenidos['guest_timeline_subtitulo']->valor ?? 'Así se ve de principio a fin.' }}</div>
     <div class="timeline">
       <div class="titem">
         <div class="dot"></div>
-        <strong>Buscar</strong>
-        <p class="muted">Usa filtros inteligentes</p>
+        <strong>{{ $contenidos['guest_timeline1_titulo']->valor ?? 'Buscar' }}</strong>
+        <p class="muted">{{ $contenidos['guest_timeline1_descripcion']->valor ?? 'Usa filtros inteligentes' }}</p>
       </div>
       <div class="titem">
         <div class="dot"></div>
-        <strong>Seleccionar</strong>
-        <p class="muted">Lee menú y políticas</p>
+        <strong>{{ $contenidos['guest_timeline2_titulo']->valor ?? 'Seleccionar' }}</strong>
+        <p class="muted">{{ $contenidos['guest_timeline2_descripcion']->valor ?? 'Lee menú y políticas' }}</p>
       </div>
       <div class="titem">
         <div class="dot"></div>
-        <strong>Reservar</strong>
-        <p class="muted">Pago seguro</p>
+        <strong>{{ $contenidos['guest_timeline3_titulo']->valor ?? 'Reservar' }}</strong>
+        <p class="muted">{{ $contenidos['guest_timeline3_descripcion']->valor ?? 'Pago seguro' }}</p>
       </div>
       <div class="titem">
         <div class="dot"></div>
-        <strong>Asistir</strong>
-        <p class="muted">Llega puntualmente</p>
+        <strong>{{ $contenidos['guest_timeline4_titulo']->valor ?? 'Asistir' }}</strong>
+        <p class="muted">{{ $contenidos['guest_timeline4_descripcion']->valor ?? 'Llega puntualmente' }}</p>
       </div>
       <div class="titem">
         <div class="dot"></div>
-        <strong>Calificar</strong>
-        <p class="muted">Comparte tu opinión</p>
+        <strong>{{ $contenidos['guest_timeline5_titulo']->valor ?? 'Calificar' }}</strong>
+        <p class="muted">{{ $contenidos['guest_timeline5_descripcion']->valor ?? 'Comparte tu opinión' }}</p>
       </div>
     </div>
   </section>
@@ -510,60 +510,60 @@ details[open] .chev {
     <div class="grid-4 steps">
       <div class="step">
         <div class="n">1</div>
-        <h5>Crea tu perfil</h5>
-        <p>Completa información, fotos y tu especialidad culinaria.</p>
+        <h5>{{ $contenidos['chef_paso1_titulo']->valor ?? 'Crea tu perfil' }}</h5>
+        <p>{{ $contenidos['chef_paso1_descripcion']->valor ?? 'Completa información, fotos y tu especialidad culinaria.' }}</p>
       </div>
       <div class="step">
         <div class="n">2</div>
-        <h5>Publica una experiencia</h5>
-        <p>Define menú, precio por persona, cupos y fecha/hora.</p>
+        <h5>{{ $contenidos['chef_paso2_titulo']->valor ?? 'Publica una experiencia' }}</h5>
+        <p>{{ $contenidos['chef_paso2_descripcion']->valor ?? 'Define menú, precio por persona, cupos y fecha/hora.' }}</p>
       </div>
       <div class="step">
         <div class="n">3</div>
-        <h5>Gestiona reservas</h5>
-        <p>Confirma y organiza la logística desde tu panel.</p>
+        <h5>{{ $contenidos['chef_paso3_titulo']->valor ?? 'Gestiona reservas' }}</h5>
+        <p>{{ $contenidos['chef_paso3_descripcion']->valor ?? 'Confirma y organiza la logística desde tu panel.' }}</p>
       </div>
       <div class="step">
         <div class="n">4</div>
-        <h5>Recibe pagos</h5>
-        <p>Liquidez transparente según las políticas establecidas.</p>
+        <h5>{{ $contenidos['chef_paso4_titulo']->valor ?? 'Recibe pagos' }}</h5>
+        <p>{{ $contenidos['chef_paso4_descripcion']->valor ?? 'Liquidez transparente según las políticas establecidas.' }}</p>
       </div>
     </div>
 
-    <h3 class="section-title">Flujo para Anfitriones</h3>
-    <div class="section-sub">Publica, recibe invitados y crece tu comunidad.</div>
+    <h3 class="section-title">{{ $contenidos['chef_timeline_titulo']->valor ?? 'Flujo para Anfitriones' }}</h3>
+    <div class="section-sub">{{ $contenidos['chef_timeline_subtitulo']->valor ?? 'Publica, recibe invitados y crece tu comunidad.' }}</div>
     <div class="timeline">
       <div class="titem">
         <div class="dot"></div>
-        <strong>Perfil</strong>
-        <p class="muted">Identidad y verificación</p>
+        <strong>{{ $contenidos['chef_timeline1_titulo']->valor ?? 'Perfil' }}</strong>
+        <p class="muted">{{ $contenidos['chef_timeline1_descripcion']->valor ?? 'Identidad y verificación' }}</p>
       </div>
       <div class="titem">
         <div class="dot"></div>
-        <strong>Experiencia</strong>
-        <p class="muted">Menú y disponibilidad</p>
+        <strong>{{ $contenidos['chef_timeline2_titulo']->valor ?? 'Experiencia' }}</strong>
+        <p class="muted">{{ $contenidos['chef_timeline2_descripcion']->valor ?? 'Menú y disponibilidad' }}</p>
       </div>
       <div class="titem">
         <div class="dot"></div>
-        <strong>Reservas</strong>
-        <p class="muted">Notificaciones y control</p>
+        <strong>{{ $contenidos['chef_timeline3_titulo']->valor ?? 'Reservas' }}</strong>
+        <p class="muted">{{ $contenidos['chef_timeline3_descripcion']->valor ?? 'Notificaciones y control' }}</p>
       </div>
       <div class="titem">
         <div class="dot"></div>
-        <strong>Evento</strong>
-        <p class="muted">Anfitriona con confianza</p>
+        <strong>{{ $contenidos['chef_timeline4_titulo']->valor ?? 'Evento' }}</strong>
+        <p class="muted">{{ $contenidos['chef_timeline4_descripcion']->valor ?? 'Anfitriona con confianza' }}</p>
       </div>
       <div class="titem">
         <div class="dot"></div>
-        <strong>Liquidación</strong>
-        <p class="muted">Ingresos en tu cuenta</p>
+        <strong>{{ $contenidos['chef_timeline5_titulo']->valor ?? 'Liquidación' }}</strong>
+        <p class="muted">{{ $contenidos['chef_timeline5_descripcion']->valor ?? 'Ingresos en tu cuenta' }}</p>
       </div>
     </div>
   </section>
 
   {{-- PAGOS Y SEGURIDAD --}}
-  <h2 class="section-title">Pagos y Seguridad</h2>
-  <p class="section-sub">Transparencia y soporte en cada paso.</p>
+  <h2 class="section-title">{{ $contenidos['pagos_titulo']->valor ?? 'Pagos y Seguridad' }}</h2>
+  <p class="section-sub">{{ $contenidos['pagos_subtitulo']->valor ?? 'Transparencia y soporte en cada paso.' }}</p>
   <div class="grid-3">
     <div class="card">
       <span class="icon">
@@ -572,11 +572,11 @@ details[open] .chev {
           <path d="M7 15h3M14 12h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </span>
-      <h4>Métodos de pago</h4>
-      <p>Operamos con pasarelas seguras. Tus datos se procesan de forma cifrada.</p>
+      <h4>{{ $contenidos['pagos_card1_titulo']->valor ?? 'Métodos de pago' }}</h4>
+      <p>{{ $contenidos['pagos_card1_descripcion']->valor ?? 'Operamos con pasarelas seguras. Tus datos se procesan de forma cifrada.' }}</p>
       <div class="kpi">
-        <span class="badge">Seguro</span>
-        <span class="muted">PCI-DSS / 3-D Secure</span>
+        <span class="badge">{{ $contenidos['pagos_card1_badge']->valor ?? 'Seguro' }}</span>
+        <span class="muted">{{ $contenidos['pagos_card1_badge_texto']->valor ?? 'PCI-DSS / 3-D Secure' }}</span>
       </div>
     </div>
     <div class="card">
@@ -586,11 +586,11 @@ details[open] .chev {
           <path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </span>
-      <h4>Política de cancelación</h4>
-      <p>Las cancelaciones y reembolsos dependen de la política definida en cada experiencia.</p>
+      <h4>{{ $contenidos['pagos_card2_titulo']->valor ?? 'Política de cancelación' }}</h4>
+      <p>{{ $contenidos['pagos_card2_descripcion']->valor ?? 'Las cancelaciones y reembolsos dependen de la política definida en cada experiencia.' }}</p>
       <div class="kpi">
-        <span class="badge">Claridad</span>
-        <span class="muted">Se muestra antes de pagar</span>
+        <span class="badge">{{ $contenidos['pagos_card2_badge']->valor ?? 'Claridad' }}</span>
+        <span class="muted">{{ $contenidos['pagos_card2_badge_texto']->valor ?? 'Se muestra antes de pagar' }}</span>
       </div>
     </div>
     <div class="card">
@@ -600,70 +600,70 @@ details[open] .chev {
           <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </span>
-      <h4>Protección y soporte</h4>
-      <p>Asistencia 24/7 y lineamientos de seguridad para invitados y anfitriones.</p>
+      <h4>{{ $contenidos['pagos_card3_titulo']->valor ?? 'Protección y soporte' }}</h4>
+      <p>{{ $contenidos['pagos_card3_descripcion']->valor ?? 'Asistencia 24/7 y lineamientos de seguridad para invitados y anfitriones.' }}</p>
       <div class="kpi">
-        <span class="badge">24/7</span>
-        <span class="muted">Acompañamiento continuo</span>
+        <span class="badge">{{ $contenidos['pagos_card3_badge']->valor ?? '24/7' }}</span>
+        <span class="muted">{{ $contenidos['pagos_card3_badge_texto']->valor ?? 'Acompañamiento continuo' }}</span>
       </div>
     </div>
   </div>
 
   {{-- FAQ --}}
-  <h2 class="section-title">Preguntas Frecuentes</h2>
+  <h2 class="section-title">{{ $contenidos['faq_titulo']->valor ?? 'Preguntas Frecuentes' }}</h2>
   <section class="faq">
     <details>
       <summary>
-        ¿Puedo cambiar mi reserva?
+        {{ $contenidos['faq1_pregunta']->valor ?? '¿Puedo cambiar mi reserva?' }}
         <svg class="chev" width="18" height="18" viewBox="0 0 24 24">
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
       </summary>
       <div class="a">
-        Sí, según disponibilidad del anfitrión y la política de cambios/cancelación de esa experiencia.
+        {{ $contenidos['faq1_respuesta']->valor ?? 'Sí, según disponibilidad del anfitrión y la política de cambios/cancelación de esa experiencia.' }}
       </div>
     </details>
     <details>
       <summary>
-        ¿Cuándo se realiza el cobro?
+        {{ $contenidos['faq2_pregunta']->valor ?? '¿Cuándo se realiza el cobro?' }}
         <svg class="chev" width="18" height="18" viewBox="0 0 24 24">
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
       </summary>
       <div class="a">
-        Al confirmar la reserva. La liquidación al anfitrión se efectúa según las condiciones acordadas.
+        {{ $contenidos['faq2_respuesta']->valor ?? 'Al confirmar la reserva. La liquidación al anfitrión se efectúa según las condiciones acordadas.' }}
       </div>
     </details>
     <details>
       <summary>
-        ¿Qué pasa si el evento se cancela?
+        {{ $contenidos['faq3_pregunta']->valor ?? '¿Qué pasa si el evento se cancela?' }}
         <svg class="chev" width="18" height="18" viewBox="0 0 24 24">
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
       </summary>
       <div class="a">
-        Te notificamos y aplicamos la política de reembolso o reprogramación correspondiente.
+        {{ $contenidos['faq3_respuesta']->valor ?? 'Te notificamos y aplicamos la política de reembolso o reprogramación correspondiente.' }}
       </div>
     </details>
     <details>
       <summary>
-        ¿Cómo reporto un problema?
+        {{ $contenidos['faq4_pregunta']->valor ?? '¿Cómo reporto un problema?' }}
         <svg class="chev" width="18" height="18" viewBox="0 0 24 24">
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
         </svg>
       </summary>
       <div class="a">
-        Desde tu panel o vía soporte 24/7 indicando el ID de tu reserva y lo ocurrido.
+        {{ $contenidos['faq4_respuesta']->valor ?? 'Desde tu panel o vía soporte 24/7 indicando el ID de tu reserva y lo ocurrido.' }}
       </div>
     </details>
   </section>
 
   {{-- CTA FINAL --}}
   <div class="cta">
-    <a class="btn primary" href="{{ route('experiencias') }}">Explorar experiencias</a>
-    <a class="btn ghost" href="{{ route('ser-chef') }}">Quiero ser chef anfitrión</a>
+    <a class="btn primary" href="{{ route('experiencias') }}">{{ $contenidos['cta_boton1']->valor ?? 'Explorar experiencias' }}</a>
+    <a class="btn ghost" href="{{ route('ser-chef') }}">{{ $contenidos['cta_boton2']->valor ?? 'Quiero ser chef anfitrión' }}</a>
   </div>
-  <div class="small">¿Necesitas ayuda adicional? Escríbenos y te acompañamos en el proceso.</div>
+  <div class="small">{{ $contenidos['cta_texto_ayuda']->valor ?? '¿Necesitas ayuda adicional? Escríbenos y te acompañamos en el proceso.' }}</div>
 </div>
 
 <script>
