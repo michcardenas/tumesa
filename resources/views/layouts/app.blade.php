@@ -670,8 +670,8 @@
                     &copy; {{ date('Y') }} TuMesa Argentina. Todos los derechos reservados.
                 </p>
                 <ul class="footer-legal-links">
-                    <li><a href="#">Términos y Condiciones</a></li>
-                    <li><a href="#">Política de Privacidad</a></li>
+                    <li><a href="{{ route('terminos') }}">Términos y Condiciones</a></li>
+                    <li><a href="{{ route('privacidad') }}">Política de Privacidad</a></li>
                     <li><a href="{{ route('como-funciona') ?? '#' }}">Cómo Funciona</a></li>
                 </ul>
             </div>
