@@ -991,7 +991,7 @@
         <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
 
         <!-- Main content -->
-        <main style="margin-top: 80px;">
+        <main style="">
             @yield('content')
         </main>
 
