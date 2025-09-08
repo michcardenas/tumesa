@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Custom Styles para Navbar Fullscreen Mobile -->
-    <style>
+     <style>
         /* ========== Variables CSS ========== */
         :root {
             --primary-color: #2563eb;
@@ -519,6 +519,7 @@
             visibility: visible;
         }
     </style>
+
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
