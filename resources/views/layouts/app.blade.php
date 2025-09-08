@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -11,8 +12,8 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- icono de carga -->
-<link rel="icon" type="image/x-icon" href="{{ asset('img/logo-tumesa.png') }}">
+    <!-- icono de carga -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/logo-tumesa.png') }}">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,127 +21,243 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom Styles -->
+    <!-- Custom Styles Mejorados -->
     <style>
-      .navbar-custom {
+        /* ========== Variables CSS ========== */
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #1e293b;
+            --secondary-dark: #0f172a;
+            --text-gray: #64748b;
+            --text-gray-light: #94a3b8;
+            --navbar-height: 70px;
+            --transition: all 0.3s ease;
+        }
+
+        /* ========== Body con padding para navbar fixed ========== */
+        body {
+            padding-top: var(--navbar-height);
+        }
+
+        /* ========== Navbar Principal ========== */
+        .navbar-custom {
             background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             padding: 0.8rem 0;
             z-index: 1050;
+            min-height: var(--navbar-height);
+            transition: var(--transition);
         }
-        
+
+        /* ========== Brand/Logo ========== */
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            color: #2563eb !important;
+            color: var(--primary-color) !important;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
         }
-        
-        .navbar-nav .nav-link {
-            color: #64748b !important;
-            font-weight: 500;
-            margin: 0 0.5rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
         }
-        
-        .navbar-nav .nav-link:hover {
-            color: #2563eb !important;
-        }
-        
-        .navbar-nav .nav-link.active {
-            color: #2563eb !important;
-            font-weight: 600;
-        }
-        
+
         .logo-icon {
-            height: 32px;
+            height: 35px;
             width: auto;
             margin-right: 0.5rem;
         }
-        
-        /* Estilos para botones de autenticación */
+
+        /* ========== Navigation Links ========== */
+        .navbar-nav .nav-link {
+            color: var(--text-gray) !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            position: relative;
+            padding: 0.5rem 0.75rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 80%;
+        }
+
+        .navbar-nav .nav-link.active {
+            color: var(--primary-color) !important;
+            font-weight: 600;
+        }
+
+        /* ========== Authentication Buttons ========== */
         .auth-buttons {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .btn-login {
-            color: #64748b;
-            border: none;
+            color: var(--text-gray);
+            border: 2px solid transparent;
             background: none;
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            transition: color 0.3s ease;
+            padding: 0.5rem 1.2rem;
+            border-radius: 0.5rem;
+            transition: var(--transition);
             text-decoration: none;
-            display: flex;
-            align-items: center;
         }
-        
+
         .btn-login:hover {
-            color: #2563eb;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.05);
         }
-        
+
         .btn-register {
-            background-color: #1e293b;
+            background-color: var(--secondary-color);
             color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
+            border: 2px solid var(--secondary-color);
+            padding: 0.5rem 1.5rem;
             border-radius: 0.5rem;
             font-weight: 500;
-            transition: background-color 0.3s ease;
+            transition: var(--transition);
             text-decoration: none;
         }
-        
+
         .btn-register:hover {
-            background-color: #0f172a;
+            background-color: var(--secondary-dark);
+            border-color: var(--secondary-dark);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 41, 59, 0.3);
         }
-        
-        /* Estilos para dropdown de usuario comensal */
-        .user-dropdown .user-button {
-            background: none;
-            border: none;
+
+        /* ========== User Dropdown Styles ========== */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-button {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #64748b;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            transition: color 0.3s ease;
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            color: var(--text-gray);
         }
-        
-        .user-dropdown .user-button:hover {
-            color: #2563eb;
+
+        .user-button:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.05);
         }
-        
+
         .user-avatar {
             width: 32px;
             height: 32px;
-            background: #2563eb;
-            color: white;
             border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
             font-size: 0.9rem;
         }
-        
-        /* Navbar toggler styles */
-        .navbar-toggler {
+
+        /* ========== Dropdown Menu ========== */
+        .dropdown-menu {
             border: none;
-            padding: 0.25rem 0.5rem;
-            background: none;
-            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            animation: dropdownFade 0.3s ease;
         }
-        
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            border-radius: 0.5rem;
+            padding: 0.6rem 1rem;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+
+        .dropdown-header {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            padding: 0.5rem 1rem;
+        }
+
+        /* ========== Mobile Toggle Button ========== */
+        .navbar-toggler {
+            border: 2px solid transparent;
+            padding: 0.25rem 0.5rem;
+            background: transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 0.5rem;
+        }
+
+        .navbar-toggler:hover {
+            background-color: rgba(37, 99, 235, 0.05);
+            border-color: var(--primary-color);
+        }
+
         .navbar-toggler:focus {
             box-shadow: none;
             outline: none;
+            border-color: var(--primary-color);
         }
-        
+
         .navbar-toggler-icon {
             display: block;
             width: 1.5em;
@@ -149,632 +266,336 @@
             background-repeat: no-repeat;
             background-position: center;
             background-size: 100%;
+            transition: var(--transition);
         }
-        
-        /* Dropdown styles */
-        .dropdown-menu {
-            z-index: 1060;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            min-width: 250px;
+
+        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2837, 99, 235, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M6 6L24 24M6 24L24 6'/%3e%3c/svg%3e");
         }
-        
-        .dropdown-header {
-            font-size: 0.9rem;
-            color: #2563eb;
-        }
-        
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
-        .dropdown-item i {
-            width: 20px;
-        }
-        
-        /* Mobile styles */
+
+        /* ========== Responsive Design ========== */
         @media (max-width: 991.98px) {
+            /* Mobile Navigation */
+            .navbar-collapse {
+                background-color: white;
+                border-radius: 0.75rem;
+                margin-top: 1rem;
+                padding: 1rem;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            }
+
             .navbar-nav {
-                text-align: center;
-                margin-top: 1rem;
-                padding-top: 1rem;
-                border-top: 1px solid #e9ecef;
+                padding: 1rem 0;
             }
-            
+
+            .navbar-nav .nav-link {
+                padding: 0.75rem 1rem;
+                margin: 0.25rem 0;
+                border-radius: 0.5rem;
+                font-size: 1rem;
+            }
+
+            .navbar-nav .nav-link:hover {
+                background-color: rgba(37, 99, 235, 0.05);
+            }
+
+            .navbar-nav .nav-link.active {
+                background-color: rgba(37, 99, 235, 0.1);
+            }
+
+            .navbar-nav .nav-link::after {
+                display: none;
+            }
+
+            /* Mobile Auth Buttons */
             .auth-buttons {
-                justify-content: center;
-                margin-top: 1rem;
                 flex-direction: column;
-                align-items: center;
-                gap: 0.75rem;
                 width: 100%;
+                padding-top: 1rem;
+                border-top: 1px solid #e2e8f0;
+                margin-top: 1rem;
             }
-            
+
             .btn-login,
-            .btn-register,
-            .user-dropdown .user-button {
-                width: 200px;
-                text-align: center;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            
             .btn-register {
-                margin-top: 0.5rem;
+                width: 100%;
+                text-align: center;
+                margin: 0.25rem 0;
             }
-            
-            /* Dropdown en móviles */
+
+            /* Mobile User Dropdown */
             .user-dropdown {
                 width: 100%;
-                display: flex;
+            }
+
+            .user-button {
+                width: 100%;
                 justify-content: center;
             }
-            
+
             .dropdown-menu {
-                min-width: 200px;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
+                width: calc(100% - 2rem);
+                margin: 0.5rem 1rem;
             }
         }
-        
-        /* Para pantallas muy pequeñas */
-        @media (max-width: 576px) {
+
+        @media (max-width: 575.98px) {
+            /* Extra small devices */
             .navbar-brand {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
-            
+
             .logo-icon {
                 height: 28px;
             }
-            
-            .btn-login,
-            .btn-register,
-            .user-dropdown .user-button {
-                width: 180px;
-                font-size: 0.9rem;
+
+            body {
+                padding-top: 60px;
+            }
+
+            .navbar-custom {
+                min-height: 60px;
+                padding: 0.5rem 0;
             }
         }
-        
-        /* Demo background */
-        body {
-            padding-top: 80px;
-            background-color: #f8fafc;
-        }
-        
-        .demo-content {
-            padding: 2rem 0;
-            min-height: 50vh;
-        }
-        .btn-login {
-            color: #64748b;
-            border: none;
-            background: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            margin-right: 0.5rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-        
-        .btn-login:hover {
-            color: #2563eb;
-        }
-        
-        .btn-register {
-            background-color: #1e293b;
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-        }
-        
-        .btn-register:hover {
-            background-color: #0f172a;
-            color: white;
-        }
-        
-        .logo-icon {
-            height: 32px;
-            width: auto;
-            margin-right: 0.5rem;
-        }
-        
-        /* Navbar toggler styles */
-        .navbar-toggler {
-            border: none;
-            padding: 0.25rem 0.5rem;
-            background: none;
-            cursor: pointer;
-        }
-        
-        .navbar-toggler:focus {
-            box-shadow: none;
-            outline: none;
-        }
-        
-        .navbar-toggler-icon {
-            display: block;
-            width: 1.5em;
-            height: 1.5em;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 100%;
-        }
-        
-        /* IMPORTANTE: Mostrar siempre el menú en pantallas grandes */
-        @media (min-width: 992px) {
-            .navbar-collapse {
-                display: flex !important;
-                visibility: visible !important;
+
+        /* ========== Animaciones adicionales ========== */
+        @media (prefers-reduced-motion: no-preference) {
+            .navbar-collapse.collapsing {
+                transition: height 0.35s ease;
             }
-        }
-        
-        /* Mobile styles */
-        @media (max-width: 991.98px) {
-            .navbar-collapse {
-                display: none;
-            }
-            
+
             .navbar-collapse.show {
-                display: block !important;
+                animation: slideDown 0.35s ease;
             }
-            
-            .navbar-nav {
-                text-align: center;
-                margin-top: 1rem;
-            }
-            
-            .auth-buttons {
-                justify-content: center !important;
-                margin-top: 1rem;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .navbar-collapse {
-                border-top: 1px solid #e9ecef;
-                margin-top: 1rem;
-                padding-top: 1rem;
-            }
-            
-            .btn-login,
-            .btn-register {
-                width: 200px;
-                margin: 0.25rem 0;
-                text-align: center;
-                display: block;
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
         }
-        
-        /* Dropdown styles */
-        .dropdown-menu {
-            z-index: 1060;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+
+        /* ========== Dark mode support (opcional) ========== */
+        @media (prefers-color-scheme: dark) {
+            .navbar-custom {
+                background-color: var(--secondary-color);
+                color: white;
+            }
+
+            .navbar-nav .nav-link {
+                color: #e2e8f0 !important;
+            }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                color: var(--primary-color) !important;
+            }
+
+            .dropdown-menu {
+                background-color: var(--secondary-color);
+                color: white;
+            }
+
+            .dropdown-item {
+                color: #e2e8f0;
+            }
+
+            .dropdown-item:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
         }
-        .footer-main {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        color: #e2e8f0;
-        padding: 4rem 0 1.5rem;
-        margin-top: 5rem;
-        position: relative;
-    }
-    
-    .footer-wave {
-        position: absolute;
-        top: -50px;
-        left: 0;
-        width: 100%;
-        height: 50px;
-        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 100'%3E%3Cpath fill='%231e293b' fill-opacity='1' d='M0,32L48,42.7C96,53,192,75,288,74.7C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,100L1392,100C1344,100,1248,100,1152,100C1056,100,960,100,864,100C768,100,672,100,576,100C480,100,384,100,288,100C192,100,96,100,48,100L0,100Z'%3E%3C/path%3E%3C/svg%3E");
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
-    
-    .footer-brand {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    
-    .footer-brand img {
-        height: 40px;
-        margin-right: 0.75rem;
-        filter: brightness(0) invert(1);
-    }
-    
-    .footer-brand h4 {
-        color: #ffffff;
-        font-weight: 700;
-        margin: 0;
-        font-size: 1.75rem;
-    }
-    
-    .footer-description {
-        color: #cbd5e1;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-    }
-    
-    .footer-section h5 {
-        color: #ffffff;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-        font-size: 1.1rem;
-        position: relative;
-        padding-bottom: 0.5rem;
-    }
-    
-    .footer-section h5:after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 30px;
-        height: 2px;
-        background: #2563eb;
-    }
-    
-    .footer-links {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .footer-links li {
-        margin-bottom: 0.75rem;
-    }
-    
-    .footer-links a {
-        color: #cbd5e1;
-        text-decoration: none;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .footer-links a:hover {
-        color: #2563eb;
-        transform: translateX(5px);
-    }
-    
-    .footer-links a i {
-        margin-right: 0.5rem;
-        font-size: 0.85rem;
-        color: #64748b;
-    }
-    
-    .social-buttons {
-        display: flex;
-        gap: 0.75rem;
-        margin-top: 1.5rem;
-    }
-    
-    .social-button {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #ffffff;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-    .social-button:hover {
-        background: #2563eb;
-        border-color: #2563eb;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
-        color: #ffffff;
-    }
-    
-    .social-button.facebook:hover {
-        background: #1877f2;
-        border-color: #1877f2;
-    }
-    
-    .social-button.instagram:hover {
-        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-        border-color: transparent;
-    }
-    
-    .newsletter-box {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        margin-top: 1rem;
-    }
-    
-    .newsletter-box h6 {
-        color: #ffffff;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-    }
-    
-    .newsletter-form {
-        display: flex;
-        gap: 0.5rem;
-    }
-    
-    .newsletter-form input {
-        flex: 1;
-        padding: 0.5rem 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 0.5rem;
-        color: #ffffff;
-        font-size: 0.9rem;
-    }
-    
-    .newsletter-form input::placeholder {
-        color: #94a3b8;
-    }
-    
-    .newsletter-form input:focus {
-        outline: none;
-        border-color: #2563eb;
-        background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .newsletter-form button {
-        background: #2563eb;
-        color: white;
-        border: none;
-        padding: 0.5rem 1.25rem;
-        border-radius: 0.5rem;
-        font-weight: 500;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .newsletter-form button:hover {
-        background: #1d4ed8;
-        transform: translateX(2px);
-    }
-    
-    .footer-bottom {
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        margin-top: 3rem;
-        padding-top: 1.5rem;
-    }
-    
-    .footer-bottom-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    
-    .footer-copyright {
-        color: #94a3b8;
-        font-size: 0.9rem;
-        margin: 0;
-    }
-    
-    .footer-legal-links {
-        display: flex;
-        gap: 1.5rem;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .footer-legal-links a {
-        color: #94a3b8;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: color 0.3s ease;
-    }
-    
-    .footer-legal-links a:hover {
-        color: #2563eb;
-    }
-    
-    .contact-info {
-        margin-top: 1rem;
-    }
-    
-    .contact-info p {
-        color: #cbd5e1;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-    }
-    
-    .contact-info p i {
-        margin-right: 0.75rem;
-        color: #64748b;
-        width: 16px;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .footer-main {
-            padding: 3rem 0 1.5rem;
-        }
-        
-        .footer-bottom-content {
-            flex-direction: column;
-            gap: 1rem;
-            text-align: center;
-        }
-        
-        .footer-legal-links {
-            justify-content: center;
-        }
-        
-        .newsletter-form {
-            flex-direction: column;
-        }
-        
-        .newsletter-form button {
-            width: 100%;
-        }
-        
-        .social-buttons {
-            justify-content: center;
-        }
-    }
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-light">
     <div id="app">
-        <!-- Navigation -->
-     
-  <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
-        <div class="container">
-            <!-- Brand -->
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="fas fa-utensils logo-icon text-primary"></i>
-                TuMesa
-            </a>
+        <!-- Navigation Mejorada -->
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <!-- Brand -->
+                <a class="navbar-brand" href="{{ url('/') }}">
+                    <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" class="logo-icon">
+                    <span>TuMesa</span>
+                </a>
 
-            <!-- Mobile toggle button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                <!-- Mobile toggle button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <!-- Navigation items -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Center navigation links -->
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Experiencias</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Ser Chef Anfitrión</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Cómo Funciona</a>
-                    </li>
-                </ul>
-
-                <!-- Right side authentication buttons -->
-                <div class="auth-buttons">
-                    <!-- Simulación de usuario no logueado -->
-                    <div id="guest-buttons" style="display: none;">
-                        <a href="#" class="btn btn-login">Iniciar Sesión</a>
-                        <a href="#" class="btn btn-register">Registrarse</a>
-                    </div>
-
-                    <!-- Simulación de Chef -->
-                    <div id="chef-dropdown" class="dropdown" style="display: none;">
-                        <button class="btn btn-login dropdown-toggle" type="button" id="chefDropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-chef-hat me-1"></i>
-                            Chef María
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chefDropdown">
-                            <li>
-                                <h6 class="dropdown-header">
-                                    <i class="fas fa-chef-hat me-2"></i>Panel de Chef
-                                </h6>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="fas fa-user-edit me-2"></i>Mi Perfil
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a href="#" class="dropdown-item text-danger">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Simulación de Comensal -->
-                    <div id="comensal-dropdown" class="dropdown user-dropdown">
-                        <button class="user-button dropdown-toggle" type="button" id="comensalDropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="user-avatar">
-                                J
-                            </div>
-                            <span>Juan Pérez</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="comensalDropdown">
-                            <li>
-                                <h6 class="dropdown-header">
-                                    <i class="fas fa-user me-2"></i>Juan Pérez
-                                    <br><small class="text-muted">juan@example.com</small>
-                                </h6>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="fas fa-user-edit me-2"></i>Editar Perfil
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="fas fa-calendar me-2"></i>Mis Reservas
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a href="#" class="dropdown-item text-danger">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Demo content -->
-    <div class="container demo-content">
-        <div class="row">
-            <div class="col-12">
-                <h1>Demo del Navbar</h1>
-                <p class="lead">Este navbar está optimizado para móviles y escritorio con roles de Spatie.</p>
-                
-                <div class="mt-4">
-                    <h3>Cambiar vista de usuario:</h3>
-                    <button class="btn btn-outline-primary" onclick="showGuest()">Usuario no logueado</button>
-                    <button class="btn btn-outline-success" onclick="showChef()">Chef Anfitrión</button>
-                    <button class="btn btn-outline-info" onclick="showComensal()">Comensal</button>
-                </div>
-                
-                <div class="mt-4">
-                    <p><strong>Instrucciones:</strong></p>
-                    <ul>
-                        <li>Prueba redimensionar la ventana para ver la responsividad</li>
-                        <li>En móviles, el menú se colapsa correctamente</li>
-                        <li>Los dropdowns funcionan tanto en escritorio como móvil</li>
-                        <li>Cambia entre tipos de usuario para ver diferentes opciones</li>
+                <!-- Navigation items -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Center navigation links -->
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}" 
+                               href="{{ route('experiencias') ?? '#' }}">
+                               <i class="fas fa-utensils d-lg-none me-2"></i>
+                               Experiencias
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}" 
+                               href="{{ route('ser-chef') ?? '#' }}">
+                               <i class="fas fa-chef-hat d-lg-none me-2"></i>
+                               Ser Chef Anfitrión
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('como-funciona') ? 'active' : '' }}" 
+                               href="{{ route('como-funciona') ?? '#' }}">
+                               <i class="fas fa-info-circle d-lg-none me-2"></i>
+                               Cómo Funciona
+                            </a>
+                        </li>
                     </ul>
+
+                    <!-- Right side authentication buttons -->
+                    <div class="auth-buttons">
+                        @auth
+                            @if(Auth::user()->hasRole('chef_anfitrion'))
+                                <!-- CHEF DROPDOWN -->
+                                <div class="dropdown user-dropdown">
+                                    <button class="user-button dropdown-toggle" type="button" id="chefDropdown"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <div class="user-avatar">
+                                            <i class="fas fa-chef-hat"></i>
+                                        </div>
+                                        <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chefDropdown">
+                                        <li>
+                                            <h6 class="dropdown-header">
+                                                <i class="fas fa-chef-hat me-2"></i>Panel de Chef
+                                                <br><small>{{ Auth::user()->email }}</small>
+                                            </h6>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('chef.dashboard') }}">
+                                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('chef.profile.edit') }}">
+                                                <i class="fas fa-user-edit me-2"></i>Mi Perfil
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('chef.ingresos') }}">
+                                                <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form method="POST" action="{{ route('logout') }}">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            @elseif(Auth::user()->hasRole('comensal'))
+                                <!-- COMENSAL DROPDOWN -->
+                                <div class="dropdown user-dropdown">
+                                    <button class="user-button dropdown-toggle" type="button" id="comensalDropdown"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <div class="user-avatar">
+                                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                        </div>
+                                        <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="comensalDropdown">
+                                        <li>
+                                            <h6 class="dropdown-header">
+                                                <i class="fas fa-user me-2"></i>{{ Auth::user()->name }}
+                                                <br><small>{{ Auth::user()->email }}</small>
+                                            </h6>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('comensal.dashboard') }}">
+                                                <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('perfil.comensal') }}">
+                                                <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('reservas.historial') }}">
+                                                <i class="fas fa-calendar me-2"></i>Mis Reservas
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form method="POST" action="{{ route('logout') }}">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            @else
+                                <!-- USUARIO SIN ROL ESPECÍFICO -->
+                                <div class="dropdown user-dropdown">
+                                    <button class="user-button dropdown-toggle" type="button" id="userDropdown" 
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <div class="user-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                        <li>
+                                            <div class="dropdown-header">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <small>Completa tu perfil para acceder a todas las funciones</small>
+                                            </div>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form method="POST" action="{{ route('logout') }}">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            @endif
+                        @else
+                            <!-- Usuario no autenticado -->
+                            <a href="{{ route('login') }}" class="btn btn-login">
+                                <i class="fas fa-sign-in-alt d-lg-none me-2"></i>
+                                Iniciar Sesión
+                            </a>
+                            <a href="{{ route('register') }}" class="btn btn-register">
+                                <i class="fas fa-user-plus d-lg-none me-2"></i>
+                                Registrarse
+                            </a>
+                        @endauth
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </nav>
 
         <!-- Main content -->
         <main style="margin-top: 80px;">
@@ -867,26 +688,38 @@
     <!-- Bootstrap JS Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function showGuest() {
-            document.getElementById('guest-buttons').style.display = 'flex';
-            document.getElementById('chef-dropdown').style.display = 'none';
-            document.getElementById('comensal-dropdown').style.display = 'none';
-        }
-        
-        function showChef() {
-            document.getElementById('guest-buttons').style.display = 'none';
-            document.getElementById('chef-dropdown').style.display = 'block';
-            document.getElementById('comensal-dropdown').style.display = 'none';
-        }
-        
-        function showComensal() {
-            document.getElementById('guest-buttons').style.display = 'none';
-            document.getElementById('chef-dropdown').style.display = 'none';
-            document.getElementById('comensal-dropdown').style.display = 'block';
-        }
-        
-        // Inicializar con comensal por defecto
-        showComensal();
+        // Cerrar el menú móvil al hacer clic en un enlace
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992) {
+                        const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                        if (bsCollapse) {
+                            bsCollapse.hide();
+                        }
+                    }
+                });
+            });
+
+            // Cambiar el navbar al hacer scroll (opcional)
+            let lastScroll = 0;
+            window.addEventListener('scroll', () => {
+                const navbar = document.querySelector('.navbar-custom');
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll > 100) {
+                    navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+                } else {
+                    navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)';
+                }
+                
+                lastScroll = currentScroll;
+            });
+        });
     </script>
     @stack('scripts')
 </body>
