@@ -22,7 +22,7 @@
 
     <!-- Custom Styles -->
     <style>
-        .navbar-custom {
+      .navbar-custom {
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 0.8rem 0;
@@ -53,6 +53,202 @@
             font-weight: 600;
         }
         
+        .logo-icon {
+            height: 32px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        
+        /* Estilos para botones de autenticación */
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-login {
+            color: #64748b;
+            border: none;
+            background: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .btn-login:hover {
+            color: #2563eb;
+        }
+        
+        .btn-register {
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-register:hover {
+            background-color: #0f172a;
+            color: white;
+        }
+        
+        /* Estilos para dropdown de usuario comensal */
+        .user-dropdown .user-button {
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .user-dropdown .user-button:hover {
+            color: #2563eb;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Navbar toggler styles */
+        .navbar-toggler {
+            border: none;
+            padding: 0.25rem 0.5rem;
+            background: none;
+            cursor: pointer;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+            outline: none;
+        }
+        
+        .navbar-toggler-icon {
+            display: block;
+            width: 1.5em;
+            height: 1.5em;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100%;
+        }
+        
+        /* Dropdown styles */
+        .dropdown-menu {
+            z-index: 1060;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            min-width: 250px;
+        }
+        
+        .dropdown-header {
+            font-size: 0.9rem;
+            color: #2563eb;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .dropdown-item i {
+            width: 20px;
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 991.98px) {
+            .navbar-nav {
+                text-align: center;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #e9ecef;
+            }
+            
+            .auth-buttons {
+                justify-content: center;
+                margin-top: 1rem;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+                width: 100%;
+            }
+            
+            .btn-login,
+            .btn-register,
+            .user-dropdown .user-button {
+                width: 200px;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .btn-register {
+                margin-top: 0.5rem;
+            }
+            
+            /* Dropdown en móviles */
+            .user-dropdown {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+            
+            .dropdown-menu {
+                min-width: 200px;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+            }
+        }
+        
+        /* Para pantallas muy pequeñas */
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+            
+            .logo-icon {
+                height: 28px;
+            }
+            
+            .btn-login,
+            .btn-register,
+            .user-dropdown .user-button {
+                width: 180px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Demo background */
+        body {
+            padding-top: 80px;
+            background-color: #f8fafc;
+        }
+        
+        .demo-content {
+            padding: 2rem 0;
+            min-height: 50vh;
+        }
         .btn-login {
             color: #64748b;
             border: none;
@@ -444,153 +640,141 @@
     <div id="app">
         <!-- Navigation -->
      
-<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
-    <div class="container">
-        <!-- Brand -->
-        <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-            <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" class="logo-icon">
-            TuMesa
-        </a>
+  <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fas fa-utensils logo-icon text-primary"></i>
+                TuMesa
+            </a>
 
-        <!-- Mobile toggle button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <!-- Mobile toggle button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <!-- Navigation items -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Center navigation links -->
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}" 
-                       href="{{ route('experiencias') ?? '#' }}">Experiencias</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}" 
-                       href="{{ route('ser-chef') ?? '#' }}">Ser Chef Anfitrión</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('como-funciona') ? 'active' : '' }}" 
-                       href="{{ route('como-funciona') ?? '#' }}">Cómo Funciona</a>
-                </li>
-            </ul>
+            <!-- Navigation items -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Center navigation links -->
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Experiencias</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Ser Chef Anfitrión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Cómo Funciona</a>
+                    </li>
+                </ul>
 
-            <!-- Right side authentication buttons -->
-            <div class="d-flex auth-buttons">
-                @auth
-                    @if(Auth::user()->hasRole('chef_anfitrion'))
-                        <!-- CHEF DROPDOWN -->
-                        <div class="dropdown">
-                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-chef-hat me-1"></i>
-                                {{ Auth::user()->name }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li>
-                                    <h6 class="dropdown-header">
-                                        <i class="fas fa-chef-hat me-2"></i>Panel de Chef
-                                    </h6>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('chef.dashboard') }}">
-                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ route('chef.profile.edit') }}">
-                                    <i class="fas fa-user-edit me-2"></i>Mi Perfil
-                                </a></li>
-                             
-                                <li><a class="dropdown-item" href="{{ route('chef.ingresos') }}">
-                                    <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+                <!-- Right side authentication buttons -->
+                <div class="auth-buttons">
+                    <!-- Simulación de usuario no logueado -->
+                    <div id="guest-buttons" style="display: none;">
+                        <a href="#" class="btn btn-login">Iniciar Sesión</a>
+                        <a href="#" class="btn btn-register">Registrarse</a>
+                    </div>
 
-                    @elseif(Auth::user()->hasRole('comensal'))
-                        <!-- COMENSAL DROPDOWN -->
-                        <div class="dropdown user-dropdown">
-                            <button class="user-button dropdown-toggle" type="button" id="userDropdown"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <div class="user-avatar">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                </div>
-                                <span>{{ Str::limit(Auth::user()->name, 15) }}</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li>
-                                    <h6 class="dropdown-header">
-                                        <i class="fas fa-user me-2"></i>{{ Auth::user()->name }}
-                                        <br><small class="text-muted">{{ Auth::user()->email }}</small>
-                                    </h6>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('comensal.dashboard') }}">
-                                    <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ route('perfil.comensal') }}">
-                                    <i class="fas fa-user-edit me-2"></i>Editar Perfil
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ route('reservas.historial') }}">
-                                    <i class="fas fa-calendar me-2"></i>Mis Reservas
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+                    <!-- Simulación de Chef -->
+                    <div id="chef-dropdown" class="dropdown" style="display: none;">
+                        <button class="btn btn-login dropdown-toggle" type="button" id="chefDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-chef-hat me-1"></i>
+                            Chef María
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chefDropdown">
+                            <li>
+                                <h6 class="dropdown-header">
+                                    <i class="fas fa-chef-hat me-2"></i>Panel de Chef
+                                </h6>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-user-edit me-2"></i>Mi Perfil
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-dollar-sign me-2"></i>Mis Ingresos
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a href="#" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                    @else
-                        <!-- USUARIO SIN ROL ESPECÍFICO (Fallback) -->
-                        <div class="dropdown">
-                            <button class="btn btn-login dropdown-toggle" type="button" id="userDropdown" 
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user me-1"></i>
-                                {{ Auth::user()->name }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li>
-                                    <span class="dropdown-item-text text-muted">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <small>Completa tu perfil para acceder a todas las funciones</small>
-                                    </span>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    @endif
-                @else
-                    <!-- User is not logged in -->
-                    <a href="{{ route('login') }}" class="btn btn-login">Iniciar Sesión</a>
-                    <a href="{{ route('register') }}" class="btn btn-register">Registrarse</a>
-                @endauth
+                    <!-- Simulación de Comensal -->
+                    <div id="comensal-dropdown" class="dropdown user-dropdown">
+                        <button class="user-button dropdown-toggle" type="button" id="comensalDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar">
+                                J
+                            </div>
+                            <span>Juan Pérez</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="comensalDropdown">
+                            <li>
+                                <h6 class="dropdown-header">
+                                    <i class="fas fa-user me-2"></i>Juan Pérez
+                                    <br><small class="text-muted">juan@example.com</small>
+                                </h6>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-tachometer-alt me-2"></i>Mi Dashboard
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-calendar me-2"></i>Mis Reservas
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a href="#" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Demo content -->
+    <div class="container demo-content">
+        <div class="row">
+            <div class="col-12">
+                <h1>Demo del Navbar</h1>
+                <p class="lead">Este navbar está optimizado para móviles y escritorio con roles de Spatie.</p>
+                
+                <div class="mt-4">
+                    <h3>Cambiar vista de usuario:</h3>
+                    <button class="btn btn-outline-primary" onclick="showGuest()">Usuario no logueado</button>
+                    <button class="btn btn-outline-success" onclick="showChef()">Chef Anfitrión</button>
+                    <button class="btn btn-outline-info" onclick="showComensal()">Comensal</button>
+                </div>
+                
+                <div class="mt-4">
+                    <p><strong>Instrucciones:</strong></p>
+                    <ul>
+                        <li>Prueba redimensionar la ventana para ver la responsividad</li>
+                        <li>En móviles, el menú se colapsa correctamente</li>
+                        <li>Los dropdowns funcionan tanto en escritorio como móvil</li>
+                        <li>Cambia entre tipos de usuario para ver diferentes opciones</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</nav>
 
         <!-- Main content -->
         <main style="margin-top: 80px;">
@@ -682,7 +866,28 @@
 
     <!-- Bootstrap JS Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script>
+        function showGuest() {
+            document.getElementById('guest-buttons').style.display = 'flex';
+            document.getElementById('chef-dropdown').style.display = 'none';
+            document.getElementById('comensal-dropdown').style.display = 'none';
+        }
+        
+        function showChef() {
+            document.getElementById('guest-buttons').style.display = 'none';
+            document.getElementById('chef-dropdown').style.display = 'block';
+            document.getElementById('comensal-dropdown').style.display = 'none';
+        }
+        
+        function showComensal() {
+            document.getElementById('guest-buttons').style.display = 'none';
+            document.getElementById('chef-dropdown').style.display = 'none';
+            document.getElementById('comensal-dropdown').style.display = 'block';
+        }
+        
+        // Inicializar con comensal por defecto
+        showComensal();
+    </script>
     @stack('scripts')
 </body>
 </html>
