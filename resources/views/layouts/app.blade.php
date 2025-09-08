@@ -20,7 +20,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    .navbar-custom {
+ .navbar-custom {
         background-color: #ffffff;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         padding: 0.8rem 0;
@@ -139,17 +139,19 @@
         flex-shrink: 0;
     }
     
-    /* Navbar toggler styles */
+    /* Navbar toggler styles - IMPORTANTE PARA MÓVILES */
     .navbar-toggler {
-        border: none;
+        border: none !important;
         padding: 0.25rem 0.5rem;
         background: none;
         cursor: pointer;
+        position: relative;
+        z-index: 1051;
     }
     
     .navbar-toggler:focus {
-        box-shadow: none;
-        outline: none;
+        box-shadow: none !important;
+        outline: none !important;
     }
     
     .navbar-toggler-icon {
@@ -198,21 +200,30 @@
         }
     }
     
-    /* Mobile styles */
+    /* ESTILOS MÓVILES CORREGIDOS */
     @media (max-width: 991.98px) {
+        /* Ocultar el collapse por defecto en móviles */
         .navbar-collapse {
             display: none;
             background: #ffffff;
             margin-top: 1rem;
-            padding: 1rem 0;
+            padding: 1rem;
             border-top: 1px solid #e9ecef;
             border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
         
+        /* Mostrar el collapse cuando tiene la clase 'show' */
         .navbar-collapse.show {
             display: block !important;
         }
         
+        /* Estilos para el contenido del navbar en móviles */
         .navbar-nav {
             text-align: center;
             margin-bottom: 1rem;
@@ -220,14 +231,17 @@
         
         .navbar-nav .nav-link {
             padding: 0.75rem 1rem;
-            margin: 0;
-            border-bottom: 1px solid #f1f5f9;
+            margin: 0.25rem 0;
+            border-radius: 0.375rem;
+            border: 1px solid transparent;
         }
         
-        .navbar-nav .nav-link:last-child {
-            border-bottom: none;
+        .navbar-nav .nav-link:hover {
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
         }
         
+        /* Estilos para los botones de auth en móviles */
         .auth-buttons {
             justify-content: center;
             flex-direction: column;
@@ -246,6 +260,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            border-radius: 0.375rem;
+        }
+        
+        .btn-login {
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
         }
         
         /* Dropdown en móviles */
@@ -258,6 +278,9 @@
         .user-dropdown .user-button {
             width: 200px;
             justify-content: center;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            border-radius: 0.375rem;
         }
         
         .dropdown-menu {
@@ -265,11 +288,23 @@
             left: 50% !important;
             transform: translateX(-50%) !important;
             position: absolute !important;
+            margin-top: 0.5rem;
         }
         
         /* Asegurar que los dropdowns se muestren correctamente */
         .dropdown.show .dropdown-menu {
             display: block;
+        }
+        
+        /* Mejorar la visibilidad del toggler en móviles */
+        .navbar-toggler {
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 0.375rem;
+            background-color: #f8fafc;
+        }
+        
+        .navbar-toggler:hover {
+            background-color: #e2e8f0;
         }
     }
     
@@ -293,14 +328,24 @@
         .dropdown-menu {
             min-width: 180px;
         }
+        
+        .navbar-collapse {
+            margin: 0.5rem;
+            padding: 0.75rem;
+        }
     }
     
     /* Estilos adicionales para mejorar UX */
     .navbar-collapse.collapsing {
         transition: height 0.35s ease;
     }
+    
+    /* Asegurar que el navbar funcione correctamente */
+    .navbar {
+        position: relative;
+    }
 
-    /* Footer styles */
+    /* Footer styles (mantener como están) */
     .footer-main {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         color: #e2e8f0;
@@ -823,5 +868,42 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     @stack('scripts')
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Asegurar que el navbar toggle funcione correctamente
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    
+    if (navbarToggler && navbarCollapse) {
+        navbarToggler.addEventListener('click', function() {
+            // Forzar toggle si Bootstrap no está funcionando
+            if (!navbarCollapse.classList.contains('show')) {
+                navbarCollapse.classList.add('show');
+            } else {
+                navbarCollapse.classList.remove('show');
+            }
+        });
+    }
+    
+    // Cerrar navbar al hacer click en un enlace (solo en móviles)
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 992) {
+                navbarCollapse.classList.remove('show');
+            }
+        });
+    });
+    
+    // Cerrar navbar al hacer click fuera del menú
+    document.addEventListener('click', function(event) {
+        if (window.innerWidth < 992) {
+            if (!navbarToggler.contains(event.target) && !navbarCollapse.contains(event.target)) {
+                navbarCollapse.classList.remove('show');
+            }
+        }
+    });
+});
+</script>
 </body>
 </html>
