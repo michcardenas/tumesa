@@ -11,6 +11,8 @@ use Illuminate\View\View;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class ProfileController extends Controller
 {
