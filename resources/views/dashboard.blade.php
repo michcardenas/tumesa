@@ -29,11 +29,10 @@
                                 Usuarios
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link disabled">
+                      <li class="menu-item">
+                            <a href="{{ route('admin.negocio') }}" class="menu-link">
                                 <i class="fas fa-utensils"></i>
-                                Experiencias
-                                <span class="coming-soon">Próximamente</span>
+                                Tu negocio
                             </a>
                         </li>
                     </ul>

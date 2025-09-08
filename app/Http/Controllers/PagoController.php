@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Cena;
+use Carbon\Carbon;
 
 class PagoController extends Controller
 {
@@ -116,4 +118,45 @@ public function pagoExito(Request $request, $codigoReserva): View|RedirectRespon
         return redirect()->route('comensal.dashboard')
             ->with('warning', 'Tu pago está siendo procesado. Te notificaremos cuando sea confirmado.');
     }
+
+
+    public function dashboardNegocio()
+{
+    // Estadísticas generales
+    $totalCenas = Cena::count();
+    $totalReservas = Reserva::count();
+    $reservasPagadas = Reserva::where('estado_pago', 'pagado')->count();
+    $totalIngresos = Reserva::where('estado_pago', 'pagado')->sum('precio_total');
+    
+    // Ingresos por mes (últimos 6 meses)
+    $ingresosPorMes = Reserva::where('estado_pago', 'pagado')
+        ->whereDate('created_at', '>=', Carbon::now()->subMonths(6))
+        ->selectRaw('MONTH(created_at) as mes, YEAR(created_at) as año, SUM(precio_total) as total')
+        ->groupBy('año', 'mes')
+        ->orderBy('año', 'desc')
+        ->orderBy('mes', 'desc')
+        ->get();
+    
+    // Cenas más populares (con más reservas)
+    $cenasPopulares = Cena::withCount('reservas')
+        ->orderBy('reservas_count', 'desc')
+        ->limit(5)
+        ->get();
+    
+    // Reservas recientes
+    $reservasRecientes = Reserva::with(['cena', 'user'])
+        ->orderBy('created_at', 'desc')
+        ->limit(10)
+        ->get();
+    
+    return view('admin.negocio.dashboard', compact(
+        'totalCenas',
+        'totalReservas', 
+        'reservasPagadas',
+        'totalIngresos',
+        'ingresosPorMes',
+        'cenasPopulares',
+        'reservasRecientes'
+    ));
+}
 }

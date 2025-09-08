@@ -84,6 +84,7 @@ Route::get('/admin/seo/como-funciona', [SeoController::class, 'comoFunciona'])->
 Route::put('/admin/seo/update', [SeoController::class, 'update'])->name('admin.seo.update');
 Route::get('/admin/usuarios', [ProfileController::class, 'gestionUsuarios'])->name('admin.usuarios');
 Route::put('/admin/usuarios/{user}/role', [ProfileController::class, 'updateUserRole'])->name('admin.usuarios.update-role');
+Route::get('/admin/negocio', [PagoController::class, 'dashboardNegocio'])->name('admin.negocio');
 
 // En routes/web.php
 Route::get('/admin/paginas/experiencias/edit', [PaginaController::class, 'editExperiencias'])->name('admin.paginas.experiencias.edit');
