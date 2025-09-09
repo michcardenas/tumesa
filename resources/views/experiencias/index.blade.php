@@ -411,8 +411,8 @@
                                     <span>{{ $cena->datetime->format('H:i') }}</span>
                                 </div>
                                 @php
-                                    $daysUntil = intval(now()->diffInDays($cena->datetime, false));
-                                @endphp
+$now = now('America/Argentina/Buenos_Aires');
+$daysUntil = intval($now->diffInDays($cena->datetime, false));                                @endphp
                                 @if($daysUntil >= 0)
                                     <div class="meta-item" style="color: #059669;">
                                         @if($daysUntil == 0)
