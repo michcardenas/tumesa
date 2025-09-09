@@ -935,6 +935,7 @@
                                 </a>
                                
                             @endif
+                            dd(Auth::user());
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="mobile-user-menu-item logout">
