@@ -941,7 +941,7 @@
                                 <button type="submit" class="mobile-user-menu-item logout">
                                     <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
                                 </button>
-                                 dd(Auth::user());
+                                {{-- <p>{{ Auth::user()->getRoleNames()[0] }}</p> --}}
                             </form>
                         </nav>
                     </div>
