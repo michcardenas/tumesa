@@ -929,7 +929,7 @@
                                 <a href="{{ route('reservas.historial') }}" class="mobile-user-menu-item">
                                     <i class="fas fa-calendar"></i>Mis Reservas
                                 </a>
-                              elseif(Auth::user()->role === 'admin')
+                              elseif(Auth::user()->role == 'admin')
                                 <a href="{{ route('dashboard') }}" class="mobile-user-menu-item">
                                     <i class="fas fa-tachometer-alt"></i>Mi Dashboard
                                 </a>
