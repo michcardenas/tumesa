@@ -867,9 +867,7 @@
                                         <a href="{{ route('dashboard') }}" class="dropdown-item">
                                             <i class="fas fa-tachometer-alt me-2"></i>Dashboard Admin
                                         </a>
-                                        <a href="{{ route('perfil.edit') }}" class="dropdown-item">
-                                            <i class="fas fa-user-edit me-2"></i>Mi Perfil
-                                        </a>
+                                       
                                     @endif
                                     <div class="dropdown-divider"></div>
                                     <form method="POST" action="{{ route('logout') }}">
@@ -940,9 +938,7 @@
                                 <a href="{{ route('dashboard') }}" class="mobile-user-menu-item">
                                     <i class="fas fa-tachometer-alt"></i>Dashboard Admin
                                 </a>
-                                <a href="{{ route('perfil.edit') }}" class="mobile-user-menu-item">
-                                    <i class="fas fa-user-edit"></i>Mi Perfil
-                                </a>
+                            
                             @endif
                            
                             <form method="POST" action="{{ route('logout') }}">
