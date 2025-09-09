@@ -797,7 +797,7 @@
 <body>
     <div id="app">
         <!-- Navbar -->
-        <nav class="navbar-custom">
+  <nav class="navbar-custom">
             <div class="navbar-container">
                 <!-- Brand -->
                 <a href="{{ url('/') }}" class="navbar-brand">
@@ -862,6 +862,13 @@
                                         </a>
                                         <a href="{{ route('reservas.historial') }}" class="dropdown-item">
                                             <i class="fas fa-calendar me-2"></i>Mis Reservas
+                                        </a>
+                                    @else
+                                        <a href="{{ route('dashboard') }}" class="dropdown-item">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard Admin
+                                        </a>
+                                        <a href="{{ route('perfil.edit') }}" class="dropdown-item">
+                                            <i class="fas fa-user-edit me-2"></i>Mi Perfil
                                         </a>
                                     @endif
                                     <div class="dropdown-divider"></div>
@@ -929,11 +936,13 @@
                                 <a href="{{ route('reservas.historial') }}" class="mobile-user-menu-item">
                                     <i class="fas fa-calendar"></i>Mis Reservas
                                 </a>
-                              elseif(Auth::user()->role == 'admin')
+                            @else
                                 <a href="{{ route('dashboard') }}" class="mobile-user-menu-item">
-                                    <i class="fas fa-tachometer-alt"></i>Mi Dashboard
+                                    <i class="fas fa-tachometer-alt"></i>Dashboard Admin
                                 </a>
-                               
+                                <a href="{{ route('perfil.edit') }}" class="mobile-user-menu-item">
+                                    <i class="fas fa-user-edit"></i>Mi Perfil
+                                </a>
                             @endif
                            
                             <form method="POST" action="{{ route('logout') }}">
@@ -941,7 +950,6 @@
                                 <button type="submit" class="mobile-user-menu-item logout">
                                     <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
                                 </button>
-                                
                             </form>
                         </nav>
                     </div>
@@ -961,7 +969,7 @@
                             <a href="{{ route('ser-chef') ?? '#' }}" 
                                class="mobile-nav-link {{ request()->routeIs('ser-chef') ? 'active' : '' }}">
                                 <i class="fas fa-chef-hat"></i>
-                                Ser Chef Anfitrión
+                                Ser Anfitrión
                             </a>
                         </li>
                         <li>
