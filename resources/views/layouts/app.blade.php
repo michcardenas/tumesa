@@ -993,7 +993,7 @@
             @yield('content')
         </main>
 
-    <footer class="footer-main">
+  <footer class="footer-main">
     <!-- Wave decoration -->
     <div class="footer-wave"></div>
     
@@ -1006,8 +1006,8 @@
                     <h4>TuMesa</h4>
                 </div>
                 <p class="footer-description">
-                    Descubre experiencias gastronómicas únicas en casas de chefs anfitriones. 
-                    Conectamos paladares curiosos con creadores culinarios apasionados.
+                    Descubre experiencias gastronómicas únicas con anfitriones locales. 
+                    Conectamos paladares curiosos con anfitriones culinarios apasionados.
                 </p>
                 <div class="social-buttons">
                     <a href="https://www.instagram.com/tumesaarg/" target="_blank" rel="noopener noreferrer" class="social-button instagram" aria-label="Instagram">
@@ -1034,10 +1034,10 @@
             <!-- For Hosts Column -->
             <div class="col-lg-2 col-md-6 mb-4">
                 <div class="footer-section">
-                    <h5>Para Chefs</h5>
+                    <h5>Para Anfitriones</h5>
                     <ul class="footer-links">
                         <li><a href="{{ route('ser-chef') ?? '#' }}"><i class="fas fa-chef-hat"></i> Ser Anfitrión</a></li>
-                        <li><a href="{{ route('ser-chef') ?? '#' }}"><i class="fas fa-book"></i> Guía del Chef</a></li>
+                        <li><a href="{{ route('ser-chef') ?? '#' }}"><i class="fas fa-book"></i> Guía del Anfitrión</a></li>
                         <li><a href="{{ route('terminos') }}"><i class="fas fa-shield-alt"></i> Términos y condiciones</a></li>
                          <li><a href="{{ route('privacidad') }}"><i class="fas fa-user-shield"></i> Política de Privacidad</a></li>
                     </ul>
@@ -1049,8 +1049,8 @@
                 <div class="footer-section">
                     <h5>Contacto</h5>
                     <div class="contact-info">
-                        <p><i class="fas fa-envelope"></i> hola@tumesa.com.ar</p>
-                        <p><i class="fas fa-phone"></i> +54 11 1234-5678</p>
+                        <p><i class="fas fa-envelope"></i> contacto@tumesa.ar</p>
+                        <p><i class="fas fa-phone"></i> +54 9 11 6629-4513</p>
                         <p><i class="fas fa-map-pin"></i> Buenos Aires, Argentina</p>
                     </div>
                     
