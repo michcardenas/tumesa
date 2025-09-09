@@ -13,7 +13,7 @@ Route::delete('/admin/cenas/{cena}', [App\Http\Controllers\AdminCenasController:
 {{-- VISTA: resources/views/admin/cenas/index.blade.php --}}
 {{-- ============================================ --}}
 
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Gestión de Cenas')
 
