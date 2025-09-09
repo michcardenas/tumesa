@@ -791,28 +791,28 @@
     }
      .mobile-close-btn {
             position: absolute;
-            top: 24px;
-            right: 24px;
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: #ffffff;
+            border: none;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: #fff;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
             z-index: 1000;
             outline: none;
         }
 
         .mobile-close-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: scale(1.05);
+            background: #f5f5f5;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .mobile-close-btn:active {
@@ -820,6 +820,8 @@
         }
 
         .mobile-close-btn svg {
+            width: 20px;
+            height: 20px;
             transition: transform 0.2s ease;
         }
 
@@ -827,33 +829,18 @@
             transform: rotate(90deg);
         }
 
-        .mobile-close-btn:focus {
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-        }
-
-        /* Animation entrance */
-        .mobile-menu.active .mobile-close-btn {
-            animation: fadeInScale 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes fadeInScale {
-            0% {
-                opacity: 0;
-                transform: scale(0.8) rotate(-90deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-        }
-
-        /* Responsive adjustments */
+        /* Para pantallas más pequeñas */
         @media (max-width: 480px) {
             .mobile-close-btn {
-                top: 20px;
-                right: 20px;
-                width: 44px;
-                height: 44px;
+                top: 15px;
+                right: 15px;
+                width: 36px;
+                height: 36px;
+            }
+            
+            .mobile-close-btn svg {
+                width: 18px;
+                height: 18px;
             }
         }
     </style>
