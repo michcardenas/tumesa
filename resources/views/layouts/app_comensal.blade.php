@@ -380,7 +380,6 @@
                 <!-- Brand -->
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
                     <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" class="logo-icon">
-                    TuMesa
                 </a>
 
                 <!-- Mobile toggle button -->

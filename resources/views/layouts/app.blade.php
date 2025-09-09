@@ -803,7 +803,6 @@
                 <!-- Brand -->
                 <a href="{{ url('/') }}" class="navbar-brand">
                     <img src="{{ asset('img/logo-tumesa.png') }}" alt="TuMesa Logo" class="logo-icon">
-                    <span>TuMesa</span>
                 </a>
 
                 <!-- Desktop Navigation -->
