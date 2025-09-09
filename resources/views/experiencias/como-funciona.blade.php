@@ -499,36 +499,6 @@ details[open] .chev {
         <p>{{ $contenidos['chef_paso4_descripcion']->valor ?? 'Liquidez transparente según las políticas establecidas.' }}</p>
       </div>
     </div>
-
-    <h3 class="section-title">{{ $contenidos['chef_timeline_titulo']->valor ?? 'Flujo para Anfitriones' }}</h3>
-    <div class="section-sub">{{ $contenidos['chef_timeline_subtitulo']->valor ?? 'Publica, recibe invitados y crece tu comunidad.' }}</div>
-    <div class="timeline">
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['chef_timeline1_titulo']->valor ?? 'Perfil' }}</strong>
-        <p class="muted">{{ $contenidos['chef_timeline1_descripcion']->valor ?? 'Identidad y verificación' }}</p>
-      </div>
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['chef_timeline2_titulo']->valor ?? 'Experiencia' }}</strong>
-        <p class="muted">{{ $contenidos['chef_timeline2_descripcion']->valor ?? 'Menú y disponibilidad' }}</p>
-      </div>
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['chef_timeline3_titulo']->valor ?? 'Reservas' }}</strong>
-        <p class="muted">{{ $contenidos['chef_timeline3_descripcion']->valor ?? 'Notificaciones y control' }}</p>
-      </div>
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['chef_timeline4_titulo']->valor ?? 'Evento' }}</strong>
-        <p class="muted">{{ $contenidos['chef_timeline4_descripcion']->valor ?? 'Anfitriona con confianza' }}</p>
-      </div>
-      <div class="titem">
-        <div class="dot"></div>
-        <strong>{{ $contenidos['chef_timeline5_titulo']->valor ?? 'Liquidación' }}</strong>
-        <p class="muted">{{ $contenidos['chef_timeline5_descripcion']->valor ?? 'Ingresos en tu cuenta' }}</p>
-      </div>
-    </div>
   </section>
 
   {{-- PAGOS Y SEGURIDAD --}}
