@@ -121,7 +121,7 @@
         }
         
         .logo-icon {
-            height: 32px;
+            height: 65px;
             width: auto;
             margin-right: 0.5rem;
         }

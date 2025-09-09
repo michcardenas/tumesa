@@ -89,7 +89,7 @@
         }
 
         .logo-icon {
-            height: 35px;
+            height: 65px;
             width: auto;
             margin-right: 0.5rem;
         }
