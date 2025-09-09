@@ -16,7 +16,7 @@
                             {{ $contenidos['hero_subtitulo']->valor ?? 'Conecta con chefs anfitriones apasionados y disfruta de cenas íntimas, auténticas y memorables en espacios privados únicos.' }}
                         </p>
                         <div class="hero-buttons">
-                            <a href="#experiencias" class="btn btn-primary btn-lg me-3">
+                            <a href="{{ route('experiencias') ?? '#' }}" class="btn btn-primary btn-lg me-3">
                                 {{ $contenidos['hero_boton1']->valor ?? 'Explorar Experiencias' }}
                             </a>
                             <a href="#convertirse-chef" class="btn btn-outline-secondary btn-lg">

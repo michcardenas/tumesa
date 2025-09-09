@@ -796,8 +796,8 @@
 </head>
 <body>
     <div id="app">
-        <!-- Navbar -->
-  <nav class="navbar-custom">
+   
+<nav class="navbar-custom">
             <div class="navbar-container">
                 <!-- Brand -->
                 <a href="{{ url('/') }}" class="navbar-brand">
@@ -897,6 +897,11 @@
         <!-- Mobile Fullscreen Menu -->
         <div class="mobile-menu" id="mobileMenu">
             <div class="mobile-menu-content">
+                <!-- Close Button -->
+                <button class="mobile-close-btn" onclick="toggleMobileMenu()" aria-label="Cerrar menú">
+                    <i class="fas fa-times"></i>
+                </button>
+
                 @auth
                     <!-- User Profile Section -->
                     <div class="mobile-user-profile">
@@ -1091,7 +1096,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
      <!-- Scripts -->
     <script>
-        // Toggle Mobile Menu
+    // Toggle Mobile Menu
         function toggleMobileMenu() {
             const menu = document.getElementById('mobileMenu');
             const overlay = document.getElementById('menuOverlay');
@@ -1120,7 +1125,7 @@
         });
 
         // Close mobile menu when clicking on a link
-        document.querySelectorAll('.mobile-nav-link, .mobile-user-menu-item').forEach(link => {
+        document.querySelectorAll('.mobile-nav-link, .mobile-user-menu-item, .mobile-btn').forEach(link => {
             link.addEventListener('click', function() {
                 const menu = document.getElementById('mobileMenu');
                 const overlay = document.getElementById('menuOverlay');
@@ -1134,6 +1139,23 @@
                     body.classList.remove('menu-open');
                 }
             });
+        });
+
+        // Close mobile menu with ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const menu = document.getElementById('mobileMenu');
+                const overlay = document.getElementById('menuOverlay');
+                const toggle = document.querySelector('.menu-toggle');
+                const body = document.body;
+
+                if (menu.classList.contains('active')) {
+                    menu.classList.remove('active');
+                    overlay.classList.remove('active');
+                    toggle.classList.remove('active');
+                    body.classList.remove('menu-open');
+                }
+            }
         });
 
         // Navbar scroll effect
