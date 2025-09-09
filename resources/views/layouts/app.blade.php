@@ -929,6 +929,11 @@
                                 <a href="{{ route('reservas.historial') }}" class="mobile-user-menu-item">
                                     <i class="fas fa-calendar"></i>Mis Reservas
                                 </a>
+                            @endif  @elseif(Auth::user()->hasRole('admin'))
+                                <a href="{{ route('dashboard') }}" class="mobile-user-menu-item">
+                                    <i class="fas fa-tachometer-alt"></i>Mi Dashboard
+                                </a>
+                               
                             @endif
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
