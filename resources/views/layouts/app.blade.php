@@ -546,7 +546,6 @@
     .footer-brand img {
         height: 40px;
         margin-right: 0.75rem;
-        filter: brightness(0) invert(1);
     }
     
     .footer-brand h4 {
