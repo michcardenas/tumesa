@@ -35,6 +35,12 @@
                                 Tu negocio
                             </a>
                         </li>
+                        <li class="menu-item">
+                            <a href="{{ route('admin.cenas') }}" class="menu-link">
+                                <i class="fas fa-cog"></i>
+                                Cenas
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
