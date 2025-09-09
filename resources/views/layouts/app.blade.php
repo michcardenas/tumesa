@@ -954,7 +954,8 @@
                             <a href="{{ route('experiencias') ?? '#' }}" 
                                class="mobile-nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}">
                                 <i class="fas fa-utensils"></i>
-                                Experiencias
+                                Experiencias                                 {{-- <p>{{ Auth::user()->getRoleNames()[0] }}</p> --}}
+
                             </a>
                         </li>
                         <li>
