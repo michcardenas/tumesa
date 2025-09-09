@@ -473,8 +473,8 @@ details[open] .chev {
         <p>{{ $contenidos['guest_paso4_descripcion']->valor ?? 'Vive la experiencia, deja una reseña y ayuda a otros a elegir.' }}</p>
       </div>
     </div>
+  </section>
 
-    
   {{-- PARA CHEFS --}}
   <section data-section="chef" class="hidden">
     <div class="grid-4 steps">
@@ -654,4 +654,3 @@ details[open] .chev {
   tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.flow)));
 })();
 </script>
-@endsection
