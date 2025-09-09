@@ -929,7 +929,7 @@
                                 <a href="{{ route('reservas.historial') }}" class="mobile-user-menu-item">
                                     <i class="fas fa-calendar"></i>Mis Reservas
                                 </a>
-                              @elseif(Auth::user()->hasRole('admin'))
+                              elseif(Auth::user()->role === 'admin')
                                 <a href="{{ route('dashboard') }}" class="mobile-user-menu-item">
                                     <i class="fas fa-tachometer-alt"></i>Mi Dashboard
                                 </a>
@@ -941,7 +941,7 @@
                                 <button type="submit" class="mobile-user-menu-item logout">
                                     <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
                                 </button>
-                                {{-- <p>{{ Auth::user()->getRoleNames()[0] }}</p> --}}
+                                
                             </form>
                         </nav>
                     </div>
@@ -954,8 +954,7 @@
                             <a href="{{ route('experiencias') ?? '#' }}" 
                                class="mobile-nav-link {{ request()->routeIs('experiencias') ? 'active' : '' }}">
                                 <i class="fas fa-utensils"></i>
-                                Experiencias                                 {{-- <p>{{ Auth::user()->getRoleNames()[0] }}</p> --}}
-
+                                Experiencias
                             </a>
                         </li>
                         <li>
