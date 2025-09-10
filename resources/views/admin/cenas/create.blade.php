@@ -237,9 +237,9 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-2"></i>Crear Cena
                             </button>
-                            <!-- <a href="{{ route('admin.cenas.index') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('admin.cenas') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-2"></i>Cancelar
-                            </a> -->
+                            </a>
                         </div>
                     </div>
                 </div>
