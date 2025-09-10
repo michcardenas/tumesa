@@ -73,7 +73,8 @@ class AdminCenasController extends Controller
 
         $cena = Cena::create($validated);
 
-        return redirect()->route('admin.cenas.index')
+return redirect()->route('admin.cenas')
+
                         ->with('success', 'Cena creada exitosamente.');
     }
 
