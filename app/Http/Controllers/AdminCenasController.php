@@ -105,7 +105,7 @@ class AdminCenasController extends Controller
 
         $cena->delete();
 
-        return redirect()->route('admin.cenas.index')
+        return redirect()->route('admin.cenas')
                         ->with('success', 'Cena eliminada exitosamente.');
     }
 }
