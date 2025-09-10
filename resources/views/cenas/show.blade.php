@@ -23,14 +23,11 @@
                             </span>
                             <h1 class="hero-title">{{ $cenaData['title'] }}</h1>
                             <div class="hero-info">
-                              <div class="info-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>
-                                        {{ \Carbon\Carbon::parse($cenaData['datetime'])->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY - HH:mm') }}
-                                    </span>
-                                </div>
                                 <div class="info-item">
-                                    <i class="fas fa-map
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>{{ \Carbon\Carbon::parse($cenaData['datetime'])->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY - HH:mm') }}</span>
+                                </div>
+                               
                             </div>
                         </div>
                     </div>
