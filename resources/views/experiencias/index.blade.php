@@ -237,7 +237,7 @@
                                 str_replace(
                                     ['Ciudad Autónoma de Buenos Aires', 'Provincia de Buenos Aires', 'CABA', 'Argentina'],
                                     '',
-                                    explode(',', $opt)[0] ?? $opt
+                                    explode(',', $opt)[1] ?? $opt
                                 )
                             )
                         }}
