@@ -391,10 +391,7 @@
                             @endif
                             
                             <div class="meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>{{ $cena->location }}</span>
-                                </div>
+                             
                                 <div class="meta-item">
                                     <i class="fas fa-users"></i>
                                     <span>{{ $cena->guests_max }} personas</span>

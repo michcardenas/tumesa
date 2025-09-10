@@ -146,10 +146,7 @@
                                     <i class="fas fa-calendar-alt me-1"></i>
                                     {{ $cena['formatted_date'] }}
                                 </small>
-                                <small class="text-muted ms-3">
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    {{ Str::limit($cena['location'], 20) }}
-                                </small>
+                                
                             </div>
                             
                             <div class="experience-availability mb-2">

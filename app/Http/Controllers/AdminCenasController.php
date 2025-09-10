@@ -69,7 +69,8 @@ class AdminCenasController extends Controller
 
         // Set default values
         $validated['guests_current'] = 0;
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = 1; // o true, ambos funcionan
+
 
         $cena = Cena::create($validated);
 
