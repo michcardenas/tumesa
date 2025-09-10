@@ -214,10 +214,12 @@ Route::get('/ser-chef', [ExperienciasController::class, 'serChef'])
 | Rutas de Autenticación (Laravel Breeze)
 |--------------------------------------------------------------------------
 */
+// Admin Cenas Routes
 Route::get('/admin/cenas', [App\Http\Controllers\AdminCenasController::class, 'index'])->name('admin.cenas');
 Route::get('/admin/cenas/create', [App\Http\Controllers\AdminCenasController::class, 'create'])->name('admin.cenas.create');
 Route::post('/admin/cenas', [App\Http\Controllers\AdminCenasController::class, 'store'])->name('admin.cenas.store');
 Route::get('/admin/cenas/{cena}/edit', [App\Http\Controllers\AdminCenasController::class, 'edit'])->name('admin.cenas.edit');
 Route::delete('/admin/cenas/{cena}', [App\Http\Controllers\AdminCenasController::class, 'destroy'])->name('admin.cenas.destroy');
+
 
 require __DIR__.'/auth.php';

@@ -1,5 +1,3 @@
-?>
-
 @extends('layouts.admin')
 
 @section('title', 'Crear Nueva Cena')
@@ -12,7 +10,7 @@
             <h1 class="h3 mb-1">Crear Nueva Cena</h1>
             <p class="text-muted">Completa la información para crear una nueva experiencia gastronómica</p>
         </div>
-        <a href="{{ route('admin.cenas.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ url('/admin/cenas') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-2"></i>Volver
         </a>
     </div>
