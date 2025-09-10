@@ -87,7 +87,59 @@ return redirect()->route('admin.cenas')
         
         return view('admin.cenas.edit', compact('cena', 'chefs'));
     }
+public function update(Request $request, Cena $cena)
+{
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'title' => 'required|string|max:255',
+        'datetime' => 'required|date|after:now',
+        'guests_max' => 'required|integer|min:1|max:50',
+        'price' => 'required|numeric|min:0',
+        'menu' => 'required|string',
+        'location' => 'required|string|max:500',
+        'latitude' => 'nullable|numeric|between:-90,90',
+        'longitude' => 'nullable|numeric|between:-180,180',
+        'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'status' => 'required|in:draft,published,cancelled',
+        'is_active' => 'boolean',
+        'special_requirements' => 'nullable|string',
+        'cancellation_policy' => 'nullable|string'
+    ]);
 
+    // Handle cover image upload
+    if ($request->hasFile('cover_image')) {
+        // Delete old cover image
+        if ($cena->cover_image) {
+            Storage::disk('public')->delete($cena->cover_image);
+        }
+        $validated['cover_image'] = $request->file('cover_image')->store('cenas/covers', 'public');
+    }
+
+    // Handle gallery images upload
+    if ($request->hasFile('gallery_images')) {
+        // Delete old gallery images
+        if ($cena->gallery_images) {
+            foreach ($cena->gallery_images as $image) {
+                Storage::disk('public')->delete($image);
+            }
+        }
+        
+        $galleryImages = [];
+        foreach ($request->file('gallery_images') as $image) {
+            $galleryImages[] = $image->store('cenas/gallery', 'public');
+        }
+        $validated['gallery_images'] = $galleryImages;
+    }
+
+    // Set boolean value
+    $validated['is_active'] = $request->has('is_active');
+
+    $cena->update($validated);
+
+    return redirect()->route('admin.cenas')
+                    ->with('success', 'Cena actualizada exitosamente.');
+}
     /**
      * Remove the specified cena from storage.
      */
