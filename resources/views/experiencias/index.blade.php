@@ -231,9 +231,10 @@
                 <select class="select" id="city" name="city">
                     <option value="">Todas las ciudades</option>
                     @foreach($cities as $opt)
-                     <option value="{{ $opt }}" {{ ($filters['city'] ?? '') === $opt ? 'selected' : '' }}>
-                        {{ explode(',', $opt)[2] ?? explode(',', $opt)[1] ?? $opt }}
+                   <option value="{{ $opt }}" {{ ($filters['city'] ?? '') === $opt ? 'selected' : '' }}>
+                        {{ preg_replace('/\b[A-Z0-9]{4,}\b/', '', (explode(',', $opt)[2] ?? explode(',', $opt)[1] ?? $opt)) }}
                     </option>
+
 
                     @endforeach
                 </select>
