@@ -1,249 +1,572 @@
-
-
 @extends('layouts.app')
 
-@section('title', 'Gestión de Cenas')
-
 @section('content')
-<div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-1">Gestión de Cenas</h1>
-            <p class="text-muted">Administra todas las experiencias gastronómicas</p>
-        </div>
-        <a href="{{ route('admin.cenas.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Nueva Cena
-        </a>
-    </div>
+<div class="admin-container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="admin-content">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2>Gestión de Usuarios</h2>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                                    <li class="breadcrumb-item active">Usuarios</li>
+                                </ol>
+                            </nav>
+                        </div>
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
 
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded">
-                                <i class="fas fa-utensils text-primary"></i>
-                            </div>
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1">Total Cenas</h6>
-                            <h4 class="mb-0">{{ $cenas->count() }}</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-success bg-opacity-10 p-3 rounded">
-                                <i class="fas fa-calendar-check text-success"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1">Próximas</h6>
-                            <h4 class="mb-0">{{ $cenas->where('datetime', '>', now())->count() }}</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-warning bg-opacity-10 p-3 rounded">
-                                <i class="fas fa-clock text-warning"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1">Finalizadas</h6>
-                            <h4 class="mb-0">{{ $cenas->where('datetime', '<', now())->count() }}</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-info bg-opacity-10 p-3 rounded">
-                                <i class="fas fa-users text-info"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1">Chefs Activos</h6>
-                            <h4 class="mb-0">{{ $cenas->pluck('user_id')->unique()->count() }}</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    @endif
 
-    <!-- Table -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            @if($cenas->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="border-0 ps-4">Cena</th>
-                                <th class="border-0">Chef</th>
-                                <th class="border-0">Fecha</th>
-                                <th class="border-0">Precio</th>
-                                <th class="border-0">Capacidad</th>
-                                <th class="border-0">Estado</th>
-                                <th class="border-0 text-end pe-4">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($cenas as $cena)
-                                <tr>
-                                    <td class="ps-4">
-                                        <div>
-                                            <h6 class="mb-1">{{ $cena->title }}</h6>
-                                            <small class="text-muted">{{ Str::limit($cena->location, 30) }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            @if($cena->user)
-                                                <div class="avatar avatar-sm rounded-circle bg-primary text-white me-2">
-                                                    {{ strtoupper(substr($cena->user->name, 0, 1)) }}
-                                                </div>
-                                                <span>{{ $cena->user->name }}</span>
-                                            @else
-                                                <span class="text-muted">Sin asignar</span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <div>{{ $cena->datetime->format('d/m/Y') }}</div>
-                                            <small class="text-muted">{{ $cena->datetime->format('H:i') }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="fw-bold">${{ number_format($cena->price, 0, ',', '.') }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-light text-dark">
-                                            {{ $cena->guests_current ?? 0 }}/{{ $cena->guests_max }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if($cena->datetime > now())
-                                            <span class="badge bg-success">Próxima</span>
-                                        @else
-                                            <span class="badge bg-secondary">Finalizada</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ route('admin.cenas.edit', $cena) }}" 
-                                               class="btn btn-sm btn-outline-primary"
-                                               data-bs-toggle="tooltip" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button type="button" 
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#deleteModal{{ $cena->id }}"
-                                                    title="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
-                                <!-- Delete Modal -->
-                                <div class="modal fade" id="deleteModal{{ $cena->id }}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header border-0">
-                                                <h5 class="modal-title">Confirmar Eliminación</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>¿Estás seguro de que deseas eliminar la cena <strong>"{{ $cena->title }}"</strong>?</p>
-                                                <p class="text-muted mb-0">Esta acción no se puede deshacer.</p>
-                                            </div>
-                                            <div class="modal-footer border-0">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <form action="{{ route('admin.cenas.destroy', $cena) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <!-- Filtros y Estadísticas -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $usuarios->total() }}</h5>
+                                    <p class="card-text text-muted">Total Usuarios</p>
                                 </div>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="text-center py-5">
-                    <div class="mb-3">
-                        <i class="fas fa-utensils text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $usuarios->where('role', 'admin')->count() }}</h5>
+                                    <p class="card-text text-muted">Administradores</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $usuarios->where('role', 'chef_anfitrion')->count() }}</h5>
+                                    <p class="card-text text-muted">Chefs</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $usuarios->where('role', 'comensal')->count() }}</h5>
+                                    <p class="card-text text-muted">Comensales</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h5 class="text-muted">No hay cenas registradas</h5>
-                    <p class="text-muted">Comienza creando tu primera experiencia gastronómica.</p>
-                    <a href="{{ route('admin.cenas.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus me-2"></i>Crear Primera Cena
-                    </a>
+
+                    <!-- Tabla de Usuarios -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Lista de Usuarios</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Usuario</th>
+                                            <th>Contacto</th>
+                                            <th>Rol & Permisos</th>
+                                            <th>Información Chef</th>
+                                            <th>Registro</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($usuarios as $usuario)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if($usuario->avatar)
+                                                        @if(str_starts_with($usuario->avatar, 'http'))
+                                                            <img src="{{ $usuario->avatar }}" alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                        @else
+                                                            <img src="{{ asset('storage/' . $usuario->avatar) }}" alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                        @endif
+                                                    @else
+                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 40px; height: 40px; font-weight: bold;">
+                                                            {{ substr($usuario->name, 0, 1) }}
+                                                        </div>
+                                                    @endif
+                                                    <div>
+                                                        <div class="fw-bold">{{ $usuario->name }}</div>
+                                                        @if($usuario->provider)
+                                                            <small class="text-muted">
+                                                                <i class="fab fa-{{ $usuario->provider }}"></i> 
+                                                                {{ ucfirst($usuario->provider) }}
+                                                            </small>
+                                                        @endif
+                                                        @if($usuario->bio)
+                                                            <div>
+                                                                <small class="text-muted" title="{{ $usuario->bio }}">
+                                                                    {{ Str::limit($usuario->bio, 30) }}
+                                                                </small>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <small class="d-block">
+                                                        <i class="fas fa-envelope me-1"></i>{{ $usuario->email }}
+                                                    </small>
+                                                    @if($usuario->telefono)
+                                                        <small class="d-block text-muted">
+                                                            <i class="fas fa-phone me-1"></i>{{ $usuario->telefono }}
+                                                        </small>
+                                                    @endif
+                                                    @if($usuario->direccion)
+                                                        <small class="d-block text-muted" title="{{ $usuario->direccion }}">
+                                                            <i class="fas fa-map-marker-alt me-1"></i>{{ Str::limit($usuario->direccion, 25) }}
+                                                        </small>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="mb-1">
+                                                    @if($usuario->role == 'admin')
+                                                        <span class="badge bg-danger">Administrador</span>
+                                                    @elseif($usuario->role == 'chef_anfitrion')
+                                                        <span class="badge bg-warning">Chef Anfitrión</span>
+                                                    @elseif($usuario->role == 'comensal')
+                                                        <span class="badge bg-success">Comensal</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">{{ $usuario->role }}</span>
+                                                    @endif
+                                                </div>
+                                                @if($usuario->roles->count() > 0)
+                                                    <div>
+                                                        @foreach($usuario->roles as $role)
+                                                            <span class="badge bg-info me-1" style="font-size: 0.7em;">{{ $role->name }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($usuario->role == 'chef_anfitrion')
+                                                    <div class="small">
+                                                        @if($usuario->especialidad)
+                                                            <div class="mb-1">
+                                                                <strong>Especialidad:</strong> {{ $usuario->especialidad }}
+                                                            </div>
+                                                        @endif
+                                                        @if($usuario->experiencia_anos)
+                                                            <div class="mb-1">
+                                                                <i class="fas fa-clock me-1"></i>{{ $usuario->experience_text }}
+                                                            </div>
+                                                        @endif
+                                                        @if($usuario->rating > 0)
+                                                            <div class="mb-1">
+                                                                <i class="fas fa-star text-warning me-1"></i>{{ $usuario->formatted_rating }}
+                                                            </div>
+                                                        @endif
+                                                        <div class="d-flex gap-1">
+                                                            @if($usuario->instagram)
+                                                                <a href="{{ $usuario->instagram_url }}" target="_blank" class="text-decoration-none">
+                                                                    <i class="fab fa-instagram text-danger"></i>
+                                                                </a>
+                                                            @endif
+                                                            @if($usuario->facebook)
+                                                                <a href="{{ $usuario->facebook_url }}" target="_blank" class="text-decoration-none">
+                                                                    <i class="fab fa-facebook text-primary"></i>
+                                                                </a>
+                                                            @endif
+                                                            @if($usuario->website)
+                                                                <a href="{{ $usuario->website }}" target="_blank" class="text-decoration-none">
+                                                                    <i class="fas fa-globe text-info"></i>
+                                                                </a>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <small class="text-muted">No aplica</small>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <small class="d-block">{{ $usuario->created_at->format('d/m/Y') }}</small>
+                                                <small class="text-muted">{{ $usuario->created_at->diffForHumans() }}</small>
+                                            </td>
+                                            <td>
+                                                @if($usuario->id !== auth()->id())
+                                                    <div class="btn-group" role="group">
+                                                        <!-- Ver Detalles -->
+                                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#viewUserModal"
+                                                                data-user="{{ json_encode($usuario) }}"
+                                                                title="Ver detalles">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        
+                                                        <!-- Editar -->
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#editUserModal"
+                                                                data-user="{{ json_encode($usuario) }}"
+                                                                title="Editar usuario">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        
+                                                        <!-- Cambiar Rol -->
+                                                        <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#changeRoleModal"
+                                                                data-user-id="{{ $usuario->id }}"
+                                                                data-user-name="{{ $usuario->name }}"
+                                                                data-current-role="{{ $usuario->role }}"
+                                                                title="Cambiar rol">
+                                                            <i class="fas fa-user-cog"></i>
+                                                        </button>
+                                                        
+                                                        <!-- Eliminar -->
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#deleteUserModal"
+                                                                data-user-id="{{ $usuario->id }}"
+                                                                data-user-name="{{ $usuario->name }}"
+                                                                title="Eliminar usuario">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                @else
+                                                    <small class="text-muted">Tu cuenta</small>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Paginación -->
+                            <div class="d-flex justify-content-center">
+                                {{ $usuarios->links() }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            @endif
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-.avatar {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-}
+<!-- Modal para Ver Detalles -->
+<div class="modal fade" id="viewUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="userDetailsContent">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-.card {
-    transition: all 0.2s ease;
-}
+<!-- Modal para Editar Usuario -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editUserForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" name="telefono" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Dirección</label>
+                                <textarea name="direccion" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Biografía</label>
+                                <textarea name="bio" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Especialidad (Solo Chefs)</label>
+                                <input type="text" name="especialidad" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Años de Experiencia</label>
+                                <input type="number" name="experiencia_anos" class="form-control" min="0">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Website</label>
+                                <input type="url" name="website" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Instagram</label>
+                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Facebook</label>
+                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-.table-hover tbody tr:hover {
-    background-color: rgba(0, 123, 255, 0.04);
-}
+<!-- Modal para Cambiar Rol -->
+<div class="modal fade" id="changeRoleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cambiar Rol de Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="changeRoleForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <p>Cambiar rol para: <strong id="userName"></strong></p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Nuevo Rol</label>
+                        <select name="role" class="form-select" required>
+                            <option value="">Seleccionar rol...</option>
+                            @foreach($roles as $role)
+                                <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-.btn-group .btn {
-    border-radius: 0.375rem;
-    margin-right: 0.25rem;
-}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Atención:</strong> Cambiar el rol modificará los permisos del usuario inmediatamente.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Cambiar Rol</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-.btn-group .btn:last-child {
-    margin-right: 0;
-}
-</style>
+<!-- Modal para Eliminar Usuario -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Eliminar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="deleteUserForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>¡ATENCIÓN!</strong> Esta acción no se puede deshacer.
+                    </div>
+                    <p>¿Estás seguro de que quieres eliminar al usuario: <strong id="deleteUserName"></strong>?</p>
+                    <p class="text-muted">Se eliminarán también todos sus datos relacionados (experiencias, reservas, etc.).</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+    // Modal Ver Detalles
+    const viewUserModal = document.getElementById('viewUserModal');
+    viewUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const user = JSON.parse(button.getAttribute('data-user'));
+        
+        const content = document.getElementById('userDetailsContent');
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    ${user.avatar ? `<img src="${user.avatar.startsWith('http') ? user.avatar : '/storage/' + user.avatar}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">` : 
+                      `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${user.name.charAt(0)}</div>`}
+                    <h4>${user.name}</h4>
+                    <p class="text-muted">${user.email}</p>
+                </div>
+                <div class="col-md-8">
+                    <h6>Información Personal</h6>
+                    <table class="table table-sm">
+                        <tr><td><strong>Teléfono:</strong></td><td>${user.telefono || 'No especificado'}</td></tr>
+                        <tr><td><strong>Dirección:</strong></td><td>${user.direccion || 'No especificado'}</td></tr>
+                        <tr><td><strong>Biografía:</strong></td><td>${user.bio || 'No especificado'}</td></tr>
+                        <tr><td><strong>Rol:</strong></td><td>${user.role}</td></tr>
+                        <tr><td><strong>Proveedor:</strong></td><td>${user.provider || 'Registro directo'}</td></tr>
+                        <tr><td><strong>Registro:</strong></td><td>${new Date(user.created_at).toLocaleDateString()}</td></tr>
+                    </table>
+                    
+                    ${user.role === 'chef_anfitrion' ? `
+                        <h6 class="mt-3">Información Chef</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Especialidad:</strong></td><td>${user.especialidad || 'No especificado'}</td></tr>
+                            <tr><td><strong>Experiencia:</strong></td><td>${user.experiencia_anos ? user.experiencia_anos + ' años' : 'No especificado'}</td></tr>
+                            <tr><td><strong>Rating:</strong></td><td>${user.rating > 0 ? user.rating + '/5' : 'Sin calificaciones'}</td></tr>
+                            <tr><td><strong>Instagram:</strong></td><td>${user.instagram ? `<a href="#" target="_blank">${user.instagram}</a>` : 'No especificado'}</td></tr>
+                            <tr><td><strong>Facebook:</strong></td><td>${user.facebook || 'No especificado'}</td></tr>
+                            <tr><td><strong>Website:</strong></td><td>${user.website ? `<a href="${user.website}" target="_blank">${user.website}</a>` : 'No especificado'}</td></tr>
+                        </table>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    // Modal Editar Usuario
+    const editUserModal = document.getElementById('editUserModal');
+    editUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const user = JSON.parse(button.getAttribute('data-user'));
+        
+        const form = document.getElementById('editUserForm');
+        form.action = `/admin/users/${user.id}`;
+        
+        // Mostrar avatar actual o placeholder
+        const currentAvatar = document.getElementById('currentAvatar');
+        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+        
+        if (user.avatar) {
+            const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`;
+            currentAvatar.src = avatarUrl;
+            currentAvatar.style.display = 'block';
+            avatarPlaceholder.style.display = 'none';
+        } else {
+            currentAvatar.style.display = 'none';
+            avatarPlaceholder.textContent = user.name.charAt(0).toUpperCase();
+            avatarPlaceholder.style.display = 'flex';
+        }
+        
+        // Limpiar input de archivo y checkbox
+        document.getElementById('avatarInput').value = '';
+        document.getElementById('removeAvatar').checked = false;
+        
+        // Llenar campos del formulario
+        form.querySelector('[name="name"]').value = user.name || '';
+        form.querySelector('[name="email"]').value = user.email || '';
+        form.querySelector('[name="telefono"]').value = user.telefono || '';
+        form.querySelector('[name="direccion"]').value = user.direccion || '';
+        form.querySelector('[name="bio"]').value = user.bio || '';
+        form.querySelector('[name="especialidad"]').value = user.especialidad || '';
+        form.querySelector('[name="experiencia_anos"]').value = user.experiencia_anos || '';
+        form.querySelector('[name="website"]').value = user.website || '';
+        form.querySelector('[name="instagram"]').value = user.instagram || '';
+        form.querySelector('[name="facebook"]').value = user.facebook || '';
+    });
+
+    // Preview de imagen al seleccionar archivo
+    document.getElementById('avatarInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const currentAvatar = document.getElementById('currentAvatar');
+        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentAvatar.src = e.target.result;
+                currentAvatar.style.display = 'block';
+                avatarPlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+            
+            // Desmarcar eliminar avatar si se selecciona nueva imagen
+            document.getElementById('removeAvatar').checked = false;
+        }
+    });
+
+    // Manejar checkbox de eliminar avatar
+    document.getElementById('removeAvatar').addEventListener('change', function() {
+        const avatarInput = document.getElementById('avatarInput');
+        const currentAvatar = document.getElementById('currentAvatar');
+        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+        
+        if (this.checked) {
+            avatarInput.value = '';
+            currentAvatar.style.display = 'none';
+            avatarPlaceholder.style.display = 'flex';
+        }
+    });
+
+    // Modal Cambiar Rol
+    const changeRoleModal = document.getElementById('changeRoleModal');
+    changeRoleModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const userId = button.getAttribute('data-user-id');
+        const userName = button.getAttribute('data-user-name');
+        const currentRole = button.getAttribute('data-current-role');
+        
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('changeRoleForm').action = `/admin/users/${userId}/role`;
+        
+        const select = changeRoleModal.querySelector('[name="role"]');
+        select.value = currentRole;
+    });
+
+    // Modal Eliminar Usuario
+    const deleteUserModal = document.getElementById('deleteUserModal');
+    deleteUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const userId = button.getAttribute('data-user-id');
+        const userName = button.getAttribute('data-user-name');
+        
+        document.getElementById('deleteUserName').textContent = userName;
+        document.getElementById('deleteUserForm').action = `/admin/users/${userId}`;
     });
 });
 </script>
