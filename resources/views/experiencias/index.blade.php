@@ -223,31 +223,26 @@
                        value="{{ $filters['q'] ?? '' }}">
             </div>
 
-            <div class="field">
-                <label class="label" for="city">
-                    <i class="fas fa-map-marker-alt" style="color: #6b7280; margin-right: 4px;"></i>
-                    Ubicación
-                </label>
-                <select class="select" id="city" name="city">
-                    <option value="">Todas las ciudades</option>
-                    @foreach($cities as $opt)
-                  <option value="{{ $opt }}" {{ ($filters['city'] ?? '') === $opt ? 'selected' : '' }}>
-                        {{
-                            trim(
-                                str_replace(
-                                    ['Ciudad Autónoma de Buenos Aires', 'Provincia de Buenos Aires', 'CABA', 'Argentina'],
-                                    '',
-                                    explode(',', $opt)[1] ?? $opt
-                                )
-                            )
-                        }}
-                    </option>
+          <div class="field">
+    <label class="label" for="city">
+        <i class="fas fa-map-marker-alt" style="color: #6b7280; margin-right: 4px;"></i>
+        Ubicación
+    </label>
 
+    {{-- lat/lng opcionales para sugerir lo más cercano si no elige ciudad --}}
+    <input type="hidden" name="lat" id="lat" value="{{ $filters['lat'] ?? '' }}">
+    <input type="hidden" name="lng" id="lng" value="{{ $filters['lng'] ?? '' }}">
 
+    <select class="select" id="city" name="city">
+        <option value="">Todas las ciudades</option>
+        @foreach($cities as $label)
+            <option value="{{ $label }}" {{ ($filters['city'] ?? '') === $label ? 'selected' : '' }}>
+                {{ $label }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
-                    @endforeach
-                </select>
-            </div>
 
             {{-- Rango de precio --}}
             {{-- Rango de precio mejorado --}}
