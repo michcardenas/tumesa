@@ -223,24 +223,41 @@
                        value="{{ $filters['q'] ?? '' }}">
             </div>
 
-          <div class="field">
+     <div class="field">
     <label class="label" for="city">
         <i class="fas fa-map-marker-alt" style="color: #6b7280; margin-right: 4px;"></i>
         Ubicación
     </label>
-
-    {{-- lat/lng opcionales para sugerir lo más cercano si no elige ciudad --}}
+    
+    {{-- Coordenadas para búsqueda por proximidad --}}
     <input type="hidden" name="lat" id="lat" value="{{ $filters['lat'] ?? '' }}">
     <input type="hidden" name="lng" id="lng" value="{{ $filters['lng'] ?? '' }}">
-
-    <select class="select" id="city" name="city">
-        <option value="">Todas las ciudades</option>
-        @foreach($cities as $label)
-            <option value="{{ $label }}" {{ ($filters['city'] ?? '') === $label ? 'selected' : '' }}>
-                {{ $label }}
-            </option>
-        @endforeach
-    </select>
+    <input type="hidden" name="radius" id="radius" value="{{ $filters['radius'] ?? 10 }}">
+    
+    <div class="location-input-container">
+        <select class="select" id="city" name="city">
+            <option value="">Todas las ubicaciones</option>
+            @foreach($locations as $location)
+                <option value="{{ $location['value'] }}" 
+                        data-lat="{{ $location['lat'] ?? '' }}" 
+                        data-lng="{{ $location['lng'] ?? '' }}"
+                        {{ ($filters['city'] ?? '') === $location['value'] ? 'selected' : '' }}>
+                    {{ $location['display'] }}
+                </option>
+            @endforeach
+        </select>
+        
+        <button type="button" id="nearMeBtn" class="btn-near-me" title="Buscar cerca de mi ubicación">
+            <i class="fas fa-crosshairs"></i>
+            <span>Cerca de mí</span>
+        </button>
+    </div>
+    
+    {{-- Indicador cuando se usa geolocalización --}}
+    <div id="currentLocationDisplay" class="current-location" style="display: none;">
+        <i class="fas fa-map-marker-alt" style="color: #10b981;"></i>
+        <span id="locationText">Búsqueda por proximidad activa</span>
+    </div>
 </div>
 
 
