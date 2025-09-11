@@ -321,7 +321,7 @@ public function users()
     $usuarios = User::with('roles')->paginate(15);
     $roles = \Spatie\Permission\Models\Role::all();
     
-    return view('admin.users', compact('usuarios', 'roles'));
+    return view('admin.usuarios.index', compact('usuarios', 'roles'));
 }
 
 /**
@@ -349,11 +349,11 @@ public function updateUser(Request $request, User $user)
             'instagram', 'facebook'
         ]));
 
-        return redirect()->route('admin.users')
+        return redirect()->route('admin.usuarios.index')
                         ->with('success', 'Usuario actualizado correctamente.');
                         
     } catch (\Exception $e) {
-        return redirect()->route('admin.users')
+        return redirect()->route('admin.usuarios.index')
                         ->with('error', 'Error al actualizar el usuario: ' . $e->getMessage());
     }
 }
@@ -374,11 +374,11 @@ public function updateUserRole(Request $request, User $user)
         // Sincronizar roles de Spatie
         $user->syncRoles([$request->role]);
 
-        return redirect()->route('admin.users')
+        return redirect()->route('admin.usuarios.index')
                         ->with('success', "Rol actualizado correctamente para {$user->name}.");
                         
     } catch (\Exception $e) {
-        return redirect()->route('admin.users')
+        return redirect()->route('admin.usuarios.index')
                         ->with('error', 'Error al actualizar el rol: ' . $e->getMessage());
     }
 }
@@ -390,7 +390,7 @@ public function deleteUser(User $user)
 {
     // Verificar que no sea el usuario actual
     if ($user->id === auth()->id()) {
-        return redirect()->route('admin.users')
+        return redirect()->route('admin.usuarios.index')
                         ->with('error', 'No puedes eliminar tu propia cuenta.');
     }
 
@@ -403,11 +403,11 @@ public function deleteUser(User $user)
         // Eliminar el usuario
         $user->delete();
 
-        return redirect()->route('admin.users')
+        return redirect()->route('admin.usuarios.index')
                         ->with('success', "Usuario {$userName} eliminado correctamente.");
                         
     } catch (\Exception $e) {
-        return redirect()->route('admin.users')
+        return redirect()->route('admin.usuarios.index')
                         ->with('error', 'Error al eliminar el usuario: ' . $e->getMessage());
     }
 }
