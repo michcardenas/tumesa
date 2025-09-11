@@ -231,12 +231,13 @@ private function cleanLocationString($location)
         // Saltar códigos postales
         $part = preg_replace('/\b[A-Z0-9]{4,}\b/', '', $part);
         
-        // Saltar términos comunes
-        if (in_array($part, [
-            'Argentina', 'CABA', 'Buenos Aires',
-            'Ciudad Autónoma de Buenos Aires',
-            'Provincia de Buenos Aires'
-        ])) {
+        // Normalizar nombres de ciudades
+        if (in_array(strtolower($part), ['caba', 'ciudad autónoma de buenos aires'])) {
+            $part = 'Buenos Aires';
+        }
+        
+        // Saltar términos que no queremos
+        if (in_array($part, ['Argentina', 'Provincia de Buenos Aires'])) {
             continue;
         }
         
@@ -246,10 +247,62 @@ private function cleanLocationString($location)
         }
     }
     
-    // Tomar máximo 2 partes (barrio, ciudad)
-    $relevantParts = array_slice($cleanedParts, 0, 2);
+    // Definir barrios/zonas conocidas
+    $knownNeighborhoods = [
+        'Palermo Hollywood', 'Palermo', 'Recoleta', 'Puerto Madero', 'San Telmo',
+        'La Boca', 'Belgrano', 'Villa Crespo', 'Colegiales', 'Núñez', 'Barracas',
+        'Caballito', 'Flores', 'Villa Urquiza', 'Villa Devoto', 'Retiro',
+        'Ciudad Jardín Lomas del Palomar', 'Lomas del Palomar', 'El Paraíso'
+    ];
     
-    return implode(', ', $relevantParts);
+    // Definir ciudades conocidas
+    $knownCities = [
+        'Buenos Aires', 'Vicente López', 'San Isidro', 'Tigre', 'La Plata',
+        'Partido de Ramallo', 'Quilmes', 'Avellaneda', 'Lanús', 'Lomas de Zamora'
+    ];
+    
+    $neighborhood = null;
+    $city = null;
+    
+    // Buscar barrio y ciudad en las partes
+    foreach ($cleanedParts as $part) {
+        // Verificar si es un barrio conocido
+        foreach ($knownNeighborhoods as $knownNeighborhood) {
+            if (stripos($part, $knownNeighborhood) !== false) {
+                $neighborhood = $knownNeighborhood;
+                break;
+            }
+        }
+        
+        // Verificar si es una ciudad conocida
+        foreach ($knownCities as $knownCity) {
+            if (stripos($part, $knownCity) !== false) {
+                $city = $knownCity;
+                break;
+            }
+        }
+    }
+    
+    // Si no encontramos barrio/ciudad específicos, usar heurística
+    if (!$neighborhood && !$city && count($cleanedParts) >= 2) {
+        // La penúltima parte suele ser el barrio, la última la ciudad
+        $neighborhood = $cleanedParts[count($cleanedParts) - 2];
+        $city = $cleanedParts[count($cleanedParts) - 1];
+    } elseif (!$neighborhood && !$city && count($cleanedParts) == 1) {
+        // Solo una parte, asumir que es barrio
+        $neighborhood = $cleanedParts[0];
+    }
+    
+    // Construir resultado
+    if ($neighborhood && $city) {
+        return "{$neighborhood}, {$city}";
+    } elseif ($neighborhood) {
+        return $neighborhood;
+    } elseif ($city) {
+        return $city;
+    }
+    
+    return '';
 }
   public function serChef()
 {
