@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cena;
 use App\Models\Pagina;
+use Illuminate\Support\Facades\Schema;
 
 class ExperienciasController extends Controller
 {
