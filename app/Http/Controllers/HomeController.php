@@ -315,5 +315,101 @@ public function showCena(Cena $cena)
         'meta_description' => 'Reserva tu lugar en "' . $cena->title . '" con "' . ($cena->user->name ?? 'nuestro chef'). '" ' . substr($cena->menu, 0, 100) . '...'
     ]);
 }
+
+public function users()
+{
+    $usuarios = User::with('roles')->paginate(15);
+    $roles = \Spatie\Permission\Models\Role::all();
+    
+    return view('admin.users', compact('usuarios', 'roles'));
+}
+
+/**
+ * Actualizar información del usuario
+ */
+public function updateUser(Request $request, User $user)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'telefono' => 'nullable|string|max:20',
+        'direccion' => 'nullable|string|max:500',
+        'bio' => 'nullable|string|max:1000',
+        'especialidad' => 'nullable|string|max:255',
+        'experiencia_anos' => 'nullable|integer|min:0|max:50',
+        'website' => 'nullable|url|max:255',
+        'instagram' => 'nullable|string|max:255',
+        'facebook' => 'nullable|string|max:255',
+    ]);
+
+    try {
+        $user->update($request->only([
+            'name', 'email', 'telefono', 'direccion', 'bio', 
+            'especialidad', 'experiencia_anos', 'website', 
+            'instagram', 'facebook'
+        ]));
+
+        return redirect()->route('admin.users')
+                        ->with('success', 'Usuario actualizado correctamente.');
+                        
+    } catch (\Exception $e) {
+        return redirect()->route('admin.users')
+                        ->with('error', 'Error al actualizar el usuario: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Actualizar rol del usuario
+ */
+public function updateUserRole(Request $request, User $user)
+{
+    $request->validate([
+        'role' => 'required|string|exists:roles,name'
+    ]);
+
+    try {
+        // Actualizar el campo role en la tabla users
+        $user->update(['role' => $request->role]);
+        
+        // Sincronizar roles de Spatie
+        $user->syncRoles([$request->role]);
+
+        return redirect()->route('admin.users')
+                        ->with('success', "Rol actualizado correctamente para {$user->name}.");
+                        
+    } catch (\Exception $e) {
+        return redirect()->route('admin.users')
+                        ->with('error', 'Error al actualizar el rol: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Eliminar usuario
+ */
+public function deleteUser(User $user)
+{
+    // Verificar que no sea el usuario actual
+    if ($user->id === auth()->id()) {
+        return redirect()->route('admin.users')
+                        ->with('error', 'No puedes eliminar tu propia cuenta.');
+    }
+
+    try {
+        $userName = $user->name;
+        
+        // Eliminar roles de Spatie
+        $user->syncRoles([]);
+        
+        // Eliminar el usuario
+        $user->delete();
+
+        return redirect()->route('admin.users')
+                        ->with('success', "Usuario {$userName} eliminado correctamente.");
+                        
+    } catch (\Exception $e) {
+        return redirect()->route('admin.users')
+                        ->with('error', 'Error al eliminar el usuario: ' . $e->getMessage());
+    }
+}
     
 }

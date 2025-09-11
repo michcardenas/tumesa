@@ -224,6 +224,13 @@ Route::put('/admin/cenas/{cena}', [App\Http\Controllers\AdminCenasController::cl
 
 
 
+Route::get('/admin/users', [HomeController::class, 'users'])->name('admin.users');
+Route::put('/admin/users/{user}', [HomeController::class, 'updateUser'])->name('admin.users.update');
+Route::put('/admin/users/{user}/role', [HomeController::class, 'updateUserRole'])->name('admin.users.role');
+Route::delete('/admin/users/{user}', [HomeController::class, 'deleteUser'])->name('admin.users.delete');
+
+
+
 
 
 require __DIR__.'/auth.php';

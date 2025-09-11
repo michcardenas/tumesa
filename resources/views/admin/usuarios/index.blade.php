@@ -28,6 +28,12 @@
                         </div>
                     @endif
 
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     <!-- Filtros y Estadísticas -->
                     <div class="row mb-4">
                         <div class="col-md-3">
@@ -75,9 +81,9 @@
                                     <thead>
                                         <tr>
                                             <th>Usuario</th>
-                                            <th>Email</th>
-                                            <th>Rol Actual</th>
-                                            <th>Roles Spatie</th>
+                                            <th>Contacto</th>
+                                            <th>Rol & Permisos</th>
+                                            <th>Información Chef</th>
                                             <th>Registro</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -101,45 +107,144 @@
                                                     <div>
                                                         <div class="fw-bold">{{ $usuario->name }}</div>
                                                         @if($usuario->provider)
-                                                            <small class="text-muted">{{ ucfirst($usuario->provider) }}</small>
+                                                            <small class="text-muted">
+                                                                <i class="fab fa-{{ $usuario->provider }}"></i> 
+                                                                {{ ucfirst($usuario->provider) }}
+                                                            </small>
+                                                        @endif
+                                                        @if($usuario->bio)
+                                                            <div>
+                                                                <small class="text-muted" title="{{ $usuario->bio }}">
+                                                                    {{ Str::limit($usuario->bio, 30) }}
+                                                                </small>
+                                                            </div>
                                                         @endif
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>{{ $usuario->email }}</td>
                                             <td>
-                                                @if($usuario->role == 'admin')
-                                                    <span class="badge bg-danger">Administrador</span>
-                                                @elseif($usuario->role == 'chef_anfitrion')
-                                                    <span class="badge bg-warning">Chef Anfitrión</span>
-                                                @elseif($usuario->role == 'comensal')
-                                                    <span class="badge bg-success">Comensal</span>
-                                                @else
-                                                    <span class="badge bg-secondary">{{ $usuario->role }}</span>
-                                                @endif
+                                                <div>
+                                                    <small class="d-block">
+                                                        <i class="fas fa-envelope me-1"></i>{{ $usuario->email }}
+                                                    </small>
+                                                    @if($usuario->telefono)
+                                                        <small class="d-block text-muted">
+                                                            <i class="fas fa-phone me-1"></i>{{ $usuario->telefono }}
+                                                        </small>
+                                                    @endif
+                                                    @if($usuario->direccion)
+                                                        <small class="d-block text-muted" title="{{ $usuario->direccion }}">
+                                                            <i class="fas fa-map-marker-alt me-1"></i>{{ Str::limit($usuario->direccion, 25) }}
+                                                        </small>
+                                                    @endif
+                                                </div>
                                             </td>
                                             <td>
+                                                <div class="mb-1">
+                                                    @if($usuario->role == 'admin')
+                                                        <span class="badge bg-danger">Administrador</span>
+                                                    @elseif($usuario->role == 'chef_anfitrion')
+                                                        <span class="badge bg-warning">Chef Anfitrión</span>
+                                                    @elseif($usuario->role == 'comensal')
+                                                        <span class="badge bg-success">Comensal</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">{{ $usuario->role }}</span>
+                                                    @endif
+                                                </div>
                                                 @if($usuario->roles->count() > 0)
-                                                    @foreach($usuario->roles as $role)
-                                                        <span class="badge bg-info me-1">{{ $role->name }}</span>
-                                                    @endforeach
-                                                @else
-                                                    <span class="text-muted">Sin roles</span>
+                                                    <div>
+                                                        @foreach($usuario->roles as $role)
+                                                            <span class="badge bg-info me-1" style="font-size: 0.7em;">{{ $role->name }}</span>
+                                                        @endforeach
+                                                    </div>
                                                 @endif
                                             </td>
                                             <td>
-                                                <small>{{ $usuario->created_at->format('d/m/Y') }}</small>
+                                                @if($usuario->role == 'chef_anfitrion')
+                                                    <div class="small">
+                                                        @if($usuario->especialidad)
+                                                            <div class="mb-1">
+                                                                <strong>Especialidad:</strong> {{ $usuario->especialidad }}
+                                                            </div>
+                                                        @endif
+                                                        @if($usuario->experiencia_anos)
+                                                            <div class="mb-1">
+                                                                <i class="fas fa-clock me-1"></i>{{ $usuario->experience_text }}
+                                                            </div>
+                                                        @endif
+                                                        @if($usuario->rating > 0)
+                                                            <div class="mb-1">
+                                                                <i class="fas fa-star text-warning me-1"></i>{{ $usuario->formatted_rating }}
+                                                            </div>
+                                                        @endif
+                                                        <div class="d-flex gap-1">
+                                                            @if($usuario->instagram)
+                                                                <a href="{{ $usuario->instagram_url }}" target="_blank" class="text-decoration-none">
+                                                                    <i class="fab fa-instagram text-danger"></i>
+                                                                </a>
+                                                            @endif
+                                                            @if($usuario->facebook)
+                                                                <a href="{{ $usuario->facebook_url }}" target="_blank" class="text-decoration-none">
+                                                                    <i class="fab fa-facebook text-primary"></i>
+                                                                </a>
+                                                            @endif
+                                                            @if($usuario->website)
+                                                                <a href="{{ $usuario->website }}" target="_blank" class="text-decoration-none">
+                                                                    <i class="fas fa-globe text-info"></i>
+                                                                </a>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <small class="text-muted">No aplica</small>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <small class="d-block">{{ $usuario->created_at->format('d/m/Y') }}</small>
+                                                <small class="text-muted">{{ $usuario->created_at->diffForHumans() }}</small>
                                             </td>
                                             <td>
                                                 @if($usuario->id !== auth()->id())
-                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#changeRoleModal"
-                                                            data-user-id="{{ $usuario->id }}"
-                                                            data-user-name="{{ $usuario->name }}"
-                                                            data-current-role="{{ $usuario->role }}">
-                                                        <i class="fas fa-user-cog"></i> Cambiar Rol
-                                                    </button>
+                                                    <div class="btn-group" role="group">
+                                                        <!-- Ver Detalles -->
+                                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#viewUserModal"
+                                                                data-user="{{ json_encode($usuario) }}"
+                                                                title="Ver detalles">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        
+                                                        <!-- Editar -->
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#editUserModal"
+                                                                data-user="{{ json_encode($usuario) }}"
+                                                                title="Editar usuario">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        
+                                                        <!-- Cambiar Rol -->
+                                                        <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#changeRoleModal"
+                                                                data-user-id="{{ $usuario->id }}"
+                                                                data-user-name="{{ $usuario->name }}"
+                                                                data-current-role="{{ $usuario->role }}"
+                                                                title="Cambiar rol">
+                                                            <i class="fas fa-user-cog"></i>
+                                                        </button>
+                                                        
+                                                        <!-- Eliminar -->
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#deleteUserModal"
+                                                                data-user-id="{{ $usuario->id }}"
+                                                                data-user-name="{{ $usuario->name }}"
+                                                                title="Eliminar usuario">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
                                                 @else
                                                     <small class="text-muted">Tu cuenta</small>
                                                 @endif
@@ -158,6 +263,98 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Ver Detalles -->
+<div class="modal fade" id="viewUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="userDetailsContent">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Usuario -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editUserForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" name="telefono" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Dirección</label>
+                                <textarea name="direccion" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Biografía</label>
+                                <textarea name="bio" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Especialidad (Solo Chefs)</label>
+                                <input type="text" name="especialidad" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Años de Experiencia</label>
+                                <input type="number" name="experiencia_anos" class="form-control" min="0">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Website</label>
+                                <input type="url" name="website" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Instagram</label>
+                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Facebook</label>
+                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -200,74 +397,124 @@
     </div>
 </div>
 
-<style>
-.admin-container {
-    background-color: #f8f9fa;
-    min-height: 100vh;
-    padding: 20px 0;
-}
-
-.card {
-    border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    margin-bottom: 1.5rem;
-}
-
-.card-header {
-    background-color: #fff;
-    border-bottom: 1px solid #dee2e6;
-    font-weight: 600;
-}
-
-.table th {
-    background-color: #f8f9fa;
-    border-top: none;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-.badge {
-    font-size: 0.75rem;
-}
-
-.btn {
-    border-radius: 0.375rem;
-}
-
-.breadcrumb {
-    background-color: transparent;
-    padding: 0;
-    margin-bottom: 0;
-}
-
-.breadcrumb-item + .breadcrumb-item::before {
-    color: #6c757d;
-}
-</style>
+<!-- Modal para Eliminar Usuario -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Eliminar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="deleteUserForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>¡ATENCIÓN!</strong> Esta acción no se puede deshacer.
+                    </div>
+                    <p>¿Estás seguro de que quieres eliminar al usuario: <strong id="deleteUserName"></strong>?</p>
+                    <p class="text-muted">Se eliminarán también todos sus datos relacionados (experiencias, reservas, etc.).</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Modal Ver Detalles
+    const viewUserModal = document.getElementById('viewUserModal');
+    viewUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const user = JSON.parse(button.getAttribute('data-user'));
+        
+        const content = document.getElementById('userDetailsContent');
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    ${user.avatar ? `<img src="${user.avatar.startsWith('http') ? user.avatar : '/storage/' + user.avatar}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">` : 
+                      `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${user.name.charAt(0)}</div>`}
+                    <h4>${user.name}</h4>
+                    <p class="text-muted">${user.email}</p>
+                </div>
+                <div class="col-md-8">
+                    <h6>Información Personal</h6>
+                    <table class="table table-sm">
+                        <tr><td><strong>Teléfono:</strong></td><td>${user.telefono || 'No especificado'}</td></tr>
+                        <tr><td><strong>Dirección:</strong></td><td>${user.direccion || 'No especificado'}</td></tr>
+                        <tr><td><strong>Biografía:</strong></td><td>${user.bio || 'No especificado'}</td></tr>
+                        <tr><td><strong>Rol:</strong></td><td>${user.role}</td></tr>
+                        <tr><td><strong>Proveedor:</strong></td><td>${user.provider || 'Registro directo'}</td></tr>
+                        <tr><td><strong>Registro:</strong></td><td>${new Date(user.created_at).toLocaleDateString()}</td></tr>
+                    </table>
+                    
+                    ${user.role === 'chef_anfitrion' ? `
+                        <h6 class="mt-3">Información Chef</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Especialidad:</strong></td><td>${user.especialidad || 'No especificado'}</td></tr>
+                            <tr><td><strong>Experiencia:</strong></td><td>${user.experiencia_anos ? user.experiencia_anos + ' años' : 'No especificado'}</td></tr>
+                            <tr><td><strong>Rating:</strong></td><td>${user.rating > 0 ? user.rating + '/5' : 'Sin calificaciones'}</td></tr>
+                            <tr><td><strong>Instagram:</strong></td><td>${user.instagram ? `<a href="#" target="_blank">${user.instagram}</a>` : 'No especificado'}</td></tr>
+                            <tr><td><strong>Facebook:</strong></td><td>${user.facebook || 'No especificado'}</td></tr>
+                            <tr><td><strong>Website:</strong></td><td>${user.website ? `<a href="${user.website}" target="_blank">${user.website}</a>` : 'No especificado'}</td></tr>
+                        </table>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    // Modal Editar Usuario
+    const editUserModal = document.getElementById('editUserModal');
+    editUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const user = JSON.parse(button.getAttribute('data-user'));
+        
+        const form = document.getElementById('editUserForm');
+        form.action = `/admin/users/${user.id}`;
+        
+        form.querySelector('[name="name"]').value = user.name || '';
+        form.querySelector('[name="email"]').value = user.email || '';
+        form.querySelector('[name="telefono"]').value = user.telefono || '';
+        form.querySelector('[name="direccion"]').value = user.direccion || '';
+        form.querySelector('[name="bio"]').value = user.bio || '';
+        form.querySelector('[name="especialidad"]').value = user.especialidad || '';
+        form.querySelector('[name="experiencia_anos"]').value = user.experiencia_anos || '';
+        form.querySelector('[name="website"]').value = user.website || '';
+        form.querySelector('[name="instagram"]').value = user.instagram || '';
+        form.querySelector('[name="facebook"]').value = user.facebook || '';
+    });
+
+    // Modal Cambiar Rol
     const changeRoleModal = document.getElementById('changeRoleModal');
-    
-    if (changeRoleModal) {
-        changeRoleModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const userId = button.getAttribute('data-user-id');
-            const userName = button.getAttribute('data-user-name');
-            const currentRole = button.getAttribute('data-current-role');
-            
-            // Actualizar el formulario
-            const form = document.getElementById('changeRoleForm');
-            form.action = `/admin/usuarios/${userId}/role`;
-            
-            // Actualizar el nombre del usuario
-            document.getElementById('userName').textContent = userName;
-            
-            // Seleccionar el rol actual
-            const roleSelect = form.querySelector('select[name="role"]');
-            roleSelect.value = currentRole;
-        });
-    }
+    changeRoleModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const userId = button.getAttribute('data-user-id');
+        const userName = button.getAttribute('data-user-name');
+        const currentRole = button.getAttribute('data-current-role');
+        
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('changeRoleForm').action = `/admin/users/${userId}/role`;
+        
+        const select = changeRoleModal.querySelector('[name="role"]');
+        select.value = currentRole;
+    });
+
+    // Modal Eliminar Usuario
+    const deleteUserModal = document.getElementById('deleteUserModal');
+    deleteUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const userId = button.getAttribute('data-user-id');
+        const userName = button.getAttribute('data-user-name');
+        
+        document.getElementById('deleteUserName').textContent = userName;
+        document.getElementById('deleteUserForm').action = `/admin/users/${userId}`;
+    });
 });
 </script>
 @endsection
