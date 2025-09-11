@@ -176,6 +176,9 @@ private function addDistanceCalculation($query, $lat, $lng)
 /**
  * Obtener ubicaciones limpias (ciudad/barrio) desde el campo location existente
  */
+/**
+ * Obtener ubicaciones limpias (ciudad/barrio) desde el campo location existente
+ */
 private function getCleanLocations($baseQuery)
 {
     $rawLocations = (clone $baseQuery)
@@ -206,7 +209,7 @@ private function getCleanLocations($baseQuery)
 }
 
 /**
- * Limpiar string de ubicación
+ * Limpiar string de ubicación para extraer solo ciudad/barrio
  */
 private function cleanLocationString($location)
 {
@@ -214,35 +217,40 @@ private function cleanLocationString($location)
     
     $parts = explode(',', $location);
     
-    // Quitar país y provincia comunes
-    $parts = array_filter($parts, function($part) {
+    // Limpiar cada parte
+    $cleanedParts = [];
+    foreach ($parts as $part) {
         $part = trim($part);
-        return !in_array($part, [
+        
+        // Saltar partes vacías
+        if (empty($part)) continue;
+        
+        // Saltar números de dirección al inicio (ej: "700 - Aviador Plüschow")
+        $part = preg_replace('/^\d+\s*-?\s*/', '', $part);
+        
+        // Saltar códigos postales
+        $part = preg_replace('/\b[A-Z0-9]{4,}\b/', '', $part);
+        
+        // Saltar términos comunes
+        if (in_array($part, [
             'Argentina', 'CABA', 'Buenos Aires',
             'Ciudad Autónoma de Buenos Aires',
             'Provincia de Buenos Aires'
-        ]);
-    });
-    
-    // Tomar las primeras 2 partes más relevantes (barrio, ciudad)
-    $relevant = array_slice(array_values($parts), 0, 2);
-    
-    // Limpiar códigos postales y espacios extra
-    $cleaned = array_map(function($part) {
+        ])) {
+            continue;
+        }
+        
         $part = trim($part);
-        // Remover códigos postales (ej: B1636AAF)
-        $part = preg_replace('/\b[A-Z0-9]{4,}\b/', '', $part);
-        return trim($part);
-    }, $relevant);
+        if (!empty($part)) {
+            $cleanedParts[] = $part;
+        }
+    }
     
-    // Filtrar partes vacías y unir
-    $cleaned = array_filter($cleaned, function($part) {
-        return !empty($part);
-    });
+    // Tomar máximo 2 partes (barrio, ciudad)
+    $relevantParts = array_slice($cleanedParts, 0, 2);
     
-    return implode(', ', $cleaned);
+    return implode(', ', $relevantParts);
 }
-
   public function serChef()
 {
     // Obtener contenidos específicos de la página 'ser-chef'
