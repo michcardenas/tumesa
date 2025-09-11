@@ -173,35 +173,29 @@ private function addDistanceCalculation($query, $lat, $lng)
 /**
  * Obtener ubicaciones limpias (ciudad/barrio)
  */
+/**
+ * Obtener ubicaciones limpias (ciudad/barrio) desde el campo location existente
+ */
 private function getCleanLocations($baseQuery)
 {
     $rawLocations = (clone $baseQuery)
-        ->select('location', 'city', 'neighborhood', 'latitude', 'longitude')
+        ->select('location', 'latitude', 'longitude')
         ->distinct()
-        ->orderBy('city')
-        ->orderBy('neighborhood')
+        ->whereNotNull('location')
+        ->where('location', '!=', '')
+        ->orderBy('location')
         ->get();
 
     $locations = collect();
 
     foreach ($rawLocations as $loc) {
-        // Priorizar datos estructurados
-        if ($loc->city && $loc->neighborhood) {
-            $display = "{$loc->neighborhood}, {$loc->city}";
-            $value = $loc->neighborhood;
-        } elseif ($loc->city) {
-            $display = $loc->city;
-            $value = $loc->city;
-        } else {
-            // Fallback: limpiar la ubicación raw
-            $display = $this->cleanLocationString($loc->location);
-            $value = $display;
-        }
-
-        if (!empty(trim($display))) {
+        // Limpiar la ubicación raw
+        $cleanedLocation = $this->cleanLocationString($loc->location);
+        
+        if (!empty(trim($cleanedLocation))) {
             $locations->push([
-                'value' => $value,
-                'display' => $display,
+                'value' => $cleanedLocation,
+                'display' => $cleanedLocation,
                 'lat' => $loc->latitude,
                 'lng' => $loc->longitude,
             ]);
@@ -230,15 +224,23 @@ private function cleanLocationString($location)
         ]);
     });
     
-    // Tomar las primeras 2 partes más relevantes
+    // Tomar las primeras 2 partes más relevantes (barrio, ciudad)
     $relevant = array_slice(array_values($parts), 0, 2);
     
-    // Limpiar códigos postales
+    // Limpiar códigos postales y espacios extra
     $cleaned = array_map(function($part) {
-        return preg_replace('/\b[A-Z0-9]{4,}\b/', '', trim($part));
+        $part = trim($part);
+        // Remover códigos postales (ej: B1636AAF)
+        $part = preg_replace('/\b[A-Z0-9]{4,}\b/', '', $part);
+        return trim($part);
     }, $relevant);
     
-    return implode(', ', array_filter($cleaned));
+    // Filtrar partes vacías y unir
+    $cleaned = array_filter($cleaned, function($part) {
+        return !empty($part);
+    });
+    
+    return implode(', ', $cleaned);
 }
 
   public function serChef()
