@@ -9,11 +9,11 @@
                     <!-- Header -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h2>Gestión de Usuarios</h2>
+                            <h2>Gestión de Experiencias Gastronómicas</h2>
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                                    <li class="breadcrumb-item active">Usuarios</li>
+                                    <li class="breadcrumb-item active">Experiencias</li>
                                 </ol>
                             </nav>
                         </div>
@@ -34,230 +34,167 @@
                         </div>
                     @endif
 
-                    <!-- Filtros y Estadísticas -->
+                    <!-- Estadísticas -->
                     <div class="row mb-4">
                         <div class="col-md-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $usuarios->total() }}</h5>
-                                    <p class="card-text text-muted">Total Usuarios</p>
+                                    <h5 class="card-title">{{ $cenas->count() }}</h5>
+                                    <p class="card-text text-muted">Total Experiencias</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $usuarios->where('role', 'admin')->count() }}</h5>
-                                    <p class="card-text text-muted">Administradores</p>
+                                    <h5 class="card-title">{{ $cenas->where('status', 'published')->count() }}</h5>
+                                    <p class="card-text text-muted">Publicadas</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $usuarios->where('role', 'chef_anfitrion')->count() }}</h5>
-                                    <p class="card-text text-muted">Chefs</p>
+                                    <h5 class="card-title">{{ $cenas->where('is_active', true)->count() }}</h5>
+                                    <p class="card-text text-muted">Activas</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $usuarios->where('role', 'comensal')->count() }}</h5>
-                                    <p class="card-text text-muted">Comensales</p>
+                                    <h5 class="card-title">{{ $cenas->where('datetime', '>', now())->count() }}</h5>
+                                    <p class="card-text text-muted">Próximas</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tabla de Usuarios -->
+                    <!-- Tabla de Experiencias -->
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">Lista de Usuarios</h5>
+                            <h5 class="mb-0">Lista de Experiencias Gastronómicas</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Usuario</th>
-                                            <th>Contacto</th>
-                                            <th>Rol & Permisos</th>
-                                            <th>Información Chef</th>
-                                            <th>Registro</th>
+                                            <th>Experiencia</th>
+                                            <th>Chef</th>
+                                            <th>Fecha/Hora</th>
+                                            <th>Capacidad</th>
+                                            <th>Precio</th>
+                                            <th>Estado</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($usuarios as $usuario)
+                                        @foreach($cenas as $cena)
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    @if($usuario->avatar)
-                                                        @if(str_starts_with($usuario->avatar, 'http'))
-                                                            <img src="{{ $usuario->avatar }}" alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                                        @else
-                                                            <img src="{{ asset('storage/' . $usuario->avatar) }}" alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                                        @endif
+                                                    @if($cena->cover_image_url)
+                                                        <img src="{{ $cena->cover_image_url }}" alt="{{ $cena->title }}" class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
                                                     @else
-                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 40px; height: 40px; font-weight: bold;">
-                                                            {{ substr($usuario->name, 0, 1) }}
+                                                        <div class="rounded me-2 d-flex align-items-center justify-content-center bg-light" style="width: 50px; height: 50px;">
+                                                            <i class="fas fa-utensils text-muted"></i>
                                                         </div>
                                                     @endif
                                                     <div>
-                                                        <div class="fw-bold">{{ $usuario->name }}</div>
-                                                        @if($usuario->provider)
-                                                            <small class="text-muted">
-                                                                <i class="fab fa-{{ $usuario->provider }}"></i> 
-                                                                {{ ucfirst($usuario->provider) }}
-                                                            </small>
-                                                        @endif
-                                                        @if($usuario->bio)
-                                                            <div>
-                                                                <small class="text-muted" title="{{ $usuario->bio }}">
-                                                                    {{ Str::limit($usuario->bio, 30) }}
-                                                                </small>
+                                                        <div class="fw-bold">{{ $cena->title }}</div>
+                                                        <small class="text-muted">{{ Str::limit($cena->menu, 40) }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if($cena->user)
+                                                    <div class="d-flex align-items-center">
+                                                        @if($cena->user->avatar)
+                                                            <img src="{{ $cena->user->avatar_url }}" alt="{{ $cena->user->name }}" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                                        @else
+                                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 30px; height: 30px; font-size: 12px;">
+                                                                {{ substr($cena->user->name, 0, 1) }}
                                                             </div>
                                                         @endif
+                                                        <span>{{ $cena->user->name }}</span>
                                                     </div>
+                                                @else
+                                                    <span class="text-muted">Sin chef</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <div class="fw-bold">{{ $cena->datetime->format('d/m/Y') }}</div>
+                                                    <small class="text-muted">{{ $cena->datetime->format('H:i') }}</small>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div>
-                                                    <small class="d-block">
-                                                        <i class="fas fa-envelope me-1"></i>{{ $usuario->email }}
-                                                    </small>
-                                                    @if($usuario->telefono)
-                                                        <small class="d-block text-muted">
-                                                            <i class="fas fa-phone me-1"></i>{{ $usuario->telefono }}
-                                                        </small>
-                                                    @endif
-                                                    @if($usuario->direccion)
-                                                        <small class="d-block text-muted" title="{{ $usuario->direccion }}">
-                                                            <i class="fas fa-map-marker-alt me-1"></i>{{ Str::limit($usuario->direccion, 25) }}
-                                                        </small>
+                                                    <span class="fw-bold">{{ $cena->guests_current }}/{{ $cena->guests_max }}</span>
+                                                    @if($cena->is_full)
+                                                        <span class="badge bg-danger ms-1">Completo</span>
+                                                    @elseif($cena->available_spots <= 3)
+                                                        <span class="badge bg-warning ms-1">{{ $cena->available_spots }} lugares</span>
                                                     @endif
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="mb-1">
-                                                    @if($usuario->role == 'admin')
-                                                        <span class="badge bg-danger">Administrador</span>
-                                                    @elseif($usuario->role == 'chef_anfitrion')
-                                                        <span class="badge bg-warning">Chef Anfitrión</span>
-                                                    @elseif($usuario->role == 'comensal')
-                                                        <span class="badge bg-success">Comensal</span>
+                                                <strong>{{ $cena->formatted_price }}</strong>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    @if($cena->status == 'published')
+                                                        <span class="badge bg-success">Publicada</span>
+                                                    @elseif($cena->status == 'draft')
+                                                        <span class="badge bg-secondary">Borrador</span>
                                                     @else
-                                                        <span class="badge bg-secondary">{{ $usuario->role }}</span>
+                                                        <span class="badge bg-warning">{{ $cena->status }}</span>
                                                     @endif
                                                 </div>
-                                                @if($usuario->roles->count() > 0)
-                                                    <div>
-                                                        @foreach($usuario->roles as $role)
-                                                            <span class="badge bg-info me-1" style="font-size: 0.7em;">{{ $role->name }}</span>
-                                                        @endforeach
-                                                    </div>
-                                                @endif
+                                                <div class="mt-1">
+                                                    @if($cena->is_active)
+                                                        <span class="badge bg-success">Activa</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Inactiva</span>
+                                                    @endif
+                                                </div>
                                             </td>
                                             <td>
-                                                @if($usuario->role == 'chef_anfitrion')
-                                                    <div class="small">
-                                                        @if($usuario->especialidad)
-                                                            <div class="mb-1">
-                                                                <strong>Especialidad:</strong> {{ $usuario->especialidad }}
-                                                            </div>
-                                                        @endif
-                                                        @if($usuario->experiencia_anos)
-                                                            <div class="mb-1">
-                                                                <i class="fas fa-clock me-1"></i>{{ $usuario->experience_text }}
-                                                            </div>
-                                                        @endif
-                                                        @if($usuario->rating > 0)
-                                                            <div class="mb-1">
-                                                                <i class="fas fa-star text-warning me-1"></i>{{ $usuario->formatted_rating }}
-                                                            </div>
-                                                        @endif
-                                                        <div class="d-flex gap-1">
-                                                            @if($usuario->instagram)
-                                                                <a href="{{ $usuario->instagram_url }}" target="_blank" class="text-decoration-none">
-                                                                    <i class="fab fa-instagram text-danger"></i>
-                                                                </a>
-                                                            @endif
-                                                            @if($usuario->facebook)
-                                                                <a href="{{ $usuario->facebook_url }}" target="_blank" class="text-decoration-none">
-                                                                    <i class="fab fa-facebook text-primary"></i>
-                                                                </a>
-                                                            @endif
-                                                            @if($usuario->website)
-                                                                <a href="{{ $usuario->website }}" target="_blank" class="text-decoration-none">
-                                                                    <i class="fas fa-globe text-info"></i>
-                                                                </a>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    <small class="text-muted">No aplica</small>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <small class="d-block">{{ $usuario->created_at->format('d/m/Y') }}</small>
-                                                <small class="text-muted">{{ $usuario->created_at->diffForHumans() }}</small>
-                                            </td>
-                                            <td>
-                                                @if($usuario->id !== auth()->id())
-                                                    <div class="btn-group" role="group">
-                                                        <!-- Ver Detalles -->
-                                                        <button type="button" class="btn btn-sm btn-outline-info" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#viewUserModal"
-                                                                data-user="{{ json_encode($usuario) }}"
-                                                                title="Ver detalles">
-                                                            <i class="fas fa-eye"></i>
-                                                        </button>
-                                                        
-                                                        <!-- Editar -->
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#editUserModal"
-                                                                data-user="{{ json_encode($usuario) }}"
-                                                                title="Editar usuario">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                        
-                                                        <!-- Cambiar Rol -->
-                                                        <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#changeRoleModal"
-                                                                data-user-id="{{ $usuario->id }}"
-                                                                data-user-name="{{ $usuario->name }}"
-                                                                data-current-role="{{ $usuario->role }}"
-                                                                title="Cambiar rol">
-                                                            <i class="fas fa-user-cog"></i>
-                                                        </button>
-                                                        
-                                                        <!-- Eliminar -->
-                                                        <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#deleteUserModal"
-                                                                data-user-id="{{ $usuario->id }}"
-                                                                data-user-name="{{ $usuario->name }}"
-                                                                title="Eliminar usuario">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                @else
-                                                    <small class="text-muted">Tu cuenta</small>
-                                                @endif
+                                                <div class="btn-group" role="group">
+                                                    <!-- Ver Detalles -->
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#viewCenaModal"
+                                                            data-cena="{{ json_encode($cena) }}"
+                                                            title="Ver detalles">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    
+                                                    <!-- Editar -->
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#editCenaModal"
+                                                            data-cena="{{ json_encode($cena) }}"
+                                                            title="Editar experiencia">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    
+                                                    <!-- Eliminar -->
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#deleteCenaModal"
+                                                            data-cena-id="{{ $cena->id }}"
+                                                            data-cena-title="{{ $cena->title }}"
+                                                            title="Eliminar experiencia">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                            </div>
-
-                            <!-- Paginación -->
-                            <div class="d-flex justify-content-center">
-                                {{ $usuarios->links() }}
                             </div>
                         </div>
                     </div>
@@ -268,14 +205,14 @@
 </div>
 
 <!-- Modal para Ver Detalles -->
-<div class="modal fade" id="viewUserModal" tabindex="-1">
+<div class="modal fade" id="viewCenaModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Detalles del Usuario</h5>
+                <h5 class="modal-title">Detalles de la Experiencia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="userDetailsContent">
+            <div class="modal-body" id="cenaDetailsContent">
                 <!-- Contenido dinámico -->
             </div>
             <div class="modal-footer">
@@ -285,69 +222,80 @@
     </div>
 </div>
 
-<!-- Modal para Editar Usuario -->
-<div class="modal fade" id="editUserModal" tabindex="-1">
+<!-- Modal para Editar Experiencia -->
+<div class="modal fade" id="editCenaModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Editar Usuario</h5>
+                <h5 class="modal-title">Editar Experiencia Gastronómica</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="editUserForm" method="POST">
+            <form id="editCenaForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Nombre</label>
-                                <input type="text" name="name" class="form-control" required>
+                                <label class="form-label">Título de la Experiencia</label>
+                                <input type="text" name="title" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" required>
+                                <label class="form-label">Fecha y Hora</label>
+                                <input type="datetime-local" name="datetime" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text" name="telefono" class="form-control">
+                                <label class="form-label">Precio por Persona</label>
+                                <input type="number" name="price" class="form-control" step="0.01" min="0" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Dirección</label>
-                                <textarea name="direccion" class="form-control" rows="2"></textarea>
+                                <label class="form-label">Capacidad Máxima</label>
+                                <input type="number" name="guests_max" class="form-control" min="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Invitados Actuales</label>
+                                <input type="number" name="guests_current" class="form-control" min="0">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Biografía</label>
-                                <textarea name="bio" class="form-control" rows="3"></textarea>
+                                <label class="form-label">Ubicación</label>
+                                <input type="text" name="location" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Especialidad (Solo Chefs)</label>
-                                <input type="text" name="especialidad" class="form-control">
+                                <label class="form-label">Estado</label>
+                                <select name="status" class="form-select" required>
+                                    <option value="draft">Borrador</option>
+                                    <option value="published">Publicada</option>
+                                    <option value="cancelled">Cancelada</option>
+                                </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Años de Experiencia</label>
-                                <input type="number" name="experiencia_anos" class="form-control" min="0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1">
+                                    <label class="form-check-label" for="is_active">
+                                        Experiencia Activa
+                                    </label>
+                                </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Website</label>
-                                <input type="url" name="website" class="form-control">
+                                <label class="form-label">Imagen de Portada</label>
+                                <input type="file" name="cover_image" class="form-control" accept="image/*">
+                                <small class="text-muted">Formatos: JPG, PNG, GIF. Máximo 2MB.</small>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Instagram</label>
-                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Facebook</label>
-                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL">
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Menú / Descripción</label>
+                        <textarea name="menu" class="form-control" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Requerimientos Especiales</label>
+                        <textarea name="special_requirements" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Política de Cancelación</label>
+                        <textarea name="cancellation_policy" class="form-control" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -359,53 +307,15 @@
     </div>
 </div>
 
-<!-- Modal para Cambiar Rol -->
-<div class="modal fade" id="changeRoleModal" tabindex="-1">
+<!-- Modal para Eliminar Experiencia -->
+<div class="modal fade" id="deleteCenaModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Cambiar Rol de Usuario</h5>
+                <h5 class="modal-title">Eliminar Experiencia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="changeRoleForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <p>Cambiar rol para: <strong id="userName"></strong></p>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Nuevo Rol</label>
-                        <select name="role" class="form-select" required>
-                            <option value="">Seleccionar rol...</option>
-                            @foreach($roles as $role)
-                                <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Atención:</strong> Cambiar el rol modificará los permisos del usuario inmediatamente.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Cambiar Rol</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Eliminar Usuario -->
-<div class="modal fade" id="deleteUserModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Eliminar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="deleteUserForm" method="POST">
+            <form id="deleteCenaForm" method="POST">
                 @csrf
                 @method('DELETE')
                 <div class="modal-body">
@@ -413,12 +323,12 @@
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         <strong>¡ATENCIÓN!</strong> Esta acción no se puede deshacer.
                     </div>
-                    <p>¿Estás seguro de que quieres eliminar al usuario: <strong id="deleteUserName"></strong>?</p>
-                    <p class="text-muted">Se eliminarán también todos sus datos relacionados (experiencias, reservas, etc.).</p>
+                    <p>¿Estás seguro de que quieres eliminar la experiencia: <strong id="deleteCenaTitle"></strong>?</p>
+                    <p class="text-muted">Se eliminarán también todas las reservas y datos relacionados.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
+                    <button type="submit" class="btn btn-danger">Eliminar Experiencia</button>
                 </div>
             </form>
         </div>
@@ -428,136 +338,114 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Modal Ver Detalles
-    const viewUserModal = document.getElementById('viewUserModal');
-    viewUserModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const user = JSON.parse(button.getAttribute('data-user'));
-        
-        const content = document.getElementById('userDetailsContent');
-        content.innerHTML = `
-            <div class="row">
-                <div class="col-md-4 text-center">
-                    ${user.avatar ? `<img src="${user.avatar.startsWith('http') ? user.avatar : '/storage/' + user.avatar}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">` : 
-                      `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${user.name.charAt(0)}</div>`}
-                    <h4>${user.name}</h4>
-                    <p class="text-muted">${user.email}</p>
-                </div>
-                <div class="col-md-8">
-                    <h6>Información Personal</h6>
-                    <table class="table table-sm">
-                        <tr><td><strong>Teléfono:</strong></td><td>${user.telefono || 'No especificado'}</td></tr>
-                        <tr><td><strong>Dirección:</strong></td><td>${user.direccion || 'No especificado'}</td></tr>
-                        <tr><td><strong>Biografía:</strong></td><td>${user.bio || 'No especificado'}</td></tr>
-                        <tr><td><strong>Rol:</strong></td><td>${user.role}</td></tr>
-                        <tr><td><strong>Proveedor:</strong></td><td>${user.provider || 'Registro directo'}</td></tr>
-                        <tr><td><strong>Registro:</strong></td><td>${new Date(user.created_at).toLocaleDateString()}</td></tr>
-                    </table>
-                    
-                    ${user.role === 'chef_anfitrion' ? `
-                        <h6 class="mt-3">Información Chef</h6>
-                        <table class="table table-sm">
-                            <tr><td><strong>Especialidad:</strong></td><td>${user.especialidad || 'No especificado'}</td></tr>
-                            <tr><td><strong>Experiencia:</strong></td><td>${user.experiencia_anos ? user.experiencia_anos + ' años' : 'No especificado'}</td></tr>
-                            <tr><td><strong>Rating:</strong></td><td>${user.rating > 0 ? user.rating + '/5' : 'Sin calificaciones'}</td></tr>
-                            <tr><td><strong>Instagram:</strong></td><td>${user.instagram ? `<a href="#" target="_blank">${user.instagram}</a>` : 'No especificado'}</td></tr>
-                            <tr><td><strong>Facebook:</strong></td><td>${user.facebook || 'No especificado'}</td></tr>
-                            <tr><td><strong>Website:</strong></td><td>${user.website ? `<a href="${user.website}" target="_blank">${user.website}</a>` : 'No especificado'}</td></tr>
-                        </table>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-    });
-
-    // Modal Editar Usuario
-    const editUserModal = document.getElementById('editUserModal');
-    editUserModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const user = JSON.parse(button.getAttribute('data-user'));
-        
-        const form = document.getElementById('editUserForm');
-        form.action = `/admin/users/${user.id}`;
-        
-        // Mostrar avatar actual
-        const currentAvatar = document.getElementById('currentAvatar');
-        if (user.avatar) {
-            const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`;
-            currentAvatar.src = avatarUrl;
-            currentAvatar.style.display = 'block';
-        } else {
-            currentAvatar.style.display = 'none';
-        }
-        
-        // Limpiar input de archivo
-        document.getElementById('avatarInput').value = '';
-        document.getElementById('removeAvatar').checked = false;
-        
-        form.querySelector('[name="name"]').value = user.name || '';
-        form.querySelector('[name="email"]').value = user.email || '';
-        form.querySelector('[name="telefono"]').value = user.telefono || '';
-        form.querySelector('[name="direccion"]').value = user.direccion || '';
-        form.querySelector('[name="bio"]').value = user.bio || '';
-        form.querySelector('[name="especialidad"]').value = user.especialidad || '';
-        form.querySelector('[name="experiencia_anos"]').value = user.experiencia_anos || '';
-        form.querySelector('[name="website"]').value = user.website || '';
-        form.querySelector('[name="instagram"]').value = user.instagram || '';
-        form.querySelector('[name="facebook"]').value = user.facebook || '';
-    });
-
-    // Preview de imagen al seleccionar archivo
-    document.getElementById('avatarInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        const currentAvatar = document.getElementById('currentAvatar');
-        
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentAvatar.src = e.target.result;
-                currentAvatar.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+    const viewCenaModal = document.getElementById('viewCenaModal');
+    if (viewCenaModal) {
+        viewCenaModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const cena = JSON.parse(button.getAttribute('data-cena'));
             
-            // Desmarcar eliminar avatar si se selecciona nueva imagen
-            document.getElementById('removeAvatar').checked = false;
-        }
-    });
+            const content = document.getElementById('cenaDetailsContent');
+            if (content) {
+                content.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            ${cena.cover_image_url ? 
+                                `<img src="${cena.cover_image_url}" class="img-fluid rounded mb-3" style="max-height: 200px;">` : 
+                                `<div class="bg-light rounded p-5 mb-3"><i class="fas fa-utensils fa-3x text-muted"></i></div>`
+                            }
+                            <h4>${cena.title}</h4>
+                            <p class="text-muted">${cena.formatted_price} por persona</p>
+                        </div>
+                        <div class="col-md-8">
+                            <h6>Información General</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Fecha:</strong></td><td>${new Date(cena.datetime).toLocaleDateString()}</td></tr>
+                                <tr><td><strong>Hora:</strong></td><td>${new Date(cena.datetime).toLocaleTimeString()}</td></tr>
+                                <tr><td><strong>Ubicación:</strong></td><td>${cena.location}</td></tr>
+                                <tr><td><strong>Capacidad:</strong></td><td>${cena.guests_current}/${cena.guests_max} personas</td></tr>
+                                <tr><td><strong>Estado:</strong></td><td>${cena.status}</td></tr>
+                                <tr><td><strong>Activa:</strong></td><td>${cena.is_active ? 'Sí' : 'No'}</td></tr>
+                            </table>
+                            
+                            <h6 class="mt-3">Menú / Descripción</h6>
+                            <p>${cena.menu || 'No especificado'}</p>
+                            
+                            ${cena.special_requirements ? `
+                                <h6 class="mt-3">Requerimientos Especiales</h6>
+                                <p>${cena.special_requirements}</p>
+                            ` : ''}
+                            
+                            ${cena.cancellation_policy ? `
+                                <h6 class="mt-3">Política de Cancelación</h6>
+                                <p>${cena.cancellation_policy}</p>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
 
-    // Manejar checkbox de eliminar avatar
-    document.getElementById('removeAvatar').addEventListener('change', function() {
-        const avatarInput = document.getElementById('avatarInput');
-        const currentAvatar = document.getElementById('currentAvatar');
-        
-        if (this.checked) {
-            avatarInput.value = '';
-            currentAvatar.style.display = 'none';
-        }
-    });
+    // Modal Editar Experiencia
+    const editCenaModal = document.getElementById('editCenaModal');
+    if (editCenaModal) {
+        editCenaModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const cena = JSON.parse(button.getAttribute('data-cena'));
+            
+            const form = document.getElementById('editCenaForm');
+            if (form) {
+                form.action = `/admin/cenas/${cena.id}`;
+                
+                // Función para establecer valores de campos
+                const setFieldValue = (name, value) => {
+                    const field = form.querySelector(`[name="${name}"]`);
+                    if (field) {
+                        if (field.type === 'checkbox') {
+                            field.checked = Boolean(value);
+                        } else {
+                            field.value = value || '';
+                        }
+                    }
+                };
+                
+                // Llenar campos del formulario
+                setFieldValue('title', cena.title);
+                setFieldValue('price', cena.price);
+                setFieldValue('guests_max', cena.guests_max);
+                setFieldValue('guests_current', cena.guests_current);
+                setFieldValue('location', cena.location);
+                setFieldValue('status', cena.status);
+                setFieldValue('is_active', cena.is_active);
+                setFieldValue('menu', cena.menu);
+                setFieldValue('special_requirements', cena.special_requirements);
+                setFieldValue('cancellation_policy', cena.cancellation_policy);
+                
+                // Formatear datetime para input datetime-local
+                if (cena.datetime) {
+                    const date = new Date(cena.datetime);
+                    const formattedDate = date.toISOString().slice(0, 16);
+                    setFieldValue('datetime', formattedDate);
+                }
+            }
+        });
+    }
 
-    // Modal Cambiar Rol
-    const changeRoleModal = document.getElementById('changeRoleModal');
-    changeRoleModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const userId = button.getAttribute('data-user-id');
-        const userName = button.getAttribute('data-user-name');
-        const currentRole = button.getAttribute('data-current-role');
-        
-        document.getElementById('userName').textContent = userName;
-        document.getElementById('changeRoleForm').action = `/admin/users/${userId}/role`;
-        
-        const select = changeRoleModal.querySelector('[name="role"]');
-        select.value = currentRole;
-    });
-
-    // Modal Eliminar Usuario
-    const deleteUserModal = document.getElementById('deleteUserModal');
-    deleteUserModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const userId = button.getAttribute('data-user-id');
-        const userName = button.getAttribute('data-user-name');
-        
-        document.getElementById('deleteUserName').textContent = userName;
-        document.getElementById('deleteUserForm').action = `/admin/users/${userId}`;
-    });
+    // Modal Eliminar Experiencia
+    const deleteCenaModal = document.getElementById('deleteCenaModal');
+    if (deleteCenaModal) {
+        deleteCenaModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const cenaId = button.getAttribute('data-cena-id');
+            const cenaTitle = button.getAttribute('data-cena-title');
+            
+            const titleElement = document.getElementById('deleteCenaTitle');
+            const form = document.getElementById('deleteCenaForm');
+            
+            if (titleElement) titleElement.textContent = cenaTitle;
+            if (form) form.action = `/admin/cenas/${cenaId}`;
+        });
+    }
 });
 </script>
 @endsection
