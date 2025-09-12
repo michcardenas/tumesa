@@ -13,12 +13,12 @@
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('admin.usuarios.index') }}">Usuarios</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('admin.users') }}">Usuarios</a></li>
                                     <li class="breadcrumb-item active">Editar: {{ $user->name }}</li>
                                 </ol>
                             </nav>
                         </div>
-                        <a href="{{ route('admin.usuarios.index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('admin.users') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Volver a Lista
                         </a>
                     </div>
@@ -289,7 +289,7 @@
                                                 <button type="submit" class="btn btn-primary">
                                                     <i class="fas fa-save me-2"></i>Guardar Cambios
                                                 </button>
-                                                <a href="{{ route('admin.usuarios.index') }}" class="btn btn-outline-secondary ms-2">
+                                                <a href="{{ route('admin.users') }}" class="btn btn-outline-secondary ms-2">
                                                     <i class="fas fa-times me-2"></i>Cancelar
                                                 </a>
                                             </div>
