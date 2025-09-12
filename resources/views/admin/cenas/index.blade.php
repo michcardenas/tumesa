@@ -285,8 +285,7 @@
     </div>
 </div>
 
-
-<!-- Modal para Editar Usuario - VERSIÓN CORREGIDA -->
+<!-- Modal para Editar Usuario -->
 <div class="modal fade" id="editUserModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -294,60 +293,18 @@
                 <h5 class="modal-title">Editar Usuario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="editUserForm" method="POST" enctype="multipart/form-data">
+            <form id="editUserForm" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <!-- Sección de Avatar -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <label class="form-label">Avatar Actual</label>
-                                    <div class="position-relative d-inline-block">
-                                        <img id="currentAvatar" 
-                                             src="" 
-                                             alt="Avatar" 
-                                             class="rounded-circle" 
-                                             style="width: 80px; height: 80px; object-fit: cover; display: none;">
-                                        <div id="avatarPlaceholder" 
-                                             class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" 
-                                             style="width: 80px; height: 80px; font-size: 32px; font-weight: bold; display: none;">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="avatarInput" class="form-label">Cambiar Avatar</label>
-                                    <input type="file" 
-                                           id="avatarInput" 
-                                           name="avatar" 
-                                           class="form-control" 
-                                           accept="image/*">
-                                    <small class="text-muted">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB.</small>
-                                </div>
-                                <div class="form-check">
-                                    <input type="checkbox" 
-                                           id="removeAvatar" 
-                                           name="remove_avatar" 
-                                           class="form-check-input" 
-                                           value="1">
-                                    <label class="form-check-label" for="removeAvatar">
-                                        Eliminar avatar actual
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Información Personal -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Nombre *</label>
+                                <label class="form-label">Nombre</label>
                                 <input type="text" name="name" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Email *</label>
+                                <label class="form-label">Email</label>
                                 <input type="email" name="email" class="form-control" required>
                             </div>
                             <div class="mb-3">
@@ -362,63 +319,40 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">Biografía</label>
-                                <textarea name="bio" class="form-control" rows="3" maxlength="500"></textarea>
-                                <small class="text-muted">Máximo 500 caracteres</small>
+                                <textarea name="bio" class="form-control" rows="3"></textarea>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Especialidad (Solo Chefs)</label>
-                                <input type="text" name="especialidad" class="form-control" placeholder="Ej: Cocina Italiana, Asados, etc.">
+                                <input type="text" name="especialidad" class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Años de Experiencia</label>
-                                <input type="number" name="experiencia_anos" class="form-control" min="0" max="50">
+                                <input type="number" name="experiencia_anos" class="form-control" min="0">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Website</label>
-                                <input type="url" name="website" class="form-control" placeholder="https://ejemplo.com">
+                                <input type="url" name="website" class="form-control">
                             </div>
                         </div>
                     </div>
-
-                    <!-- Redes Sociales -->
                     <div class="row">
-                        <div class="col-12">
-                            <h6 class="mb-3">Redes Sociales</h6>
-                        </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">
-                                    <i class="fab fa-instagram text-danger me-1"></i>
-                                    Instagram
-                                </label>
-                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL completa">
-                                <small class="text-muted">Sin el símbolo @</small>
+                                <label class="form-label">Instagram</label>
+                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">
-                                    <i class="fab fa-facebook text-primary me-1"></i>
-                                    Facebook
-                                </label>
-                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL completa">
+                                <label class="form-label">Facebook</label>
+                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL">
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Información adicional -->
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <small>Los campos marcados con (*) son obligatorios. Los cambios en las redes sociales y especialidad solo aplican para usuarios con rol de Chef.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i>Guardar Cambios
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -495,180 +429,92 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Modal Ver Detalles
     const viewUserModal = document.getElementById('viewUserModal');
-    if (viewUserModal) {
-        viewUserModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const user = JSON.parse(button.getAttribute('data-user'));
-            
-            const content = document.getElementById('userDetailsContent');
-            if (content) {
-                content.innerHTML = `
-                    <div class="row">
-                        <div class="col-md-4 text-center">
-                            ${user.avatar ? `<img src="${user.avatar.startsWith('http') ? user.avatar : '/storage/' + user.avatar}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">` : 
-                              `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${user.name.charAt(0)}</div>`}
-                            <h4>${user.name}</h4>
-                            <p class="text-muted">${user.email}</p>
-                        </div>
-                        <div class="col-md-8">
-                            <h6>Información Personal</h6>
-                            <table class="table table-sm">
-                                <tr><td><strong>Teléfono:</strong></td><td>${user.telefono || 'No especificado'}</td></tr>
-                                <tr><td><strong>Dirección:</strong></td><td>${user.direccion || 'No especificado'}</td></tr>
-                                <tr><td><strong>Biografía:</strong></td><td>${user.bio || 'No especificado'}</td></tr>
-                                <tr><td><strong>Rol:</strong></td><td>${user.role}</td></tr>
-                                <tr><td><strong>Proveedor:</strong></td><td>${user.provider || 'Registro directo'}</td></tr>
-                                <tr><td><strong>Registro:</strong></td><td>${new Date(user.created_at).toLocaleDateString()}</td></tr>
-                            </table>
-                            
-                            ${user.role === 'chef_anfitrion' ? `
-                                <h6 class="mt-3">Información Chef</h6>
-                                <table class="table table-sm">
-                                    <tr><td><strong>Especialidad:</strong></td><td>${user.especialidad || 'No especificado'}</td></tr>
-                                    <tr><td><strong>Experiencia:</strong></td><td>${user.experiencia_anos ? user.experiencia_anos + ' años' : 'No especificado'}</td></tr>
-                                    <tr><td><strong>Rating:</strong></td><td>${user.rating > 0 ? user.rating + '/5' : 'Sin calificaciones'}</td></tr>
-                                    <tr><td><strong>Instagram:</strong></td><td>${user.instagram ? `<a href="#" target="_blank">${user.instagram}</a>` : 'No especificado'}</td></tr>
-                                    <tr><td><strong>Facebook:</strong></td><td>${user.facebook || 'No especificado'}</td></tr>
-                                    <tr><td><strong>Website:</strong></td><td>${user.website ? `<a href="${user.website}" target="_blank">${user.website}</a>` : 'No especificado'}</td></tr>
-                                </table>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            }
-        });
-    }
+    viewUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const user = JSON.parse(button.getAttribute('data-user'));
+        
+        const content = document.getElementById('userDetailsContent');
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    ${user.avatar ? `<img src="${user.avatar.startsWith('http') ? user.avatar : '/storage/' + user.avatar}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">` : 
+                      `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${user.name.charAt(0)}</div>`}
+                    <h4>${user.name}</h4>
+                    <p class="text-muted">${user.email}</p>
+                </div>
+                <div class="col-md-8">
+                    <h6>Información Personal</h6>
+                    <table class="table table-sm">
+                        <tr><td><strong>Teléfono:</strong></td><td>${user.telefono || 'No especificado'}</td></tr>
+                        <tr><td><strong>Dirección:</strong></td><td>${user.direccion || 'No especificado'}</td></tr>
+                        <tr><td><strong>Biografía:</strong></td><td>${user.bio || 'No especificado'}</td></tr>
+                        <tr><td><strong>Rol:</strong></td><td>${user.role}</td></tr>
+                        <tr><td><strong>Proveedor:</strong></td><td>${user.provider || 'Registro directo'}</td></tr>
+                        <tr><td><strong>Registro:</strong></td><td>${new Date(user.created_at).toLocaleDateString()}</td></tr>
+                    </table>
+                    
+                    ${user.role === 'chef_anfitrion' ? `
+                        <h6 class="mt-3">Información Chef</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Especialidad:</strong></td><td>${user.especialidad || 'No especificado'}</td></tr>
+                            <tr><td><strong>Experiencia:</strong></td><td>${user.experiencia_anos ? user.experiencia_anos + ' años' : 'No especificado'}</td></tr>
+                            <tr><td><strong>Rating:</strong></td><td>${user.rating > 0 ? user.rating + '/5' : 'Sin calificaciones'}</td></tr>
+                            <tr><td><strong>Instagram:</strong></td><td>${user.instagram ? `<a href="#" target="_blank">${user.instagram}</a>` : 'No especificado'}</td></tr>
+                            <tr><td><strong>Facebook:</strong></td><td>${user.facebook || 'No especificado'}</td></tr>
+                            <tr><td><strong>Website:</strong></td><td>${user.website ? `<a href="${user.website}" target="_blank">${user.website}</a>` : 'No especificado'}</td></tr>
+                        </table>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
 
     // Modal Editar Usuario
     const editUserModal = document.getElementById('editUserModal');
-    if (editUserModal) {
-        editUserModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const user = JSON.parse(button.getAttribute('data-user'));
-            
-            const form = document.getElementById('editUserForm');
-            if (form) {
-                form.action = `/admin/users/${user.id}`;
-            }
-            
-            // Mostrar avatar actual o placeholder
-            const currentAvatar = document.getElementById('currentAvatar');
-            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-            
-            if (currentAvatar && avatarPlaceholder) {
-                if (user.avatar) {
-                    const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`;
-                    currentAvatar.src = avatarUrl;
-                    currentAvatar.style.display = 'block';
-                    avatarPlaceholder.style.display = 'none';
-                } else {
-                    currentAvatar.style.display = 'none';
-                    avatarPlaceholder.textContent = user.name.charAt(0).toUpperCase();
-                    avatarPlaceholder.style.display = 'flex';
-                }
-            }
-            
-            // Limpiar input de archivo y checkbox
-            const avatarInput = document.getElementById('avatarInput');
-            const removeAvatar = document.getElementById('removeAvatar');
-            if (avatarInput) avatarInput.value = '';
-            if (removeAvatar) removeAvatar.checked = false;
-            
-            // Llenar campos del formulario
-            if (form) {
-                const setFieldValue = (name, value) => {
-                    const field = form.querySelector(`[name="${name}"]`);
-                    if (field) field.value = value || '';
-                };
-                
-                setFieldValue('name', user.name);
-                setFieldValue('email', user.email);
-                setFieldValue('telefono', user.telefono);
-                setFieldValue('direccion', user.direccion);
-                setFieldValue('bio', user.bio);
-                setFieldValue('especialidad', user.especialidad);
-                setFieldValue('experiencia_anos', user.experiencia_anos);
-                setFieldValue('website', user.website);
-                setFieldValue('instagram', user.instagram);
-                setFieldValue('facebook', user.facebook);
-            }
-        });
-    }
-
-    // Preview de imagen al seleccionar archivo
-    const avatarInput = document.getElementById('avatarInput');
-    if (avatarInput) {
-        avatarInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const currentAvatar = document.getElementById('currentAvatar');
-            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-            const removeAvatar = document.getElementById('removeAvatar');
-            
-            if (file && currentAvatar && avatarPlaceholder) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentAvatar.src = e.target.result;
-                    currentAvatar.style.display = 'block';
-                    avatarPlaceholder.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-                
-                // Desmarcar eliminar avatar si se selecciona nueva imagen
-                if (removeAvatar) removeAvatar.checked = false;
-            }
-        });
-    }
-
-    // Manejar checkbox de eliminar avatar
-    const removeAvatar = document.getElementById('removeAvatar');
-    if (removeAvatar) {
-        removeAvatar.addEventListener('change', function() {
-            const avatarInput = document.getElementById('avatarInput');
-            const currentAvatar = document.getElementById('currentAvatar');
-            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-            
-            if (this.checked && currentAvatar && avatarPlaceholder) {
-                if (avatarInput) avatarInput.value = '';
-                currentAvatar.style.display = 'none';
-                avatarPlaceholder.style.display = 'flex';
-            }
-        });
-    }
+    editUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const user = JSON.parse(button.getAttribute('data-user'));
+        
+        const form = document.getElementById('editUserForm');
+        form.action = `/admin/users/${user.id}`;
+        
+        form.querySelector('[name="name"]').value = user.name || '';
+        form.querySelector('[name="email"]').value = user.email || '';
+        form.querySelector('[name="telefono"]').value = user.telefono || '';
+        form.querySelector('[name="direccion"]').value = user.direccion || '';
+        form.querySelector('[name="bio"]').value = user.bio || '';
+        form.querySelector('[name="especialidad"]').value = user.especialidad || '';
+        form.querySelector('[name="experiencia_anos"]').value = user.experiencia_anos || '';
+        form.querySelector('[name="website"]').value = user.website || '';
+        form.querySelector('[name="instagram"]').value = user.instagram || '';
+        form.querySelector('[name="facebook"]').value = user.facebook || '';
+    });
 
     // Modal Cambiar Rol
     const changeRoleModal = document.getElementById('changeRoleModal');
-    if (changeRoleModal) {
-        changeRoleModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const userId = button.getAttribute('data-user-id');
-            const userName = button.getAttribute('data-user-name');
-            const currentRole = button.getAttribute('data-current-role');
-            
-            const userNameElement = document.getElementById('userName');
-            const changeRoleForm = document.getElementById('changeRoleForm');
-            const roleSelect = changeRoleModal.querySelector('[name="role"]');
-            
-            if (userNameElement) userNameElement.textContent = userName;
-            if (changeRoleForm) changeRoleForm.action = `/admin/users/${userId}/role`;
-            if (roleSelect) roleSelect.value = currentRole;
-        });
-    }
+    changeRoleModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const userId = button.getAttribute('data-user-id');
+        const userName = button.getAttribute('data-user-name');
+        const currentRole = button.getAttribute('data-current-role');
+        
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('changeRoleForm').action = `/admin/users/${userId}/role`;
+        
+        const select = changeRoleModal.querySelector('[name="role"]');
+        select.value = currentRole;
+    });
 
     // Modal Eliminar Usuario
     const deleteUserModal = document.getElementById('deleteUserModal');
-    if (deleteUserModal) {
-        deleteUserModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const userId = button.getAttribute('data-user-id');
-            const userName = button.getAttribute('data-user-name');
-            
-            const deleteUserName = document.getElementById('deleteUserName');
-            const deleteUserForm = document.getElementById('deleteUserForm');
-            
-            if (deleteUserName) deleteUserName.textContent = userName;
-            if (deleteUserForm) deleteUserForm.action = `/admin/users/${userId}`;
-        });
-    }
+    deleteUserModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const userId = button.getAttribute('data-user-id');
+        const userName = button.getAttribute('data-user-name');
+        
+        document.getElementById('deleteUserName').textContent = userName;
+        document.getElementById('deleteUserForm').action = `/admin/users/${userId}`;
+    });
 });
 </script>
 @endsection
