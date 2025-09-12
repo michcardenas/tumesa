@@ -44,37 +44,18 @@ class ExperienciasController extends Controller
             });
         }
 
-        // FILTRO DE UBICACIÓN INTELIGENTE
+        // Filtro de ubicación corregido - solo usar el campo 'location' que existe
         if ($city !== '') {
-            \Log::info('Buscando ciudad: ' . $city);
-            
-            // Búsqueda inteligente por partes de la ubicación
-            $query->where(function($q) use ($city) {
-                // Buscar el texto completo
-                $q->where('location', 'like', "%{$city}%");
-                
-                // También buscar por partes separadas por comas
-                $parts = explode(',', $city);
-                foreach ($parts as $part) {
-                    $part = trim($part);
-                    if (!empty($part)) {
-                        $q->orWhere('location', 'like', "%{$part}%");
-                    }
-                }
-                
-                // Búsquedas específicas para casos comunes
-                if (stripos($city, 'Ciudad Jardín Lomas del Palomar') !== false) {
-                    $q->orWhere('location', 'like', "%Lomas del Palomar%")
-                      ->orWhere('location', 'like', "%Ciudad Jardín%");
-                }
-                
-                if (stripos($city, 'Buenos Aires') !== false) {
-                    $q->orWhere('location', 'like', "%Buenos Aires%")
-                      ->orWhere('location', 'like', "%CABA%");
-                }
-            });
-            
-            \Log::info('Resultados encontrados: ' . $query->count());
+            // Primero intentar búsqueda exacta por ubicación
+            $exactMatch = clone $query;
+            $exactMatch->where('location', 'like', "%{$city}%");
+
+            // Si no hay resultados exactos y tenemos coordenadas, buscar por proximidad
+            if ($exactMatch->count() === 0 && $userLat && $userLng) {
+                $query = $this->addProximityFilter($query, $userLat, $userLng, $radius);
+            } else {
+                $query = $exactMatch;
+            }
         } elseif ($userLat && $userLng) {
             // Solo filtro por proximidad si no hay filtro de ciudad
             $query = $this->addProximityFilter($query, $userLat, $userLng, $radius);
@@ -115,7 +96,7 @@ class ExperienciasController extends Controller
         // Paginación
         $cenas = $query->paginate(12)->appends($request->query());
 
-        // UBICACIONES PARA EL FILTRO - VERSIÓN CORREGIDA
+        // Opciones para selects (ciudades y barrios limpios)
         $locations = $this->getCleanLocations($base);
 
         return view('experiencias.index', [
@@ -138,54 +119,12 @@ class ExperienciasController extends Controller
     }
 
     /**
-     * VERSIÓN CORREGIDA - Obtener ubicaciones para el filtro
-     * Problema: estaba limpiando las ubicaciones para mostrar, 
-     * pero debe mostrar exactamente lo que está en la DB para que coincida la búsqueda
-     */
-    private function getCleanLocations($baseQuery)
-    {
-        $rawLocations = (clone $baseQuery)
-            ->select('location', 'latitude', 'longitude')
-            ->distinct()
-            ->whereNotNull('location')
-            ->where('location', '!=', '')
-            ->orderBy('location')
-            ->get();
-
-        $locations = collect();
-
-        foreach ($rawLocations as $loc) {
-            // OPCIÓN 1: Usar la ubicación tal como está en la DB (más confiable)
-            $locations->push([
-                'value' => $loc->location, // Usar el valor original
-                'display' => $this->cleanLocationForDisplay($loc->location), // Solo limpiar para mostrar
-                'lat' => $loc->latitude,
-                'lng' => $loc->longitude,
-            ]);
-        }
-
-        return $locations->unique('value')->values();
-    }
-
-    /**
-     * Nueva función: limpiar SOLO para mostrar, no para filtrar
-     */
-    private function cleanLocationForDisplay($location)
-    {
-        if (empty($location)) return '';
-        
-        // Limpiezas básicas para mostrar mejor
-        $location = preg_replace('/^\d+\s*-?\s*/', '', $location); // Quitar números de dirección
-        $location = preg_replace('/,\s*Argentina$/', '', $location); // Quitar ", Argentina" al final
-        
-        return trim($location);
-    }
-
-    /**
      * Agregar filtro de proximidad geográfica
      */
     private function addProximityFilter($query, $lat, $lng, $radiusKm)
     {
+        // Fórmula Haversine para calcular distancia
+        // 6371 es el radio de la Tierra en km
         $earthRadius = 6371;
         
         return $query->whereRaw("
@@ -222,15 +161,142 @@ class ExperienciasController extends Controller
         ", [$lat, $lng, $lat]);
     }
 
+    private function getCleanLocations($baseQuery)
+    {
+        $rawLocations = (clone $baseQuery)
+            ->select('location', 'latitude', 'longitude')
+            ->distinct()
+            ->whereNotNull('location')
+            ->where('location', '!=', '')
+            ->orderBy('location')
+            ->get();
+
+        $locations = collect();
+
+        foreach ($rawLocations as $loc) {
+            // Limpiar la ubicación raw
+            $cleanedLocation = $this->cleanLocationString($loc->location);
+            
+            if (!empty(trim($cleanedLocation))) {
+                $locations->push([
+                    'value' => $cleanedLocation,
+                    'display' => $cleanedLocation,
+                    'lat' => $loc->latitude,
+                    'lng' => $loc->longitude,
+                ]);
+            }
+        }
+
+        return $locations->unique('value')->values();
+    }
+
+    private function cleanLocationString($location)
+    {
+        if (empty($location)) return '';
+        
+        $parts = explode(',', $location);
+        
+        // Limpiar cada parte
+        $cleanedParts = [];
+        foreach ($parts as $part) {
+            $part = trim($part);
+            
+            // Saltar partes vacías
+            if (empty($part)) continue;
+            
+            // Saltar números de dirección al inicio (ej: "700 - Aviador Plüschow")
+            $part = preg_replace('/^\d+\s*-?\s*/', '', $part);
+            
+            // Saltar códigos postales
+            $part = preg_replace('/\b[A-Z0-9]{4,}\b/', '', $part);
+            
+            // Normalizar nombres de ciudades
+            if (in_array(strtolower($part), ['caba', 'ciudad autónoma de buenos aires'])) {
+                $part = 'Buenos Aires';
+            }
+            
+            // Saltar términos que no queremos
+            if (in_array($part, ['Argentina', 'Provincia de Buenos Aires'])) {
+                continue;
+            }
+            
+            $part = trim($part);
+            if (!empty($part)) {
+                $cleanedParts[] = $part;
+            }
+        }
+        
+        // Definir barrios/zonas conocidas
+        $knownNeighborhoods = [
+            'Palermo Hollywood', 'Palermo', 'Recoleta', 'Puerto Madero', 'San Telmo',
+            'La Boca', 'Belgrano', 'Villa Crespo', 'Colegiales', 'Núñez', 'Barracas',
+            'Caballito', 'Flores', 'Villa Urquiza', 'Villa Devoto', 'Retiro',
+            'Ciudad Jardín Lomas del Palomar', 'Lomas del Palomar', 'El Paraíso'
+        ];
+        
+        // Definir ciudades conocidas
+        $knownCities = [
+            'Buenos Aires', 'Vicente López', 'San Isidro', 'Tigre', 'La Plata',
+            'Partido de Ramallo', 'Quilmes', 'Avellaneda', 'Lanús', 'Lomas de Zamora'
+        ];
+        
+        $neighborhood = null;
+        $city = null;
+        
+        // Buscar barrio y ciudad en las partes
+        foreach ($cleanedParts as $part) {
+            // Verificar si es un barrio conocido
+            foreach ($knownNeighborhoods as $knownNeighborhood) {
+                if (stripos($part, $knownNeighborhood) !== false) {
+                    $neighborhood = $knownNeighborhood;
+                    break;
+                }
+            }
+            
+            // Verificar si es una ciudad conocida
+            foreach ($knownCities as $knownCity) {
+                if (stripos($part, $knownCity) !== false) {
+                    $city = $knownCity;
+                    break;
+                }
+            }
+        }
+        
+        // Si no encontramos barrio/ciudad específicos, usar heurística
+        if (!$neighborhood && !$city && count($cleanedParts) >= 2) {
+            // La penúltima parte suele ser el barrio, la última la ciudad
+            $neighborhood = $cleanedParts[count($cleanedParts) - 2];
+            $city = $cleanedParts[count($cleanedParts) - 1];
+        } elseif (!$neighborhood && !$city && count($cleanedParts) == 1) {
+            // Solo una parte, asumir que es barrio
+            $neighborhood = $cleanedParts[0];
+        }
+        
+        // Construir resultado
+        if ($neighborhood && $city) {
+            return "{$neighborhood}, {$city}";
+        } elseif ($neighborhood) {
+            return $neighborhood;
+        } elseif ($city) {
+            return $city;
+        }
+        
+        return '';
+    }
+
     public function serChef()
     {
+        // Obtener contenidos específicos de la página 'ser-chef'
         $contenidosSerChef = \App\Models\Pagina::porPagina('ser-chef')->get()->keyBy('clave');
+        
         return view('experiencias.ser-chef', ['contenidos' => $contenidosSerChef]);
     }
 
     public function comoFunciona()
     {
+        // Obtener contenidos específicos de la página 'como-funciona'
         $contenidosComoFunciona = \App\Models\Pagina::porPagina('como-funciona')->get()->keyBy('clave');
+        
         return view('experiencias.como-funciona', ['contenidos' => $contenidosComoFunciona]);
     }
 }
