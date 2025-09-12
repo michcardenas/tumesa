@@ -223,6 +223,7 @@ Route::delete('/admin/cenas/{cena}', [App\Http\Controllers\AdminCenasController:
 Route::put('/admin/cenas/{cena}', [App\Http\Controllers\AdminCenasController::class, 'update'])->name('admin.cenas.update');
 
 
+Route::get('/admin/users/{user}/edit', [HomeController::class, 'editUser'])->name('admin.users.edit');
 
 Route::get('/admin/users', [HomeController::class, 'users'])->name('admin.users');
 Route::put('/admin/users/{user}', [HomeController::class, 'updateUser'])->name('admin.users.update');

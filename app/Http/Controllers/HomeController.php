@@ -411,5 +411,9 @@ public function deleteUser(User $user)
                         ->with('error', 'Error al eliminar el usuario: ' . $e->getMessage());
     }
 }
+public function editUser(User $user)
+{
+    return view('admin.users.edit', compact('user'));
+}
     
 }
