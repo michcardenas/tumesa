@@ -285,7 +285,8 @@
     </div>
 </div>
 
-<!-- Modal para Editar Usuario -->
+
+<!-- Modal para Editar Usuario - VERSIÓN CORREGIDA -->
 <div class="modal fade" id="editUserModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -293,18 +294,60 @@
                 <h5 class="modal-title">Editar Usuario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="editUserForm" method="POST">
+            <form id="editUserForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
+                    <!-- Sección de Avatar -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="text-center">
+                                <div class="mb-3">
+                                    <label class="form-label">Avatar Actual</label>
+                                    <div class="position-relative d-inline-block">
+                                        <img id="currentAvatar" 
+                                             src="" 
+                                             alt="Avatar" 
+                                             class="rounded-circle" 
+                                             style="width: 80px; height: 80px; object-fit: cover; display: none;">
+                                        <div id="avatarPlaceholder" 
+                                             class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" 
+                                             style="width: 80px; height: 80px; font-size: 32px; font-weight: bold; display: none;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="avatarInput" class="form-label">Cambiar Avatar</label>
+                                    <input type="file" 
+                                           id="avatarInput" 
+                                           name="avatar" 
+                                           class="form-control" 
+                                           accept="image/*">
+                                    <small class="text-muted">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB.</small>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" 
+                                           id="removeAvatar" 
+                                           name="remove_avatar" 
+                                           class="form-check-input" 
+                                           value="1">
+                                    <label class="form-check-label" for="removeAvatar">
+                                        Eliminar avatar actual
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Personal -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Nombre</label>
+                                <label class="form-label">Nombre *</label>
                                 <input type="text" name="name" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Email</label>
+                                <label class="form-label">Email *</label>
                                 <input type="email" name="email" class="form-control" required>
                             </div>
                             <div class="mb-3">
@@ -319,40 +362,63 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">Biografía</label>
-                                <textarea name="bio" class="form-control" rows="3"></textarea>
+                                <textarea name="bio" class="form-control" rows="3" maxlength="500"></textarea>
+                                <small class="text-muted">Máximo 500 caracteres</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Especialidad (Solo Chefs)</label>
-                                <input type="text" name="especialidad" class="form-control">
+                                <input type="text" name="especialidad" class="form-control" placeholder="Ej: Cocina Italiana, Asados, etc.">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Años de Experiencia</label>
-                                <input type="number" name="experiencia_anos" class="form-control" min="0">
+                                <input type="number" name="experiencia_anos" class="form-control" min="0" max="50">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Website</label>
-                                <input type="url" name="website" class="form-control">
+                                <input type="url" name="website" class="form-control" placeholder="https://ejemplo.com">
                             </div>
                         </div>
                     </div>
+
+                    <!-- Redes Sociales -->
                     <div class="row">
+                        <div class="col-12">
+                            <h6 class="mb-3">Redes Sociales</h6>
+                        </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Instagram</label>
-                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL">
+                                <label class="form-label">
+                                    <i class="fab fa-instagram text-danger me-1"></i>
+                                    Instagram
+                                </label>
+                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL completa">
+                                <small class="text-muted">Sin el símbolo @</small>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Facebook</label>
-                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL">
+                                <label class="form-label">
+                                    <i class="fab fa-facebook text-primary me-1"></i>
+                                    Facebook
+                                </label>
+                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL completa">
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>Los campos marcados con (*) son obligatorios. Los cambios en las redes sociales y especialidad solo aplican para usuarios con rol de Chef.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Guardar Cambios
+                    </button>
                 </div>
             </form>
         </div>
