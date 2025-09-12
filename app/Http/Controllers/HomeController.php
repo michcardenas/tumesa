@@ -329,32 +329,74 @@ public function users()
  */
 public function updateUser(Request $request, User $user)
 {
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $user->id,
-        'telefono' => 'nullable|string|max:20',
-        'direccion' => 'nullable|string|max:500',
-        'bio' => 'nullable|string|max:1000',
-        'especialidad' => 'nullable|string|max:255',
-        'experiencia_anos' => 'nullable|integer|min:0|max:50',
-        'website' => 'nullable|url|max:255',
-        'instagram' => 'nullable|string|max:255',
-        'facebook' => 'nullable|string|max:255',
-    ]);
-
     try {
-        $user->update($request->only([
-            'name', 'email', 'telefono', 'direccion', 'bio', 
-            'especialidad', 'experiencia_anos', 'website', 
-            'instagram', 'facebook'
-        ]));
+        // Validación
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'telefono' => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:500',
+            'bio' => 'nullable|string|max:1000',
+            'role' => 'required|in:admin,chef_anfitrion,comensal',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ];
 
-        return redirect()->route('admin.usuarios.index')
-                        ->with('success', 'Usuario actualizado correctamente.');
-                        
+        // Reglas adicionales para chefs
+        if ($request->role === 'chef_anfitrion') {
+            $rules = array_merge($rules, [
+                'especialidad' => 'nullable|string|max:255',
+                'experiencia_anos' => 'nullable|integer|min:0|max:50',
+                'website' => 'nullable|url|max:255',
+                'instagram' => 'nullable|string|max:255',
+                'facebook' => 'nullable|string|max:255',
+            ]);
+        }
+
+        $validatedData = $request->validate($rules);
+
+        // Manejar subida del avatar
+        if ($request->hasFile('avatar')) {
+            // Eliminar avatar anterior si existe y no es de proveedor externo
+            if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
+                $oldAvatarPath = storage_path('app/public/' . $user->avatar);
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath);
+                }
+            }
+
+            // Subir nuevo avatar
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $validatedData['avatar'] = $avatarPath;
+        }
+
+        // Si no es chef, limpiar campos de chef
+        if ($validatedData['role'] !== 'chef_anfitrion') {
+            $validatedData['especialidad'] = null;
+            $validatedData['experiencia_anos'] = null;
+            $validatedData['website'] = null;
+            $validatedData['instagram'] = null;
+            $validatedData['facebook'] = null;
+        }
+
+        // Actualizar usuario
+        $user->update($validatedData);
+
+        // Actualizar roles de Spatie si es necesario
+        if ($user->role !== $validatedData['role']) {
+            $user->syncRoles([$validatedData['role']]);
+        }
+
+        return redirect()
+            ->route('admin.users.edit', $user)
+            ->with('success', 'Usuario actualizado correctamente.');
+
     } catch (\Exception $e) {
-        return redirect()->route('admin.usuarios.index')
-                        ->with('error', 'Error al actualizar el usuario: ' . $e->getMessage());
+        \Log::error('Error actualizando usuario: ' . $e->getMessage());
+        
+        return redirect()
+            ->back()
+            ->withInput()
+            ->with('error', 'Ocurrió un error al actualizar el usuario. Por favor, intenta de nuevo.');
     }
 }
 
