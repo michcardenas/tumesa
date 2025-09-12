@@ -285,7 +285,7 @@ public function procesarReserva(Request $request): RedirectResponse
         ]);
 
         // Configurar MercadoPago
-        \MercadoPago\MercadoPagoConfig::setAccessToken("TEST-7710589893885438-080817-3174e23bf25e4fa03ab7383053c5b49c-90445855");
+\MercadoPago\MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
         
         $client = new \MercadoPago\Client\Preference\PreferenceClient();
         
