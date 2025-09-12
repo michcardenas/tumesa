@@ -431,25 +431,13 @@
                             @endif
                             
                             {{-- NUEVA SECCIÓN: Ubicación de la experiencia --}}
-                            @if($cena->location || $cena->city || $cena->address)
-                                <div class="location-info">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>
-                                        @if($cena->city)
-                                            {{ $cena->city }}
-                                        @elseif($cena->location)
-                                            {{ $cena->location }}
-                                        @elseif($cena->address)
-                                            {{ \Illuminate\Support\Str::limit($cena->address, 30) }}
-                                        @endif
-                                        
-                                        {{-- Si hay barrio/zona, agrégalo --}}
-                                        @if($cena->neighborhood)
-                                            , {{ $cena->neighborhood }}
-                                        @endif
-                                    </span>
-                                </div>
-                            @endif
+                      {{-- Ubicación de la experiencia --}}
+                        @if(!empty($cena->clean_location))
+                            <div class="location-info">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ $cena->clean_location }}</span>
+                            </div>
+                        @endif
                             
                             <div class="meta">
                                 <div class="meta-item">
