@@ -478,6 +478,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('editUserForm');
         form.action = `/admin/users/${user.id}`;
         
+        // Mostrar avatar actual
+        const currentAvatar = document.getElementById('currentAvatar');
+        if (user.avatar) {
+            const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`;
+            currentAvatar.src = avatarUrl;
+            currentAvatar.style.display = 'block';
+        } else {
+            currentAvatar.style.display = 'none';
+        }
+        
+        // Limpiar input de archivo
+        document.getElementById('avatarInput').value = '';
+        document.getElementById('removeAvatar').checked = false;
+        
         form.querySelector('[name="name"]').value = user.name || '';
         form.querySelector('[name="email"]').value = user.email || '';
         form.querySelector('[name="telefono"]').value = user.telefono || '';
@@ -488,6 +502,35 @@ document.addEventListener('DOMContentLoaded', function() {
         form.querySelector('[name="website"]').value = user.website || '';
         form.querySelector('[name="instagram"]').value = user.instagram || '';
         form.querySelector('[name="facebook"]').value = user.facebook || '';
+    });
+
+    // Preview de imagen al seleccionar archivo
+    document.getElementById('avatarInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const currentAvatar = document.getElementById('currentAvatar');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentAvatar.src = e.target.result;
+                currentAvatar.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            // Desmarcar eliminar avatar si se selecciona nueva imagen
+            document.getElementById('removeAvatar').checked = false;
+        }
+    });
+
+    // Manejar checkbox de eliminar avatar
+    document.getElementById('removeAvatar').addEventListener('change', function() {
+        const avatarInput = document.getElementById('avatarInput');
+        const currentAvatar = document.getElementById('currentAvatar');
+        
+        if (this.checked) {
+            avatarInput.value = '';
+            currentAvatar.style.display = 'none';
+        }
     });
 
     // Modal Cambiar Rol
