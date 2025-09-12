@@ -455,7 +455,7 @@ public function deleteUser(User $user)
 }
 public function editUser(User $user)
 {
-    return view('admin.users.edit', compact('user'));
+    return view('admin.usuarios.edit', compact('user'));
 }
     
 }
