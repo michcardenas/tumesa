@@ -215,14 +215,12 @@
                                                             <i class="fas fa-eye"></i>
                                                         </button>
                                                         
-                                                        <!-- Editar -->
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#editUserModal"
-                                                                data-user="{{ json_encode($usuario) }}"
-                                                                title="Editar usuario">
+                                                        <!-- Editar - Ahora redirige a la página de edición -->
+                                                        <a href="{{ route('admin.users.edit', $usuario) }}" 
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="Editar usuario">
                                                             <i class="fas fa-edit"></i>
-                                                        </button>
+                                                        </a>
                                                         
                                                         <!-- Cambiar Rol -->
                                                         <button type="button" class="btn btn-sm btn-outline-warning" 
@@ -281,80 +279,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Editar Usuario -->
-<div class="modal fade" id="editUserModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="editUserForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Nombre</label>
-                                <input type="text" name="name" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text" name="telefono" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Dirección</label>
-                                <textarea name="direccion" class="form-control" rows="2"></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Biografía</label>
-                                <textarea name="bio" class="form-control" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Especialidad (Solo Chefs)</label>
-                                <input type="text" name="especialidad" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Años de Experiencia</label>
-                                <input type="number" name="experiencia_anos" class="form-control" min="0">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Website</label>
-                                <input type="url" name="website" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Instagram</label>
-                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Facebook</label>
-                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
