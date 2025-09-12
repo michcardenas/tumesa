@@ -215,14 +215,12 @@
                                                             <i class="fas fa-eye"></i>
                                                         </button>
                                                         
-                                                        <!-- Editar -->
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#editUserModal"
-                                                                data-user="{{ json_encode($usuario) }}"
-                                                                title="Editar usuario">
+                                                        <!-- Editar - Ahora redirige a la página de edición -->
+                                                        <a href="{{ route('admin.users.edit', $usuario) }}" 
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="Editar usuario">
                                                             <i class="fas fa-edit"></i>
-                                                        </button>
+                                                        </a>
                                                         
                                                         <!-- Cambiar Rol -->
                                                         <button type="button" class="btn btn-sm btn-outline-warning" 
@@ -281,80 +279,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Editar Usuario -->
-<div class="modal fade" id="editUserModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="editUserForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Nombre</label>
-                                <input type="text" name="name" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text" name="telefono" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Dirección</label>
-                                <textarea name="direccion" class="form-control" rows="2"></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Biografía</label>
-                                <textarea name="bio" class="form-control" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Especialidad (Solo Chefs)</label>
-                                <input type="text" name="especialidad" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Años de Experiencia</label>
-                                <input type="number" name="experiencia_anos" class="form-control" min="0">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Website</label>
-                                <input type="url" name="website" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Instagram</label>
-                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Facebook</label>
-                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -427,12 +351,24 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Modal Ver Detalles
+    // Modal Ver Detalles - Con mejor manejo de errores
     const viewUserModal = document.getElementById('viewUserModal');
     if (viewUserModal) {
         viewUserModal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
-            const user = JSON.parse(button.getAttribute('data-user'));
+            
+            if (!button || !button.hasAttribute('data-user')) {
+                console.error('No se encontró data-user en el botón de ver detalles');
+                return;
+            }
+            
+            let user;
+            try {
+                user = JSON.parse(button.getAttribute('data-user'));
+            } catch (e) {
+                console.error('Error parsing user data for view modal:', e);
+                return;
+            }
             
             const content = document.getElementById('userDetailsContent');
             if (content) {
@@ -440,9 +376,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="row">
                         <div class="col-md-4 text-center">
                             ${user.avatar ? `<img src="${user.avatar.startsWith('http') ? user.avatar : '/storage/' + user.avatar}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">` : 
-                              `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${user.name.charAt(0)}</div>`}
-                            <h4>${user.name}</h4>
-                            <p class="text-muted">${user.email}</p>
+                              `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${(user.name || 'U').charAt(0)}</div>`}
+                            <h4>${user.name || 'Usuario sin nombre'}</h4>
+                            <p class="text-muted">${user.email || 'Sin email'}</p>
                         </div>
                         <div class="col-md-8">
                             <h6>Información Personal</h6>
@@ -450,9 +386,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <tr><td><strong>Teléfono:</strong></td><td>${user.telefono || 'No especificado'}</td></tr>
                                 <tr><td><strong>Dirección:</strong></td><td>${user.direccion || 'No especificado'}</td></tr>
                                 <tr><td><strong>Biografía:</strong></td><td>${user.bio || 'No especificado'}</td></tr>
-                                <tr><td><strong>Rol:</strong></td><td>${user.role}</td></tr>
+                                <tr><td><strong>Rol:</strong></td><td>${user.role || 'Sin rol'}</td></tr>
                                 <tr><td><strong>Proveedor:</strong></td><td>${user.provider || 'Registro directo'}</td></tr>
-                                <tr><td><strong>Registro:</strong></td><td>${new Date(user.created_at).toLocaleDateString()}</td></tr>
+                                <tr><td><strong>Registro:</strong></td><td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Fecha desconocida'}</td></tr>
                             </table>
                             
                             ${user.role === 'chef_anfitrion' ? `
@@ -469,104 +405,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 `;
+            } else {
+                console.error('No se encontró el contenedor userDetailsContent');
             }
         });
-    }
-
-    // Modal Editar Usuario
-    const editUserModal = document.getElementById('editUserModal');
-    if (editUserModal) {
-        editUserModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const user = JSON.parse(button.getAttribute('data-user'));
-            
-            const form = document.getElementById('editUserForm');
-            if (form) {
-                form.action = `/admin/users/${user.id}`;
-            }
-            
-            // Mostrar avatar actual o placeholder
-            const currentAvatar = document.getElementById('currentAvatar');
-            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-            
-            if (currentAvatar && avatarPlaceholder) {
-                if (user.avatar) {
-                    const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`;
-                    currentAvatar.src = avatarUrl;
-                    currentAvatar.style.display = 'block';
-                    avatarPlaceholder.style.display = 'none';
-                } else {
-                    currentAvatar.style.display = 'none';
-                    avatarPlaceholder.textContent = user.name.charAt(0).toUpperCase();
-                    avatarPlaceholder.style.display = 'flex';
-                }
-            }
-            
-            // Limpiar input de archivo y checkbox
-            const avatarInput = document.getElementById('avatarInput');
-            const removeAvatar = document.getElementById('removeAvatar');
-            if (avatarInput) avatarInput.value = '';
-            if (removeAvatar) removeAvatar.checked = false;
-            
-            // Llenar campos del formulario
-            if (form) {
-                const setFieldValue = (name, value) => {
-                    const field = form.querySelector(`[name="${name}"]`);
-                    if (field) field.value = value || '';
-                };
-                
-                setFieldValue('name', user.name);
-                setFieldValue('email', user.email);
-                setFieldValue('telefono', user.telefono);
-                setFieldValue('direccion', user.direccion);
-                setFieldValue('bio', user.bio);
-                setFieldValue('especialidad', user.especialidad);
-                setFieldValue('experiencia_anos', user.experiencia_anos);
-                setFieldValue('website', user.website);
-                setFieldValue('instagram', user.instagram);
-                setFieldValue('facebook', user.facebook);
-            }
-        });
-    }
-
-    // Preview de imagen al seleccionar archivo
-    const avatarInput = document.getElementById('avatarInput');
-    if (avatarInput) {
-        avatarInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const currentAvatar = document.getElementById('currentAvatar');
-            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-            const removeAvatar = document.getElementById('removeAvatar');
-            
-            if (file && currentAvatar && avatarPlaceholder) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentAvatar.src = e.target.result;
-                    currentAvatar.style.display = 'block';
-                    avatarPlaceholder.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-                
-                // Desmarcar eliminar avatar si se selecciona nueva imagen
-                if (removeAvatar) removeAvatar.checked = false;
-            }
-        });
-    }
-
-    // Manejar checkbox de eliminar avatar
-    const removeAvatar = document.getElementById('removeAvatar');
-    if (removeAvatar) {
-        removeAvatar.addEventListener('change', function() {
-            const avatarInput = document.getElementById('avatarInput');
-            const currentAvatar = document.getElementById('currentAvatar');
-            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-            
-            if (this.checked && currentAvatar && avatarPlaceholder) {
-                if (avatarInput) avatarInput.value = '';
-                currentAvatar.style.display = 'none';
-                avatarPlaceholder.style.display = 'flex';
-            }
-        });
+    } else {
+        console.error('No se encontró el modal viewUserModal');
     }
 
     // Modal Cambiar Rol
