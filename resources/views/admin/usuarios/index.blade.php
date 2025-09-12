@@ -215,14 +215,12 @@
                                                             <i class="fas fa-eye"></i>
                                                         </button>
                                                         
-                                                        <!-- Editar -->
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#editUserModal"
-                                                                data-user="{{ json_encode($usuario) }}"
-                                                                title="Editar usuario">
+                                                        <!-- Editar - Ahora redirige a la página de edición -->
+                                                        <a href="{{ route('admin.users.edit', $usuario) }}" 
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="Editar usuario">
                                                             <i class="fas fa-edit"></i>
-                                                        </button>
+                                                        </a>
                                                         
                                                         <!-- Cambiar Rol -->
                                                         <button type="button" class="btn btn-sm btn-outline-warning" 
@@ -281,80 +279,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Editar Usuario -->
-<div class="modal fade" id="editUserModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="editUserForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Nombre</label>
-                                <input type="text" name="name" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text" name="telefono" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Dirección</label>
-                                <textarea name="direccion" class="form-control" rows="2"></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Biografía</label>
-                                <textarea name="bio" class="form-control" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Especialidad (Solo Chefs)</label>
-                                <input type="text" name="especialidad" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Años de Experiencia</label>
-                                <input type="number" name="experiencia_anos" class="form-control" min="0">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Website</label>
-                                <input type="url" name="website" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Instagram</label>
-                                <input type="text" name="instagram" class="form-control" placeholder="@usuario o URL">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Facebook</label>
-                                <input type="text" name="facebook" class="form-control" placeholder="usuario o URL">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -427,137 +351,102 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Modal Ver Detalles
+    // Modal Ver Detalles - Con mejor manejo de errores
     const viewUserModal = document.getElementById('viewUserModal');
-    viewUserModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const user = JSON.parse(button.getAttribute('data-user'));
-        
-        const content = document.getElementById('userDetailsContent');
-        content.innerHTML = `
-            <div class="row">
-                <div class="col-md-4 text-center">
-                    ${user.avatar ? `<img src="${user.avatar.startsWith('http') ? user.avatar : '/storage/' + user.avatar}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">` : 
-                      `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${user.name.charAt(0)}</div>`}
-                    <h4>${user.name}</h4>
-                    <p class="text-muted">${user.email}</p>
-                </div>
-                <div class="col-md-8">
-                    <h6>Información Personal</h6>
-                    <table class="table table-sm">
-                        <tr><td><strong>Teléfono:</strong></td><td>${user.telefono || 'No especificado'}</td></tr>
-                        <tr><td><strong>Dirección:</strong></td><td>${user.direccion || 'No especificado'}</td></tr>
-                        <tr><td><strong>Biografía:</strong></td><td>${user.bio || 'No especificado'}</td></tr>
-                        <tr><td><strong>Rol:</strong></td><td>${user.role}</td></tr>
-                        <tr><td><strong>Proveedor:</strong></td><td>${user.provider || 'Registro directo'}</td></tr>
-                        <tr><td><strong>Registro:</strong></td><td>${new Date(user.created_at).toLocaleDateString()}</td></tr>
-                    </table>
-                    
-                    ${user.role === 'chef_anfitrion' ? `
-                        <h6 class="mt-3">Información Chef</h6>
-                        <table class="table table-sm">
-                            <tr><td><strong>Especialidad:</strong></td><td>${user.especialidad || 'No especificado'}</td></tr>
-                            <tr><td><strong>Experiencia:</strong></td><td>${user.experiencia_anos ? user.experiencia_anos + ' años' : 'No especificado'}</td></tr>
-                            <tr><td><strong>Rating:</strong></td><td>${user.rating > 0 ? user.rating + '/5' : 'Sin calificaciones'}</td></tr>
-                            <tr><td><strong>Instagram:</strong></td><td>${user.instagram ? `<a href="#" target="_blank">${user.instagram}</a>` : 'No especificado'}</td></tr>
-                            <tr><td><strong>Facebook:</strong></td><td>${user.facebook || 'No especificado'}</td></tr>
-                            <tr><td><strong>Website:</strong></td><td>${user.website ? `<a href="${user.website}" target="_blank">${user.website}</a>` : 'No especificado'}</td></tr>
-                        </table>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-    });
-
-    // Modal Editar Usuario
-    const editUserModal = document.getElementById('editUserModal');
-    editUserModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const user = JSON.parse(button.getAttribute('data-user'));
-        
-        const form = document.getElementById('editUserForm');
-        form.action = `/admin/users/${user.id}`;
-        
-        // Mostrar avatar actual
-        const currentAvatar = document.getElementById('currentAvatar');
-        if (user.avatar) {
-            const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`;
-            currentAvatar.src = avatarUrl;
-            currentAvatar.style.display = 'block';
-        } else {
-            currentAvatar.style.display = 'none';
-        }
-        
-        // Limpiar input de archivo
-        document.getElementById('avatarInput').value = '';
-        document.getElementById('removeAvatar').checked = false;
-        
-        form.querySelector('[name="name"]').value = user.name || '';
-        form.querySelector('[name="email"]').value = user.email || '';
-        form.querySelector('[name="telefono"]').value = user.telefono || '';
-        form.querySelector('[name="direccion"]').value = user.direccion || '';
-        form.querySelector('[name="bio"]').value = user.bio || '';
-        form.querySelector('[name="especialidad"]').value = user.especialidad || '';
-        form.querySelector('[name="experiencia_anos"]').value = user.experiencia_anos || '';
-        form.querySelector('[name="website"]').value = user.website || '';
-        form.querySelector('[name="instagram"]').value = user.instagram || '';
-        form.querySelector('[name="facebook"]').value = user.facebook || '';
-    });
-
-    // Preview de imagen al seleccionar archivo
-    document.getElementById('avatarInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        const currentAvatar = document.getElementById('currentAvatar');
-        
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentAvatar.src = e.target.result;
-                currentAvatar.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+    if (viewUserModal) {
+        viewUserModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
             
-            // Desmarcar eliminar avatar si se selecciona nueva imagen
-            document.getElementById('removeAvatar').checked = false;
-        }
-    });
-
-    // Manejar checkbox de eliminar avatar
-    document.getElementById('removeAvatar').addEventListener('change', function() {
-        const avatarInput = document.getElementById('avatarInput');
-        const currentAvatar = document.getElementById('currentAvatar');
-        
-        if (this.checked) {
-            avatarInput.value = '';
-            currentAvatar.style.display = 'none';
-        }
-    });
+            if (!button || !button.hasAttribute('data-user')) {
+                console.error('No se encontró data-user en el botón de ver detalles');
+                return;
+            }
+            
+            let user;
+            try {
+                user = JSON.parse(button.getAttribute('data-user'));
+            } catch (e) {
+                console.error('Error parsing user data for view modal:', e);
+                return;
+            }
+            
+            const content = document.getElementById('userDetailsContent');
+            if (content) {
+                content.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            ${user.avatar ? `<img src="${user.avatar.startsWith('http') ? user.avatar : '/storage/' + user.avatar}" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">` : 
+                              `<div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">${(user.name || 'U').charAt(0)}</div>`}
+                            <h4>${user.name || 'Usuario sin nombre'}</h4>
+                            <p class="text-muted">${user.email || 'Sin email'}</p>
+                        </div>
+                        <div class="col-md-8">
+                            <h6>Información Personal</h6>
+                            <table class="table table-sm">
+                                <tr><td><strong>Teléfono:</strong></td><td>${user.telefono || 'No especificado'}</td></tr>
+                                <tr><td><strong>Dirección:</strong></td><td>${user.direccion || 'No especificado'}</td></tr>
+                                <tr><td><strong>Biografía:</strong></td><td>${user.bio || 'No especificado'}</td></tr>
+                                <tr><td><strong>Rol:</strong></td><td>${user.role || 'Sin rol'}</td></tr>
+                                <tr><td><strong>Proveedor:</strong></td><td>${user.provider || 'Registro directo'}</td></tr>
+                                <tr><td><strong>Registro:</strong></td><td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Fecha desconocida'}</td></tr>
+                            </table>
+                            
+                            ${user.role === 'chef_anfitrion' ? `
+                                <h6 class="mt-3">Información Chef</h6>
+                                <table class="table table-sm">
+                                    <tr><td><strong>Especialidad:</strong></td><td>${user.especialidad || 'No especificado'}</td></tr>
+                                    <tr><td><strong>Experiencia:</strong></td><td>${user.experiencia_anos ? user.experiencia_anos + ' años' : 'No especificado'}</td></tr>
+                                    <tr><td><strong>Rating:</strong></td><td>${user.rating > 0 ? user.rating + '/5' : 'Sin calificaciones'}</td></tr>
+                                    <tr><td><strong>Instagram:</strong></td><td>${user.instagram ? `<a href="#" target="_blank">${user.instagram}</a>` : 'No especificado'}</td></tr>
+                                    <tr><td><strong>Facebook:</strong></td><td>${user.facebook || 'No especificado'}</td></tr>
+                                    <tr><td><strong>Website:</strong></td><td>${user.website ? `<a href="${user.website}" target="_blank">${user.website}</a>` : 'No especificado'}</td></tr>
+                                </table>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            } else {
+                console.error('No se encontró el contenedor userDetailsContent');
+            }
+        });
+    } else {
+        console.error('No se encontró el modal viewUserModal');
+    }
 
     // Modal Cambiar Rol
     const changeRoleModal = document.getElementById('changeRoleModal');
-    changeRoleModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const userId = button.getAttribute('data-user-id');
-        const userName = button.getAttribute('data-user-name');
-        const currentRole = button.getAttribute('data-current-role');
-        
-        document.getElementById('userName').textContent = userName;
-        document.getElementById('changeRoleForm').action = `/admin/users/${userId}/role`;
-        
-        const select = changeRoleModal.querySelector('[name="role"]');
-        select.value = currentRole;
-    });
+    if (changeRoleModal) {
+        changeRoleModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+            const currentRole = button.getAttribute('data-current-role');
+            
+            const userNameElement = document.getElementById('userName');
+            const changeRoleForm = document.getElementById('changeRoleForm');
+            const roleSelect = changeRoleModal.querySelector('[name="role"]');
+            
+            if (userNameElement) userNameElement.textContent = userName;
+            if (changeRoleForm) changeRoleForm.action = `/admin/users/${userId}/role`;
+            if (roleSelect) roleSelect.value = currentRole;
+        });
+    }
 
     // Modal Eliminar Usuario
     const deleteUserModal = document.getElementById('deleteUserModal');
-    deleteUserModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const userId = button.getAttribute('data-user-id');
-        const userName = button.getAttribute('data-user-name');
-        
-        document.getElementById('deleteUserName').textContent = userName;
-        document.getElementById('deleteUserForm').action = `/admin/users/${userId}`;
-    });
+    if (deleteUserModal) {
+        deleteUserModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+            
+            const deleteUserName = document.getElementById('deleteUserName');
+            const deleteUserForm = document.getElementById('deleteUserForm');
+            
+            if (deleteUserName) deleteUserName.textContent = userName;
+            if (deleteUserForm) deleteUserForm.action = `/admin/users/${userId}`;
+        });
+    }
 });
 </script>
 @endsection
