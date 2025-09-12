@@ -44,15 +44,36 @@ class ExperienciasController extends Controller
             });
         }
 
-        // FILTRO DE UBICACIÓN CORREGIDO
+        // FILTRO DE UBICACIÓN INTELIGENTE
         if ($city !== '') {
-            // DEBUG: Agregar log para ver qué está buscando
             \Log::info('Buscando ciudad: ' . $city);
             
-            // Buscar en la ubicación original SIN procesar
-            $query->where('location', 'like', "%{$city}%");
+            // Búsqueda inteligente por partes de la ubicación
+            $query->where(function($q) use ($city) {
+                // Buscar el texto completo
+                $q->where('location', 'like', "%{$city}%");
+                
+                // También buscar por partes separadas por comas
+                $parts = explode(',', $city);
+                foreach ($parts as $part) {
+                    $part = trim($part);
+                    if (!empty($part)) {
+                        $q->orWhere('location', 'like', "%{$part}%");
+                    }
+                }
+                
+                // Búsquedas específicas para casos comunes
+                if (stripos($city, 'Ciudad Jardín Lomas del Palomar') !== false) {
+                    $q->orWhere('location', 'like', "%Lomas del Palomar%")
+                      ->orWhere('location', 'like', "%Ciudad Jardín%");
+                }
+                
+                if (stripos($city, 'Buenos Aires') !== false) {
+                    $q->orWhere('location', 'like', "%Buenos Aires%")
+                      ->orWhere('location', 'like', "%CABA%");
+                }
+            });
             
-            // DEBUG: Ver cuántos resultados encontró
             \Log::info('Resultados encontrados: ' . $query->count());
         } elseif ($userLat && $userLng) {
             // Solo filtro por proximidad si no hay filtro de ciudad
