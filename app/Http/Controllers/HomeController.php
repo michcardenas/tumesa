@@ -387,7 +387,7 @@ public function updateUser(Request $request, User $user)
         }
 
         return redirect()
-            ->route('admin.usuarios.edit', $user)
+            ->route('admin.users.edit', $user)
             ->with('success', 'Usuario actualizado correctamente.');
 
     } catch (\Exception $e) {
@@ -455,7 +455,7 @@ public function deleteUser(User $user)
 }
 public function editUser(User $user)
 {
-    return view('admin.usuarios.edit', compact('user'));
+    return view('admin.users.edit', compact('user'));
 }
     
 }
