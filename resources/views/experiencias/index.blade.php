@@ -67,6 +67,24 @@
 .meta { display:flex; gap:12px; align-items:center; color:#6b7280; font-size:13px; margin:4px 0; flex-wrap: wrap; }
 .meta-item { display: flex; align-items: center; gap: 4px; }
 
+/* Nuevo estilo para la ubicación */
+.location-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: #f0f9ff;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #0369a1;
+    font-weight: 500;
+}
+
+.location-info i {
+    color: #0284c7;
+}
+
 .description { 
   color: #6b7280; font-size: 14px; line-height: 1.5; margin: 8px 0 12px 0; 
   flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
@@ -97,6 +115,7 @@
 .results-count { color: #6b7280; font-size: 14px; margin-bottom: 16px; }
 .no-results { text-align: center; padding: 40px 20px; }
 .no-results i { font-size: 48px; color: #d1d5db; margin-bottom: 16px; }
+
 /* ========== Estilos para el Filtro de Precio Mejorado ========== */
 .price-range-container {
     margin: 15px 0;
@@ -223,84 +242,82 @@
                        value="{{ $filters['q'] ?? '' }}">
             </div>
 
-     <div class="field">
-    <label class="label" for="city">
-        <i class="fas fa-map-marker-alt" style="color: #6b7280; margin-right: 4px;"></i>
-        Ubicación
-    </label>
-    
-    {{-- Coordenadas para búsqueda por proximidad --}}
-    <input type="hidden" name="lat" id="lat" value="{{ $filters['lat'] ?? '' }}">
-    <input type="hidden" name="lng" id="lng" value="{{ $filters['lng'] ?? '' }}">
-    <input type="hidden" name="radius" id="radius" value="{{ $filters['radius'] ?? 10 }}">
-    
-    <div class="location-input-container">
-        <select class="select" id="city" name="city">
-            <option value="">Todas las ubicaciones</option>
-            @foreach($locations as $location)
-                <option value="{{ $location['value'] }}" 
-                        data-lat="{{ $location['lat'] ?? '' }}" 
-                        data-lng="{{ $location['lng'] ?? '' }}"
-                        {{ ($filters['city'] ?? '') === $location['value'] ? 'selected' : '' }}>
-                    {{ $location['display'] }}
-                </option>
-            @endforeach
-        </select>
-        
-        <button type="button" id="nearMeBtn" class="btn-near-me" title="Buscar cerca de mi ubicación">
-            <i class="fas fa-crosshairs"></i>
-            <span>Cerca de mí</span>
-        </button>
-    </div>
-    
-    {{-- Indicador cuando se usa geolocalización --}}
-    <div id="currentLocationDisplay" class="current-location" style="display: none;">
-        <i class="fas fa-map-marker-alt" style="color: #10b981;"></i>
-        <span id="locationText">Búsqueda por proximidad activa</span>
-    </div>
-</div>
+            <div class="field">
+                <label class="label" for="city">
+                    <i class="fas fa-map-marker-alt" style="color: #6b7280; margin-right: 4px;"></i>
+                    Ubicación
+                </label>
+                
+                {{-- Coordenadas para búsqueda por proximidad --}}
+                <input type="hidden" name="lat" id="lat" value="{{ $filters['lat'] ?? '' }}">
+                <input type="hidden" name="lng" id="lng" value="{{ $filters['lng'] ?? '' }}">
+                <input type="hidden" name="radius" id="radius" value="{{ $filters['radius'] ?? 10 }}">
+                
+                <div class="location-input-container">
+                    <select class="select" id="city" name="city">
+                        <option value="">Todas las ubicaciones</option>
+                        @foreach($locations as $location)
+                            <option value="{{ $location['value'] }}" 
+                                    data-lat="{{ $location['lat'] ?? '' }}" 
+                                    data-lng="{{ $location['lng'] ?? '' }}"
+                                    {{ ($filters['city'] ?? '') === $location['value'] ? 'selected' : '' }}>
+                                {{ $location['display'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                    
+                    <button type="button" id="nearMeBtn" class="btn-near-me" title="Buscar cerca de mi ubicación">
+                        <i class="fas fa-crosshairs"></i>
+                        <span>Cerca de mí</span>
+                    </button>
+                </div>
+                
+                {{-- Indicador cuando se usa geolocalización --}}
+                <div id="currentLocationDisplay" class="current-location" style="display: none;">
+                    <i class="fas fa-map-marker-alt" style="color: #10b981;"></i>
+                    <span id="locationText">Búsqueda por proximidad activa</span>
+                </div>
+            </div>
 
-
-            {{-- Rango de precio --}}
             {{-- Rango de precio mejorado --}}
-<div class="field">
-    <label class="label">
-        <span style="color: #6b7280; margin-right: 4px;">AR$</span>
-        Precio por persona
-    </label>
-    
-    <div class="price-range-container">
-        <div class="range-slider">
-            <div class="range-track"></div>
-            <div class="range-track-active" id="rangeTrackActive"></div>
-            
-            <input type="range" 
-                   class="range-input" 
-                   id="price_min" 
-                   name="price_min"
-                   min="{{ $minPrice }}" 
-                   max="{{ $maxPrice }}" 
-                   value="{{ $filters['price_min'] ?? $minPrice }}">
-            
-            <input type="range" 
-                   class="range-input" 
-                   id="price_max" 
-                   name="price_max"
-                   min="{{ $minPrice }}" 
-                   max="{{ $maxPrice }}" 
-                   value="{{ $filters['price_max'] ?? $maxPrice }}">
-        </div>
-        
-        <div class="range-values-display">
-            <div class="range-value min">
-                Mín: <span id="lblMin">${{ number_format($filters['price_min'] ?? $minPrice, 0, ',', '.') }}</span>
+            <div class="field">
+                <label class="label">
+                    <span style="color: #6b7280; margin-right: 4px;">AR$</span>
+                    Precio por persona
+                </label>
+                
+                <div class="price-range-container">
+                    <div class="range-slider">
+                        <div class="range-track"></div>
+                        <div class="range-track-active" id="rangeTrackActive"></div>
+                        
+                        <input type="range" 
+                               class="range-input" 
+                               id="price_min" 
+                               name="price_min"
+                               min="{{ $minPrice }}" 
+                               max="{{ $maxPrice }}" 
+                               value="{{ $filters['price_min'] ?? $minPrice }}">
+                        
+                        <input type="range" 
+                               class="range-input" 
+                               id="price_max" 
+                               name="price_max"
+                               min="{{ $minPrice }}" 
+                               max="{{ $maxPrice }}" 
+                               value="{{ $filters['price_max'] ?? $maxPrice }}">
+                    </div>
+                    
+                    <div class="range-values-display">
+                        <div class="range-value min">
+                            Mín: <span id="lblMin">${{ number_format($filters['price_min'] ?? $minPrice, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="range-value max">
+                            Máx: <span id="lblMax">${{ number_format($filters['price_max'] ?? $maxPrice, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="range-value max">
-                Máx: <span id="lblMax">${{ number_format($filters['price_max'] ?? $maxPrice, 0, ',', '.') }}</span>
-            </div>
-        </div>
-    </div>
-</div>
 
             <div class="field">
                 <label class="label" for="guests">
@@ -413,8 +430,28 @@
                                 </div>
                             @endif
                             
+                            {{-- NUEVA SECCIÓN: Ubicación de la experiencia --}}
+                            @if($cena->location || $cena->city || $cena->address)
+                                <div class="location-info">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>
+                                        @if($cena->city)
+                                            {{ $cena->city }}
+                                        @elseif($cena->location)
+                                            {{ $cena->location }}
+                                        @elseif($cena->address)
+                                            {{ \Illuminate\Support\Str::limit($cena->address, 30) }}
+                                        @endif
+                                        
+                                        {{-- Si hay barrio/zona, agrégalo --}}
+                                        @if($cena->neighborhood)
+                                            , {{ $cena->neighborhood }}
+                                        @endif
+                                    </span>
+                                </div>
+                            @endif
+                            
                             <div class="meta">
-                             
                                 <div class="meta-item">
                                     <i class="fas fa-users"></i>
                                     <span>{{ $cena->guests_max }} personas</span>
