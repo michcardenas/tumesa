@@ -399,7 +399,7 @@
                             <img src="{{ $cover }}" alt="{{ $cena->title }}">
                             
                             @if($cena->user && $cena->user->especialidad)
-                                <span class="badge">{{ $cena->user->especialidad }}</span>
+                                <!-- <span class="badge">{{ $cena->user->especialidad }}</span> -->
                             @endif
                             
                             @if($availableSpots <= 3 && $availableSpots > 0)
