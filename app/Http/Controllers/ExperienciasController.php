@@ -318,10 +318,10 @@ class ExperienciasController extends Controller
         }
     }
     
-    // Construir el resultado final - SIEMPRE devolver dos partes
+    // Construir el resultado final - SIEMPRE devolver dos partes: localidad/barrio, PROVINCIA
     $result = [];
     
-    // Determinar la primera parte (barrio/localidad)
+    // Determinar la primera parte (barrio/localidad preferentemente)
     if ($barrio) {
         $result[] = ucwords(strtolower($barrio));
     } elseif ($localidad) {
@@ -330,40 +330,49 @@ class ExperienciasController extends Controller
         $result[] = ucwords(strtolower($partido));
     }
     
-    // Determinar la segunda parte (ciudad/provincia)
-    // SIEMPRE agregar una segunda parte
+    // Determinar la PROVINCIA como segunda parte (SIEMPRE)
     if (count($result) > 0) {
-        $secondPart = null;
+        $provinciaFinal = null;
         
-        if ($barrio && $localidad && strcasecmp($barrio, $localidad) !== 0) {
-            // Si tenemos barrio Y localidad diferentes, usar localidad como segunda parte
-            $secondPart = ucwords(strtolower($localidad));
-        } elseif ($partido && (!$localidad || strcasecmp($partido, $localidad) !== 0)) {
-            // Si tenemos partido diferente a localidad
-            $secondPart = ucwords(strtolower($partido));
-        } elseif ($provincia) {
-            // Si tenemos provincia
+        if ($provincia) {
+            // Si tenemos provincia explícita
             if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
-                $secondPart = 'Buenos Aires';
+                $provinciaFinal = 'Buenos Aires';
             } else {
-                $secondPart = ucwords(strtolower($provincia));
+                $provinciaFinal = ucwords(strtolower($provincia));
             }
+        } else if ($partido) {
+            // Si tenemos partido, es de Buenos Aires
+            $provinciaFinal = 'Buenos Aires';
         } else {
-            // Por defecto, asumir Buenos Aires si no hay más contexto
-            $secondPart = 'Buenos Aires';
+            // Por defecto, asumir Buenos Aires
+            $provinciaFinal = 'Buenos Aires';
         }
         
-        // Agregar segunda parte solo si es diferente a la primera
-        if ($secondPart && strcasecmp($result[0], $secondPart) !== 0) {
-            $result[] = $secondPart;
+        // Agregar la provincia como segunda parte
+        // Verificar que no sea igual a la primera parte
+        if ($provinciaFinal && strcasecmp($result[0], $provinciaFinal) !== 0) {
+            $result[] = $provinciaFinal;
+        } else if (strcasecmp($result[0], 'Buenos Aires') === 0) {
+            // Si la primera parte ya es "Buenos Aires", usar CABA o Ciudad
+            $result[0] = 'Ciudad de Buenos Aires';
+            $result[] = 'Buenos Aires';
         } else {
-            // Si son iguales o no hay segunda parte, agregar Buenos Aires por defecto
+            // Si son iguales, agregar Buenos Aires por defecto
             $result[] = 'Buenos Aires';
         }
     }
     
-    // Si no pudimos determinar nada, devolver vacío
+    // Si no pudimos determinar nada para la primera parte, intentar con lo que tengamos
     if (count($result) === 0) {
+        if ($provincia) {
+            // Solo tenemos provincia, mostrarla sola
+            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
+                return 'Ciudad de Buenos Aires, Buenos Aires';
+            } else {
+                return ucwords(strtolower($provincia));
+            }
+        }
         return '';
     }
     
