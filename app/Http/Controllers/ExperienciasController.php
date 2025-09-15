@@ -167,33 +167,33 @@ class ExperienciasController extends Controller
     }
 
     private function getCleanLocations($baseQuery)
-    {
-        $rawLocations = (clone $baseQuery)
-            ->select('location', 'latitude', 'longitude')
-            ->distinct()
-            ->whereNotNull('location')
-            ->where('location', '!=', '')
-            ->orderBy('location')
-            ->get();
+{
+    $rawLocations = (clone $baseQuery)
+        ->select('location', 'latitude', 'longitude')
+        ->distinct()
+        ->whereNotNull('location')
+        ->where('location', '!=', '')
+        ->get();
 
-        $locations = collect();
+    $locations = collect();
+    $addedLocations = []; // Para evitar duplicados
 
-        foreach ($rawLocations as $loc) {
-            // Limpiar la ubicación raw
-            $cleanedLocation = $this->cleanLocationString($loc->location);
-            
-            if (!empty(trim($cleanedLocation))) {
-                $locations->push([
-                    'value' => $cleanedLocation,
-                    'display' => $cleanedLocation,
-                    'lat' => $loc->latitude,
-                    'lng' => $loc->longitude,
-                ]);
-            }
+    foreach ($rawLocations as $loc) {
+        $cleanedLocation = $this->cleanLocationString($loc->location);
+        
+        if (!empty(trim($cleanedLocation)) && !in_array($cleanedLocation, $addedLocations)) {
+            $locations->push([
+                'value' => $cleanedLocation,
+                'display' => $cleanedLocation,
+                'lat' => $loc->latitude,
+                'lng' => $loc->longitude,
+            ]);
+            $addedLocations[] = $cleanedLocation;
         }
-
-        return $locations->unique('value')->values();
     }
+
+    return $locations->sortBy('display')->values();
+}
 
    private function cleanLocationString($location)
 {
@@ -205,236 +205,218 @@ class ExperienciasController extends Controller
     // Dividir por comas
     $parts = array_map('trim', explode(',', $location));
     
-    // Listas expandidas de barrios y zonas de Buenos Aires
-    $knownNeighborhoods = [
-        // CABA
-        'Palermo', 'Palermo Hollywood', 'Palermo Soho', 'Palermo Chico',
-        'Recoleta', 'Puerto Madero', 'San Telmo', 'La Boca',
-        'Belgrano', 'Villa Crespo', 'Colegiales', 'Núñez',
-        'Barracas', 'Caballito', 'Flores', 'Villa Urquiza',
-        'Villa Devoto', 'Retiro', 'Constitución', 'Monserrat',
-        'San Nicolás', 'Microcentro', 'Almagro', 'Boedo',
-        'Parque Patricios', 'Nueva Pompeya', 'Villa Lugano',
-        'Villa Riachuelo', 'Mataderos', 'Liniers', 'Villa Luro',
-        'Vélez Sársfield', 'Villa Real', 'Versalles', 'Villa del Parque',
-        'Villa Santa Rita', 'Villa Pueyrredón', 'Saavedra', 'Chacarita',
-        'Paternal', 'Villa Ortúzar', 'Agronomía', 'Parque Chas',
-        'Villa General Mitre', 'Balvanera', 'San Cristóbal',
-        
-        // Gran Buenos Aires - Zona Norte
-        'Olivos', 'Vicente López', 'La Lucila', 'Martínez',
-        'Acassuso', 'San Isidro', 'Beccar', 'Victoria',
-        'San Fernando', 'Tigre', 'Don Torcuato', 'El Talar',
-        'General Pacheco', 'Nordelta', 'Benavídez',
-        'Florida', 'Florida Oeste', 'Munro', 'Carapachay',
-        'Villa Adelina', 'Boulogne', 'Villa Martelli',
-        
-        // Gran Buenos Aires - Zona Oeste
-        'Ciudad Jardín Lomas del Palomar', 'Lomas del Palomar',
-        'El Palomar', 'Caseros', 'Ciudadela', 'Ramos Mejía',
-        'Haedo', 'Morón', 'Castelar', 'Ituzaingó', 'Hurlingham',
-        'Villa Tesei', 'Santos Lugares', 'Sáenz Peña',
-        'Tres de Febrero', 'San Martín', 'Villa Ballester',
-        'San Andrés', 'Villa Maipú', 'Villa Lynch',
-        
-        // Gran Buenos Aires - Zona Sur
-        'Avellaneda', 'Lanús', 'Banfield', 'Lomas de Zamora',
-        'Temperley', 'Adrogué', 'Burzaco', 'Quilmes',
-        'Bernal', 'Don Bosco', 'Wilde', 'Sarandí',
-        'Villa Domínico', 'Gerli', 'Remedios de Escalada',
-        'Valentín Alsina', 'Monte Grande', 'Luis Guillón',
-        'Ezeiza', 'Tristán Suárez', 'Canning',
-        
-        // Otros
-        'La Plata', 'City Bell', 'Gonnet', 'Villa Elisa',
-        'Berisso', 'Ensenada', 'Pilar', 'Del Viso',
-        'Tortuguitas', 'Grand Bourg', 'Los Polvorines',
-        'Pablo Nogués', 'Malvinas Argentinas', 'Escobar',
-        'Garín', 'Maschwitz', 'Belén de Escobar',
-        'El Paraíso', 'La Reja', 'Moreno', 'Paso del Rey',
-        'Merlo', 'Padua', 'Pontevedra', 'González Catán',
-        'Isidro Casanova', 'Rafael Castillo', 'Laferrere'
+    // Provincias de Argentina
+    $provincias = [
+        'Buenos Aires', 'CABA', 'Ciudad Autónoma de Buenos Aires',
+        'Córdoba', 'Santa Fe', 'Mendoza', 'Tucumán', 'Salta',
+        'Entre Ríos', 'Corrientes', 'Misiones', 'Chaco', 'Formosa',
+        'Santiago del Estero', 'San Juan', 'San Luis', 'La Rioja',
+        'Catamarca', 'Jujuy', 'La Pampa', 'Neuquén', 'Río Negro',
+        'Chubut', 'Santa Cruz', 'Tierra del Fuego'
     ];
     
-    // Ciudades y municipios principales
-    $knownCities = [
-        'Buenos Aires', 'CABA', 'Ciudad de Buenos Aires',
-        'Vicente López', 'San Isidro', 'San Fernando', 'Tigre',
-        'La Plata', 'Quilmes', 'Avellaneda', 'Lanús',
-        'Lomas de Zamora', 'Almirante Brown', 'Berazategui',
-        'Florencio Varela', 'Esteban Echeverría', 'Ezeiza',
-        'Morón', 'Tres de Febrero', 'La Matanza', 'Merlo',
-        'Moreno', 'San Martín', 'San Miguel', 'José C. Paz',
-        'Malvinas Argentinas', 'Hurlingham', 'Ituzaingó',
-        'Pilar', 'Escobar', 'General Rodríguez', 'Luján',
-        'Mercedes', 'Campana', 'Zárate', 'Exaltación de la Cruz',
-        'San Antonio de Areco', 'Partido de Ramallo', 'Ramallo'
-    ];
-    
-    // Términos a ignorar o filtrar
+    // Términos a ignorar
     $ignoreTerms = [
-        'Argentina', 'Provincia de Buenos Aires', 'Buenos Aires Province',
-        'AR', 'ARG', 'América del Sur', 'South America', 'América'
+        'Argentina', 'AR', 'ARG', 'América del Sur', 'South America',
+        'República Argentina', 'Argentine Republic'
     ];
     
-    // Limpiar y procesar cada parte
+    // Variables para almacenar resultados
+    $direccion = null;
+    $barrio = null;
+    $localidad = null;
+    $partido = null;
+    $provincia = null;
     $cleanedParts = [];
-    $foundNeighborhood = null;
-    $foundCity = null;
-    $streetName = null;
-    $partidoFound = false;
     
+    // Procesar cada parte
     foreach ($parts as $index => $part) {
-        // Guardar el original para análisis
         $originalPart = $part;
         
-        // Detectar si es "Partido de X" ANTES de limpiarlo
+        // Detectar si es "Partido de X"
         if (preg_match('/^Partido de (.+)$/i', $originalPart, $matches)) {
-            $foundCity = trim($matches[1]);
-            $partidoFound = true;
+            $partido = trim($matches[1]);
             continue;
         }
         
-        // Limpiar números de calle y códigos postales
-        $part = preg_replace('/^\d+\s*-?\s*/', '', $part);
-        $part = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $part);
-        $part = preg_replace('/\s+/', ' ', trim($part));
-        
-        if (empty($part)) continue;
+        // Detectar si es "Provincia de X" o "X Province"
+        if (preg_match('/^(Provincia de |Province of |)(.+Province)$/i', $originalPart, $matches)) {
+            $provinciaTemp = trim(str_replace('Province', '', $matches[2]));
+            // Normalizar nombres de provincia en inglés
+            if (strcasecmp($provinciaTemp, 'Buenos Aires') === 0) {
+                $provincia = 'Buenos Aires';
+            } else {
+                $provincia = $provinciaTemp;
+            }
+            continue;
+        }
         
         // Verificar si debe ser ignorado
         $shouldIgnore = false;
         foreach ($ignoreTerms as $ignore) {
-            if (stripos($part, $ignore) !== false || 
-                strcasecmp($part, $ignore) === 0) {
+            if (strcasecmp($part, $ignore) === 0 || 
+                stripos($part, $ignore) !== false) {
                 $shouldIgnore = true;
                 break;
             }
         }
         if ($shouldIgnore) continue;
         
-        // Normalizar nombres especiales
-        if (stripos($part, 'CABA') !== false || 
-            stripos($part, 'Ciudad Autónoma') !== false ||
-            stripos($part, 'C.A.B.A') !== false) {
-            $part = 'Buenos Aires';
+        // Limpiar números al inicio (direcciones) y códigos postales
+        $cleanPart = preg_replace('/^\d+\s*-?\s*/', '', $part);
+        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $cleanPart); // Códigos postales argentinos
+        $cleanPart = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $cleanPart); // Otros códigos
+        $cleanPart = preg_replace('/\s+/', ' ', trim($cleanPart));
+        
+        if (empty($cleanPart)) continue;
+        
+        // Normalizar CABA
+        if (stripos($cleanPart, 'CABA') !== false || 
+            stripos($cleanPart, 'Ciudad Autónoma') !== false ||
+            stripos($cleanPart, 'C.A.B.A') !== false) {
+            $cleanPart = 'Buenos Aires';
+            $provincia = 'CABA';
         }
         
-        // Si ya encontramos "Partido de X", no buscar más ciudades
-        if ($partidoFound) {
-            // Solo buscar barrios
-            if (!$foundNeighborhood) {
-                foreach ($knownNeighborhoods as $neighborhood) {
-                    if (stripos($part, $neighborhood) !== false) {
-                        $foundNeighborhood = $neighborhood;
-                        break;
-                    }
+        // Verificar si es una provincia conocida
+        $isProvince = false;
+        foreach ($provincias as $prov) {
+            if (strcasecmp($cleanPart, $prov) === 0) {
+                if (!$provincia) {
+                    $provincia = $prov;
                 }
-            }
-        } else {
-            // Buscar barrio conocido
-            if (!$foundNeighborhood) {
-                foreach ($knownNeighborhoods as $neighborhood) {
-                    if (stripos($part, $neighborhood) !== false) {
-                        $foundNeighborhood = $neighborhood;
-                        break;
-                    }
-                }
-            }
-            
-            // Buscar ciudad conocida (pero no si es un "Buenos Aires" genérico antes del código postal)
-            if (!$foundCity) {
-                // Verificar si el siguiente elemento es un código postal
-                $nextIsPostalCode = false;
-                if (isset($parts[$index + 1])) {
-                    $nextIsPostalCode = preg_match('/^[A-Z0-9]{4,8}/', trim($parts[$index + 1]));
-                }
-                
-                // No tomar "Buenos Aires" si viene antes de un código postal
-                if (!($part === 'Buenos Aires' && $nextIsPostalCode)) {
-                    foreach ($knownCities as $city) {
-                        if (stripos($part, $city) !== false) {
-                            $foundCity = $city;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Si no es ni barrio ni ciudad conocida, podría ser un nombre de calle
-        if (!$foundNeighborhood && !$foundCity && !$streetName && !empty($part)) {
-            // Verificar si parece ser un nombre de calle (contiene palabras típicas)
-            if (preg_match('/\b(calle|avenida|av\.|boulevard|blvd|pasaje|paseo)/i', $originalPart) ||
-                preg_match('/^[A-Z][a-záéíóú]+(\s+[A-Z][a-záéíóú]+)*$/', $part)) {
-                $streetName = $part;
-            }
-        }
-        
-        $cleanedParts[] = $part;
-    }
-    
-    // Si no encontramos barrio o ciudad, intentar con heurística mejorada
-    if (!$foundNeighborhood && !$foundCity && count($cleanedParts) >= 2) {
-        // Buscar de atrás hacia adelante (usualmente la estructura es: calle, barrio, ciudad, país)
-        for ($i = count($cleanedParts) - 1; $i >= 0; $i--) {
-            $part = $cleanedParts[$i];
-            
-            // Si ya encontramos ciudad, el anterior podría ser el barrio
-            if ($foundCity && !$foundNeighborhood && $i > 0) {
-                $foundNeighborhood = $cleanedParts[$i - 1];
+                $isProvince = true;
                 break;
             }
+        }
+        
+        // Si no es provincia y no está vacío, agregarlo a partes limpias
+        if (!$isProvince && !empty($cleanPart)) {
+            $cleanedParts[] = $cleanPart;
+        }
+    }
+    
+    // Analizar las partes limpias para determinar qué es cada cosa
+    // Generalmente el orden es: Calle, Barrio, Localidad/Ciudad, Provincia, País
+    $numParts = count($cleanedParts);
+    
+    if ($numParts > 0) {
+        // La lógica varía según la cantidad de partes
+        if ($numParts == 1) {
+            // Solo una parte: probablemente sea barrio o localidad
+            $localidad = $cleanedParts[0];
+        } elseif ($numParts == 2) {
+            // Dos partes: probablemente barrio y localidad
+            $barrio = $cleanedParts[0];
+            $localidad = $cleanedParts[1];
+        } elseif ($numParts >= 3) {
+            // Tres o más partes
+            // La primera puede ser calle (la ignoramos si tiene formato de dirección)
+            $startIndex = 0;
             
-            // Buscar patrones comunes de ciudades
-            if (!$foundCity) {
-                if (preg_match('/\b(Buenos Aires|Vicente López|San Isidro|Tigre|La Plata|Quilmes|Avellaneda|Lanús|Lomas de Zamora|Morón|San Martín)\b/i', $part, $matches)) {
-                    $foundCity = $matches[1];
-                }
+            // Verificar si la primera parte parece una calle
+            if (preg_match('/^[A-Z][a-záéíóú]+(\s+[A-Z][a-záéíóú]+)*$/', $cleanedParts[0]) ||
+                preg_match('/\b(calle|avenida|av\.|boulevard|blvd|pasaje|paseo)/i', $cleanedParts[0])) {
+                $direccion = $cleanedParts[0];
+                $startIndex = 1;
+            }
+            
+            // Asignar el resto
+            $remainingParts = array_slice($cleanedParts, $startIndex);
+            if (count($remainingParts) == 1) {
+                $localidad = $remainingParts[0];
+            } elseif (count($remainingParts) == 2) {
+                $barrio = $remainingParts[0];
+                $localidad = $remainingParts[1];
+            } else {
+                // Tomar los dos últimos elementos más relevantes
+                $barrio = $remainingParts[count($remainingParts) - 2];
+                $localidad = $remainingParts[count($remainingParts) - 1];
             }
         }
     }
     
-    // Si aún no tenemos resultados claros, usar las últimas partes limpias
-    if (!$foundNeighborhood && !$foundCity && count($cleanedParts) > 0) {
-        if (count($cleanedParts) >= 2) {
-            // Tomar las dos últimas partes relevantes
-            $foundNeighborhood = $cleanedParts[count($cleanedParts) - 2];
-            $foundCity = $cleanedParts[count($cleanedParts) - 1];
-        } else {
-            // Solo una parte, asumirla como barrio
-            $foundNeighborhood = $cleanedParts[0];
-            $foundCity = 'Buenos Aires'; // Asumir Buenos Aires por defecto
-        }
-    }
-    
-    // Normalizar ciudad si es necesario
-    if ($foundCity) {
-        // Remover "Partido de" si quedó
-        $foundCity = preg_replace('/^(Partido de |Municipality of )/i', '', $foundCity);
-        
-        // Si la ciudad es muy genérica o es igual al barrio, usar Buenos Aires
-        if (strcasecmp($foundCity, $foundNeighborhood) === 0) {
-            $foundCity = 'Buenos Aires';
+    // Si tenemos partido pero no localidad, usar el partido como localidad
+    if ($partido && !$localidad) {
+        $localidad = $partido;
+    } elseif ($partido && $localidad && strcasecmp($partido, $localidad) !== 0) {
+        // Si el partido es diferente a la localidad, puede ser más específico
+        if (!$barrio) {
+            $barrio = $localidad;
+            $localidad = $partido;
         }
     }
     
     // Construir el resultado final
-    if ($foundNeighborhood && $foundCity) {
-        // Evitar duplicación si el barrio y ciudad son iguales
-        if (strcasecmp($foundNeighborhood, $foundCity) === 0) {
-            return ucwords(strtolower($foundNeighborhood));
+    $result = [];
+    
+    // Prioridad: mostrar barrio si existe, sino localidad
+    if ($barrio && $localidad) {
+        // Si barrio y localidad son iguales, mostrar solo uno
+        if (strcasecmp($barrio, $localidad) === 0) {
+            $result[] = ucwords(strtolower($barrio));
+        } else {
+            $result[] = ucwords(strtolower($barrio));
         }
-        return ucwords(strtolower($foundNeighborhood)) . ', ' . ucwords(strtolower($foundCity));
-    } elseif ($foundNeighborhood) {
-        return ucwords(strtolower($foundNeighborhood)) . ', Buenos Aires';
-    } elseif ($foundCity) {
-        return ucwords(strtolower($foundCity));
+        
+        // Agregar localidad/ciudad
+        if (strcasecmp($barrio, $localidad) !== 0) {
+            $result[] = ucwords(strtolower($localidad));
+        } else if ($partido && strcasecmp($partido, $localidad) !== 0) {
+            $result[] = ucwords(strtolower($partido));
+        } else if ($provincia) {
+            // Si no hay más info, agregar provincia
+            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
+                $result[] = 'Buenos Aires';
+            } else {
+                $result[] = ucwords(strtolower($provincia));
+            }
+        } else {
+            // Default a Buenos Aires si no hay más contexto
+            $result[] = 'Buenos Aires';
+        }
+    } elseif ($localidad) {
+        $result[] = ucwords(strtolower($localidad));
+        
+        // Agregar contexto adicional
+        if ($partido && strcasecmp($partido, $localidad) !== 0) {
+            $result[] = ucwords(strtolower($partido));
+        } else if ($provincia) {
+            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
+                $result[] = 'Buenos Aires';
+            } else {
+                $result[] = ucwords(strtolower($provincia));
+            }
+        } else {
+            // Para casos de Buenos Aires, agregar la provincia
+            $result[] = 'Buenos Aires';
+        }
+    } elseif ($partido) {
+        // Solo tenemos partido
+        $result[] = ucwords(strtolower($partido));
+        $result[] = 'Buenos Aires'; // Asumir Buenos Aires para partidos
+    } else {
+        // No pudimos determinar nada útil
+        return '';
     }
     
-    // Si no pudimos determinar nada, devolver vacío
-    return '';
+    // Evitar duplicados consecutivos
+    $finalResult = [];
+    $lastValue = '';
+    foreach ($result as $value) {
+        if (strcasecmp($value, $lastValue) !== 0) {
+            $finalResult[] = $value;
+            $lastValue = $value;
+        }
+    }
+    
+    return implode(', ', $finalResult);
 }
+
+/**
+ * Método auxiliar para obtener ubicaciones limpias únicas
+ */
+
 
     public function serChef()
     {
