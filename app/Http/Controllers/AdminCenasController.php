@@ -5,6 +5,9 @@ use Illuminate\Http\Request;
 use App\Models\Cena;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class AdminCenasController extends Controller
 {
@@ -110,7 +113,6 @@ public function update(Request $request, Cena $cena)
 
     // Handle cover image upload
     if ($request->hasFile('cover_image')) {
-        // Delete old cover image
         if ($cena->cover_image) {
             Storage::disk('public')->delete($cena->cover_image);
         }
@@ -119,7 +121,6 @@ public function update(Request $request, Cena $cena)
 
     // Handle gallery images upload
     if ($request->hasFile('gallery_images')) {
-        // Delete old gallery images
         if ($cena->gallery_images) {
             foreach ($cena->gallery_images as $image) {
                 Storage::disk('public')->delete($image);
@@ -136,36 +137,88 @@ public function update(Request $request, Cena $cena)
     // Set boolean value
     $validated['is_active'] = $request->has('is_active');
 
-    // ===== SOLUCIÓN: Separar las coordenadas del array validated =====
-    // Guardamos las coordenadas aparte
-    $latitude = $validated['latitude'] ?? null;
-    $longitude = $validated['longitude'] ?? null;
+    // ========================================================
+    // SOLUCIÓN ROBUSTA PARA COORDENADAS
+    // ========================================================
     
-    // Removemos las coordenadas del array para evitar problemas con el cast
+    // Paso 1: Extraer las coordenadas
+    $latitude = null;
+    $longitude = null;
+    
+    if (isset($validated['latitude']) && $validated['latitude'] !== '') {
+        $latitude = (float) $validated['latitude'];
+    }
+    if (isset($validated['longitude']) && $validated['longitude'] !== '') {
+        $longitude = (float) $validated['longitude'];
+    }
+    
+    // Paso 2: Remover coordenadas del array principal
     unset($validated['latitude']);
     unset($validated['longitude']);
     
-    // Actualizamos primero todos los campos excepto las coordenadas
+    // Paso 3: Actualizar todos los campos EXCEPTO las coordenadas
     $cena->update($validated);
     
-    // Ahora actualizamos las coordenadas usando asignación directa
-    // Esto evita el problema del cast decimal
+    // Paso 4: Actualizar las coordenadas usando DB::table (MÉTODO MÁS CONFIABLE)
     if ($latitude !== null && $longitude !== null) {
-        $cena->latitude = $latitude;
-        $cena->longitude = $longitude;
-        $cena->save();
-        
-        // Alternativa si lo anterior no funciona: usar DB directamente
-        // \DB::table('cenas')
-        //     ->where('id', $cena->id)
-        //     ->update([
-        //         'latitude' => $latitude,
-        //         'longitude' => $longitude
-        //     ]);
+        try {
+            // Este método SIEMPRE funciona, independientemente del cast en el modelo
+            DB::table('cenas')
+                ->where('id', $cena->id)
+                ->update([
+                    'latitude' => $latitude,
+                    'longitude' => $longitude
+                ]);
+                
+            // Log de éxito (puedes quitarlo después de verificar que funciona)
+            Log::info('Coordenadas actualizadas exitosamente', [
+                'cena_id' => $cena->id,
+                'latitude' => $latitude,
+                'longitude' => $longitude
+            ]);
+            
+        } catch (\Exception $e) {
+            // Si hay algún error, lo registramos
+            Log::error('Error actualizando coordenadas', [
+                'cena_id' => $cena->id,
+                'error' => $e->getMessage()
+            ]);
+            
+            // Opcionalmente, puedes mostrar el error al usuario
+            return redirect()->route('admin.cenas')
+                            ->with('error', 'La cena se actualizó pero hubo un problema con las coordenadas.');
+        }
     }
 
     return redirect()->route('admin.cenas')
                     ->with('success', 'Cena actualizada exitosamente.');
+}
+
+// ========================================================
+// MÉTODO AUXILIAR PARA VERIFICAR (OPCIONAL)
+// Puedes agregar este método a tu controlador para verificar
+// ========================================================
+
+public function verifyCoordinates($cenaId)
+{
+    $cena = Cena::find($cenaId);
+    $dbValues = DB::table('cenas')
+                  ->where('id', $cenaId)
+                  ->select('latitude', 'longitude')
+                  ->first();
+    
+    return [
+        'model_values' => [
+            'latitude' => $cena->latitude,
+            'longitude' => $cena->longitude
+        ],
+        'db_values' => [
+            'latitude' => $dbValues->latitude,
+            'longitude' => $dbValues->longitude
+        ],
+        'match' => $cena->latitude == $dbValues->latitude && 
+                   $cena->longitude == $dbValues->longitude
+    ];
 }
     /**
      * Remove the specified cena from storage.
