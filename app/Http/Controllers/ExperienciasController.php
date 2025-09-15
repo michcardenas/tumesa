@@ -195,99 +195,217 @@ class ExperienciasController extends Controller
         return $locations->unique('value')->values();
     }
 
-    private function cleanLocationString($location)
-    {
-        if (empty($location)) return '';
+   private function cleanLocationString($location)
+{
+    if (empty($location)) return '';
+    
+    // Normalizar el string
+    $location = str_replace(['  ', '   '], ' ', trim($location));
+    
+    // Dividir por comas
+    $parts = array_map('trim', explode(',', $location));
+    
+    // Listas expandidas de barrios y zonas de Buenos Aires
+    $knownNeighborhoods = [
+        // CABA
+        'Palermo', 'Palermo Hollywood', 'Palermo Soho', 'Palermo Chico',
+        'Recoleta', 'Puerto Madero', 'San Telmo', 'La Boca',
+        'Belgrano', 'Villa Crespo', 'Colegiales', 'Núñez',
+        'Barracas', 'Caballito', 'Flores', 'Villa Urquiza',
+        'Villa Devoto', 'Retiro', 'Constitución', 'Monserrat',
+        'San Nicolás', 'Microcentro', 'Almagro', 'Boedo',
+        'Parque Patricios', 'Nueva Pompeya', 'Villa Lugano',
+        'Villa Riachuelo', 'Mataderos', 'Liniers', 'Villa Luro',
+        'Vélez Sársfield', 'Villa Real', 'Versalles', 'Villa del Parque',
+        'Villa Santa Rita', 'Villa Pueyrredón', 'Saavedra', 'Chacarita',
+        'Paternal', 'Villa Ortúzar', 'Agronomía', 'Parque Chas',
+        'Villa General Mitre', 'Balvanera', 'San Cristóbal',
         
-        $parts = explode(',', $location);
+        // Gran Buenos Aires - Zona Norte
+        'Olivos', 'Vicente López', 'La Lucila', 'Martínez',
+        'Acassuso', 'San Isidro', 'Beccar', 'Victoria',
+        'San Fernando', 'Tigre', 'Don Torcuato', 'El Talar',
+        'General Pacheco', 'Nordelta', 'Benavídez',
+        'Florida', 'Florida Oeste', 'Munro', 'Carapachay',
+        'Villa Adelina', 'Boulogne', 'Villa Martelli',
         
-        // Limpiar cada parte
-        $cleanedParts = [];
-        foreach ($parts as $part) {
-            $part = trim($part);
-            
-            // Saltar partes vacías
-            if (empty($part)) continue;
-            
-            // Saltar números de dirección al inicio (ej: "700 - Aviador Plüschow")
-            $part = preg_replace('/^\d+\s*-?\s*/', '', $part);
-            
-            // Saltar códigos postales
-            $part = preg_replace('/\b[A-Z0-9]{4,}\b/', '', $part);
-            
-            // Normalizar nombres de ciudades
-            if (in_array(strtolower($part), ['caba', 'ciudad autónoma de buenos aires'])) {
-                $part = 'Buenos Aires';
-            }
-            
-            // Saltar términos que no queremos
-            if (in_array($part, ['Argentina', 'Provincia de Buenos Aires'])) {
-                continue;
-            }
-            
-            $part = trim($part);
-            if (!empty($part)) {
-                $cleanedParts[] = $part;
+        // Gran Buenos Aires - Zona Oeste
+        'Ciudad Jardín Lomas del Palomar', 'Lomas del Palomar',
+        'El Palomar', 'Caseros', 'Ciudadela', 'Ramos Mejía',
+        'Haedo', 'Morón', 'Castelar', 'Ituzaingó', 'Hurlingham',
+        'Villa Tesei', 'Santos Lugares', 'Sáenz Peña',
+        'Tres de Febrero', 'San Martín', 'Villa Ballester',
+        'San Andrés', 'Villa Maipú', 'Villa Lynch',
+        
+        // Gran Buenos Aires - Zona Sur
+        'Avellaneda', 'Lanús', 'Banfield', 'Lomas de Zamora',
+        'Temperley', 'Adrogué', 'Burzaco', 'Quilmes',
+        'Bernal', 'Don Bosco', 'Wilde', 'Sarandí',
+        'Villa Domínico', 'Gerli', 'Remedios de Escalada',
+        'Valentín Alsina', 'Monte Grande', 'Luis Guillón',
+        'Ezeiza', 'Tristán Suárez', 'Canning',
+        
+        // Otros
+        'La Plata', 'City Bell', 'Gonnet', 'Villa Elisa',
+        'Berisso', 'Ensenada', 'Pilar', 'Del Viso',
+        'Tortuguitas', 'Grand Bourg', 'Los Polvorines',
+        'Pablo Nogués', 'Malvinas Argentinas', 'Escobar',
+        'Garín', 'Maschwitz', 'Belén de Escobar',
+        'El Paraíso', 'La Reja', 'Moreno', 'Paso del Rey',
+        'Merlo', 'Padua', 'Pontevedra', 'González Catán',
+        'Isidro Casanova', 'Rafael Castillo', 'Laferrere'
+    ];
+    
+    // Ciudades y municipios principales
+    $knownCities = [
+        'Buenos Aires', 'CABA', 'Ciudad de Buenos Aires',
+        'Vicente López', 'San Isidro', 'San Fernando', 'Tigre',
+        'La Plata', 'Quilmes', 'Avellaneda', 'Lanús',
+        'Lomas de Zamora', 'Almirante Brown', 'Berazategui',
+        'Florencio Varela', 'Esteban Echeverría', 'Ezeiza',
+        'Morón', 'Tres de Febrero', 'La Matanza', 'Merlo',
+        'Moreno', 'San Martín', 'San Miguel', 'José C. Paz',
+        'Malvinas Argentinas', 'Hurlingham', 'Ituzaingó',
+        'Pilar', 'Escobar', 'General Rodríguez', 'Luján',
+        'Mercedes', 'Campana', 'Zárate', 'Exaltación de la Cruz',
+        'San Antonio de Areco', 'Partido de Ramallo', 'Ramallo'
+    ];
+    
+    // Términos a ignorar o filtrar
+    $ignoreTerms = [
+        'Argentina', 'Provincia de Buenos Aires', 'Buenos Aires Province',
+        'AR', 'ARG', 'América del Sur', 'South America', 'América'
+    ];
+    
+    // Limpiar y procesar cada parte
+    $cleanedParts = [];
+    $foundNeighborhood = null;
+    $foundCity = null;
+    $streetName = null;
+    
+    foreach ($parts as $part) {
+        // Limpiar números de calle y códigos postales
+        $originalPart = $part;
+        $part = preg_replace('/^\d+\s*-?\s*/', '', $part);
+        $part = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $part);
+        $part = preg_replace('/\s+/', ' ', trim($part));
+        
+        if (empty($part)) continue;
+        
+        // Verificar si debe ser ignorado
+        $shouldIgnore = false;
+        foreach ($ignoreTerms as $ignore) {
+            if (stripos($part, $ignore) !== false || 
+                strcasecmp($part, $ignore) === 0) {
+                $shouldIgnore = true;
+                break;
             }
         }
+        if ($shouldIgnore) continue;
         
-        // Definir barrios/zonas conocidas
-        $knownNeighborhoods = [
-            'Palermo Hollywood', 'Palermo', 'Recoleta', 'Puerto Madero', 'San Telmo',
-            'La Boca', 'Belgrano', 'Villa Crespo', 'Colegiales', 'Núñez', 'Barracas',
-            'Caballito', 'Flores', 'Villa Urquiza', 'Villa Devoto', 'Retiro',
-            'Ciudad Jardín Lomas del Palomar', 'Lomas del Palomar', 'El Paraíso'
-        ];
+        // Normalizar nombres especiales
+        if (stripos($part, 'CABA') !== false || 
+            stripos($part, 'Ciudad Autónoma') !== false ||
+            stripos($part, 'C.A.B.A') !== false) {
+            $part = 'Buenos Aires';
+        }
         
-        // Definir ciudades conocidas
-        $knownCities = [
-            'Buenos Aires', 'Vicente López', 'San Isidro', 'Tigre', 'La Plata',
-            'Partido de Ramallo', 'Quilmes', 'Avellaneda', 'Lanús', 'Lomas de Zamora'
-        ];
+        // Manejar "Partido de X" o "Municipality of X"
+        $part = preg_replace('/^(Partido de |Municipality of |Municipalidad de )/i', '', $part);
         
-        $neighborhood = null;
-        $city = null;
-        
-        // Buscar barrio y ciudad en las partes
-        foreach ($cleanedParts as $part) {
-            // Verificar si es un barrio conocido
-            foreach ($knownNeighborhoods as $knownNeighborhood) {
-                if (stripos($part, $knownNeighborhood) !== false) {
-                    $neighborhood = $knownNeighborhood;
+        // Buscar barrio conocido
+        if (!$foundNeighborhood) {
+            foreach ($knownNeighborhoods as $neighborhood) {
+                if (stripos($part, $neighborhood) !== false) {
+                    $foundNeighborhood = $neighborhood;
                     break;
                 }
             }
-            
-            // Verificar si es una ciudad conocida
-            foreach ($knownCities as $knownCity) {
-                if (stripos($part, $knownCity) !== false) {
-                    $city = $knownCity;
+        }
+        
+        // Buscar ciudad conocida
+        if (!$foundCity) {
+            foreach ($knownCities as $city) {
+                if (stripos($part, $city) !== false) {
+                    $foundCity = $city;
                     break;
                 }
             }
         }
         
-        // Si no encontramos barrio/ciudad específicos, usar heurística
-        if (!$neighborhood && !$city && count($cleanedParts) >= 2) {
-            // La penúltima parte suele ser el barrio, la última la ciudad
-            $neighborhood = $cleanedParts[count($cleanedParts) - 2];
-            $city = $cleanedParts[count($cleanedParts) - 1];
-        } elseif (!$neighborhood && !$city && count($cleanedParts) == 1) {
-            // Solo una parte, asumir que es barrio
-            $neighborhood = $cleanedParts[0];
+        // Si no es ni barrio ni ciudad conocida, podría ser un nombre de calle
+        if (!$foundNeighborhood && !$foundCity && !$streetName && !empty($part)) {
+            // Verificar si parece ser un nombre de calle (contiene palabras típicas)
+            if (preg_match('/\b(calle|avenida|av\.|boulevard|blvd|pasaje|paseo)/i', $originalPart) ||
+                preg_match('/^[A-Z][a-záéíóú]+(\s+[A-Z][a-záéíóú]+)*$/', $part)) {
+                $streetName = $part;
+            }
         }
         
-        // Construir resultado
-        if ($neighborhood && $city) {
-            return "{$neighborhood}, {$city}";
-        } elseif ($neighborhood) {
-            return $neighborhood;
-        } elseif ($city) {
-            return $city;
-        }
-        
-        return '';
+        $cleanedParts[] = $part;
     }
+    
+    // Si no encontramos barrio o ciudad, intentar con heurística mejorada
+    if (!$foundNeighborhood && !$foundCity && count($cleanedParts) >= 2) {
+        // Buscar de atrás hacia adelante (usualmente la estructura es: calle, barrio, ciudad, país)
+        for ($i = count($cleanedParts) - 1; $i >= 0; $i--) {
+            $part = $cleanedParts[$i];
+            
+            // Si ya encontramos ciudad, el anterior podría ser el barrio
+            if ($foundCity && !$foundNeighborhood && $i > 0) {
+                $foundNeighborhood = $cleanedParts[$i - 1];
+                break;
+            }
+            
+            // Buscar patrones comunes de ciudades
+            if (!$foundCity) {
+                if (preg_match('/\b(Buenos Aires|Vicente López|San Isidro|Tigre|La Plata|Quilmes|Avellaneda|Lanús|Lomas de Zamora|Morón|San Martín)\b/i', $part, $matches)) {
+                    $foundCity = $matches[1];
+                }
+            }
+        }
+    }
+    
+    // Si aún no tenemos resultados claros, usar las últimas partes limpias
+    if (!$foundNeighborhood && !$foundCity && count($cleanedParts) > 0) {
+        if (count($cleanedParts) >= 2) {
+            // Tomar las dos últimas partes relevantes
+            $foundNeighborhood = $cleanedParts[count($cleanedParts) - 2];
+            $foundCity = $cleanedParts[count($cleanedParts) - 1];
+        } else {
+            // Solo una parte, asumirla como barrio
+            $foundNeighborhood = $cleanedParts[0];
+            $foundCity = 'Buenos Aires'; // Asumir Buenos Aires por defecto
+        }
+    }
+    
+    // Normalizar ciudad si es necesario
+    if ($foundCity) {
+        // Remover "Partido de" si quedó
+        $foundCity = preg_replace('/^(Partido de |Municipality of )/i', '', $foundCity);
+        
+        // Si la ciudad es muy genérica o es igual al barrio, usar Buenos Aires
+        if (strcasecmp($foundCity, $foundNeighborhood) === 0) {
+            $foundCity = 'Buenos Aires';
+        }
+    }
+    
+    // Construir el resultado final
+    if ($foundNeighborhood && $foundCity) {
+        // Evitar duplicación si el barrio y ciudad son iguales
+        if (strcasecmp($foundNeighborhood, $foundCity) === 0) {
+            return ucwords(strtolower($foundNeighborhood));
+        }
+        return ucwords(strtolower($foundNeighborhood)) . ', ' . ucwords(strtolower($foundCity));
+    } elseif ($foundNeighborhood) {
+        return ucwords(strtolower($foundNeighborhood)) . ', Buenos Aires';
+    } elseif ($foundCity) {
+        return ucwords(strtolower($foundCity));
+    }
+    
+    // Si no pudimos determinar nada, devolver vacío
+    return '';
+}
 
     public function serChef()
     {
