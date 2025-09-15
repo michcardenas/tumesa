@@ -52,7 +52,6 @@ class AdminCenasController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'status' => 'required|in:draft,published,cancelled',
-            'is_active' => 'nullable',
             'special_requirements' => 'nullable|string',
             'cancellation_policy' => 'nullable|string'
         ]);
@@ -73,7 +72,6 @@ class AdminCenasController extends Controller
 
         // Set default values
         $validated['guests_current'] = 0;
-        $validated['is_active'] = 1; // o true, ambos funcionan
 
 
         $cena = Cena::create($validated);
