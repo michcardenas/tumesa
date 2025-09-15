@@ -7,8 +7,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Validator;
 
 class AdminCenasController extends Controller
 {
@@ -52,6 +50,7 @@ class AdminCenasController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'status' => 'required|in:draft,published,cancelled',
+            'is_active' => 'boolean',
             'special_requirements' => 'nullable|string',
             'cancellation_policy' => 'nullable|string'
         ]);
@@ -72,6 +71,7 @@ class AdminCenasController extends Controller
 
         // Set default values
         $validated['guests_current'] = 0;
+        $validated['is_active'] = 1; // o true, ambos funcionan
 
 
         $cena = Cena::create($validated);
@@ -108,7 +108,6 @@ public function update(Request $request, Cena $cena)
         'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         'status'     => ['required', Rule::in(['draft','published','cancelled'])],
-        'is_active'  => 'boolean',
         'special_requirements' => 'nullable|string',
         'cancellation_policy'  => 'nullable|string',
     ];
@@ -148,7 +147,6 @@ public function update(Request $request, Cena $cena)
             ->all();
     }
 
-    $validated['is_active'] = $request->boolean('is_active');
 
     $cena->fill($validated);
     \Log::info('Dirty antes de save():', $cena->getDirty());
