@@ -52,7 +52,6 @@ class AdminCenasController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'status' => 'required|in:draft,published,cancelled',
-            'is_active' => 'boolean',
             'special_requirements' => 'nullable|string',
             'cancellation_policy' => 'nullable|string'
         ]);
