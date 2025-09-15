@@ -92,6 +92,8 @@ return redirect()->route('admin.cenas')
     }
 public function update(Request $request, Cena $cena) 
 {
+    \Log::info('=== UPDATE CENA ID: '.$cena->id.' ===', $request->only('latitude','longitude'));
+
     $validated = $request->validate([
         'user_id'    => 'required|exists:users,id',
         'title'      => 'required|string|max:255',
@@ -100,6 +102,7 @@ public function update(Request $request, Cena $cena)
         'price'      => 'required|numeric|min:0',
         'menu'       => 'required|string',
         'location'   => 'required|string|max:500',
+        // Fuerza coords válidas si siempre usas mapa:
         'latitude'   => 'required|numeric|between:-90,90',
         'longitude'  => 'required|numeric|between:-180,180',
         'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -110,7 +113,7 @@ public function update(Request $request, Cena $cena)
         'cancellation_policy'  => 'nullable|string',
     ]);
 
-    // Subidas (igual que ya tenías)
+    // Imágenes (igual que ya tenías)
     if ($request->hasFile('cover_image')) {
         if ($cena->cover_image) \Storage::disk('public')->delete($cena->cover_image);
         $validated['cover_image'] = $request->file('cover_image')->store('cenas/covers', 'public');
@@ -124,14 +127,23 @@ public function update(Request $request, Cena $cena)
             ->all();
     }
 
+    // Booleano
     $validated['is_active'] = $request->boolean('is_active');
 
-    // Normaliza a number para evitar strings
+    // Normaliza coords a number (evita strings vacíos)
     $validated['latitude']  = (float) $validated['latitude'];
     $validated['longitude'] = (float) $validated['longitude'];
 
-    // Guarda con Eloquent
-    $cena->fill($validated)->save();
+    // (Opcional) mira qué cambiará antes de guardar
+    $cena->fill($validated);
+    \Log::info('Dirty antes de save():', $cena->getDirty());
+
+    $cena->save();
+
+    \Log::info('Guardado OK', [
+        'lat_final' => $cena->latitude,
+        'lng_final' => $cena->longitude,
+    ]);
 
     return redirect()->route('admin.cenas')->with('success', 'Cena actualizada exitosamente.');
 }
