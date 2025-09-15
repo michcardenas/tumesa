@@ -94,25 +94,31 @@ public function update(Request $request, Cena $cena)
 {
     \Log::info('=== UPDATE CENA ID: '.$cena->id.' ===', $request->only('latitude','longitude'));
 
-    $validated = $request->validate([
-        'user_id'    => 'required|exists:users,id',
-        'title'      => 'required|string|max:255',
-        'datetime'   => 'required|date|after:now',
-        'guests_max' => 'required|integer|min:1|max:50',
-        'price'      => 'required|numeric|min:0',
-        'menu'       => 'required|string',
-        'location'   => 'required|string|max:500',
-        // Fuerza coords válidas si siempre usas mapa:
-        'latitude'   => 'required|numeric|between:-90,90',
-        'longitude'  => 'required|numeric|between:-180,180',
-        'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        'status'     => 'required|in:draft,published,cancelled',
-        'is_active'  => 'boolean',
-        'special_requirements' => 'nullable|string',
-        'cancellation_policy'  => 'nullable|string',
-    ]);
+$validated = $request->validate([
+    'user_id'    => 'required|exists:users,id',
+    'title'      => 'required|string|max:255',
+    'datetime'   => 'required|date|after:now',
+    'guests_max' => 'required|integer|min:1|max:50',
+    'price'      => 'required|numeric|min:0',
+    'menu'       => 'required|string',
+    'location'   => 'required|string|max:500',
+    'latitude'   => 'required|numeric|between:-90,90',
+    'longitude'  => 'required|numeric|between:-180,180',
+    'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+    'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+    'status'     => 'required|in:draft,published,cancelled',
+    'is_active'  => 'boolean',
+    'special_requirements' => 'nullable|string',
+    'cancellation_policy'  => 'nullable|string',
+]);
 
+// Normaliza EXACTO a 7 decimales (string) para que coincida con DECIMAL(10,7)
+$validated['latitude']  = number_format((float)$validated['latitude'],  7, '.', '');
+$validated['longitude'] = number_format((float)$validated['longitude'], 7, '.', '');
+\Log::info('Validated antes de imagenes y save():', [
+    'lat_validated' => $validated['latitude'],
+    'lng_validated' => $validated['longitude'],
+]);
     // Imágenes (igual que ya tenías)
     if ($request->hasFile('cover_image')) {
         if ($cena->cover_image) \Storage::disk('public')->delete($cena->cover_image);
