@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Models\Cena;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdminCenasController extends Controller
 {
@@ -88,12 +90,6 @@ return redirect()->route('admin.cenas')
         
         return view('admin.cenas.edit', compact('cena', 'chefs'));
     }
-<?php
-
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
-
 public function update(Request $request, Cena $cena) 
 {
     // LOG 1: Ver qué llega del formulario
