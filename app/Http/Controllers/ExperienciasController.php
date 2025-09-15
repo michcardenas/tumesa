@@ -166,36 +166,7 @@ class ExperienciasController extends Controller
         ", [$lat, $lng, $lat]);
     }
 
-    private function getCleanLocations($baseQuery)
-{
-    $rawLocations = (clone $baseQuery)
-        ->select('location', 'latitude', 'longitude')
-        ->distinct()
-        ->whereNotNull('location')
-        ->where('location', '!=', '')
-        ->get();
-
-    $locations = collect();
-    $addedLocations = []; // Para evitar duplicados
-
-    foreach ($rawLocations as $loc) {
-        $cleanedLocation = $this->cleanLocationString($loc->location);
-        
-        if (!empty(trim($cleanedLocation)) && !in_array($cleanedLocation, $addedLocations)) {
-            $locations->push([
-                'value' => $cleanedLocation,
-                'display' => $cleanedLocation,
-                'lat' => $loc->latitude,
-                'lng' => $loc->longitude,
-            ]);
-            $addedLocations[] = $cleanedLocation;
-        }
-    }
-
-    return $locations->sortBy('display')->values();
-}
-
-   private function cleanLocationString($location)
+    private function cleanLocationString($location)
 {
     if (empty($location)) return '';
     
@@ -347,72 +318,94 @@ class ExperienciasController extends Controller
         }
     }
     
-    // Construir el resultado final
+    // Construir el resultado final - SIEMPRE devolver dos partes
     $result = [];
     
-    // Prioridad: mostrar barrio si existe, sino localidad
-    if ($barrio && $localidad) {
-        // Si barrio y localidad son iguales, mostrar solo uno
-        if (strcasecmp($barrio, $localidad) === 0) {
-            $result[] = ucwords(strtolower($barrio));
-        } else {
-            $result[] = ucwords(strtolower($barrio));
-        }
-        
-        // Agregar localidad/ciudad
-        if (strcasecmp($barrio, $localidad) !== 0) {
-            $result[] = ucwords(strtolower($localidad));
-        } else if ($partido && strcasecmp($partido, $localidad) !== 0) {
-            $result[] = ucwords(strtolower($partido));
-        } else if ($provincia) {
-            // Si no hay más info, agregar provincia
-            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
-                $result[] = 'Buenos Aires';
-            } else {
-                $result[] = ucwords(strtolower($provincia));
-            }
-        } else {
-            // Default a Buenos Aires si no hay más contexto
-            $result[] = 'Buenos Aires';
-        }
+    // Determinar la primera parte (barrio/localidad)
+    if ($barrio) {
+        $result[] = ucwords(strtolower($barrio));
     } elseif ($localidad) {
         $result[] = ucwords(strtolower($localidad));
+    } elseif ($partido) {
+        $result[] = ucwords(strtolower($partido));
+    }
+    
+    // Determinar la segunda parte (ciudad/provincia)
+    // SIEMPRE agregar una segunda parte
+    if (count($result) > 0) {
+        $secondPart = null;
         
-        // Agregar contexto adicional
-        if ($partido && strcasecmp($partido, $localidad) !== 0) {
-            $result[] = ucwords(strtolower($partido));
-        } else if ($provincia) {
+        if ($barrio && $localidad && strcasecmp($barrio, $localidad) !== 0) {
+            // Si tenemos barrio Y localidad diferentes, usar localidad como segunda parte
+            $secondPart = ucwords(strtolower($localidad));
+        } elseif ($partido && (!$localidad || strcasecmp($partido, $localidad) !== 0)) {
+            // Si tenemos partido diferente a localidad
+            $secondPart = ucwords(strtolower($partido));
+        } elseif ($provincia) {
+            // Si tenemos provincia
             if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
-                $result[] = 'Buenos Aires';
+                $secondPart = 'Buenos Aires';
             } else {
-                $result[] = ucwords(strtolower($provincia));
+                $secondPart = ucwords(strtolower($provincia));
             }
         } else {
-            // Para casos de Buenos Aires, agregar la provincia
+            // Por defecto, asumir Buenos Aires si no hay más contexto
+            $secondPart = 'Buenos Aires';
+        }
+        
+        // Agregar segunda parte solo si es diferente a la primera
+        if ($secondPart && strcasecmp($result[0], $secondPart) !== 0) {
+            $result[] = $secondPart;
+        } else {
+            // Si son iguales o no hay segunda parte, agregar Buenos Aires por defecto
             $result[] = 'Buenos Aires';
         }
-    } elseif ($partido) {
-        // Solo tenemos partido
-        $result[] = ucwords(strtolower($partido));
-        $result[] = 'Buenos Aires'; // Asumir Buenos Aires para partidos
-    } else {
-        // No pudimos determinar nada útil
+    }
+    
+    // Si no pudimos determinar nada, devolver vacío
+    if (count($result) === 0) {
         return '';
     }
     
-    // Evitar duplicados consecutivos
-    $finalResult = [];
-    $lastValue = '';
-    foreach ($result as $value) {
-        if (strcasecmp($value, $lastValue) !== 0) {
-            $finalResult[] = $value;
-            $lastValue = $value;
-        }
+    // Asegurar que siempre tengamos exactamente 2 partes
+    if (count($result) === 1) {
+        $result[] = 'Buenos Aires';
     }
     
-    return implode(', ', $finalResult);
+    return implode(', ', $result);
 }
 
+/**
+ * Método auxiliar para obtener ubicaciones limpias únicas
+ */
+private function getCleanLocations($baseQuery)
+{
+    $rawLocations = (clone $baseQuery)
+        ->select('location', 'latitude', 'longitude')
+        ->distinct()
+        ->whereNotNull('location')
+        ->where('location', '!=', '')
+        ->get();
+
+    $locations = collect();
+    $addedLocations = []; // Para evitar duplicados
+
+    foreach ($rawLocations as $loc) {
+        $cleanedLocation = $this->cleanLocationString($loc->location);
+        
+        if (!empty(trim($cleanedLocation)) && !in_array($cleanedLocation, $addedLocations)) {
+            $locations->push([
+                'value' => $cleanedLocation,
+                'display' => $cleanedLocation,
+                'lat' => $loc->latitude,
+                'lng' => $loc->longitude,
+            ]);
+            $addedLocations[] = $cleanedLocation;
+        }
+    }
+
+    return $locations->sortBy('display')->values();
+}
 /**
  * Método auxiliar para obtener ubicaciones limpias únicas
  */
