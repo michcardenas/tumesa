@@ -88,8 +88,27 @@ return redirect()->route('admin.cenas')
         
         return view('admin.cenas.edit', compact('cena', 'chefs'));
     }
+<?php
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+
 public function update(Request $request, Cena $cena) 
 {
+    // LOG 1: Ver qué llega del formulario
+    \Log::info('=== UPDATE CENA ID: ' . $cena->id . ' ===');
+    \Log::info('Coordenadas recibidas del formulario:', [
+        'latitude' => $request->input('latitude'),
+        'longitude' => $request->input('longitude')
+    ]);
+    
+    // LOG 2: Ver valores actuales
+    \Log::info('Coordenadas actuales en BD:', [
+        'latitude' => $cena->latitude,
+        'longitude' => $cena->longitude
+    ]);
+    
     $validated = $request->validate([
         'user_id' => 'required|exists:users,id',
         'title' => 'required|string|max:255',
@@ -134,8 +153,51 @@ public function update(Request $request, Cena $cena)
     // Set boolean value
     $validated['is_active'] = $request->has('is_active');
 
-    // Con el cast correcto, esto ahora funcionará perfectamente
+    // LOG 3: Ver datos validados
+    \Log::info('Coordenadas después de validación:', [
+        'latitude' => $validated['latitude'] ?? 'null',
+        'longitude' => $validated['longitude'] ?? 'null'
+    ]);
+
+    // ===== SOLUCIÓN: Separar coordenadas y usar DB directo =====
+    
+    // Guardar coordenadas aparte
+    $latitudeToUpdate = isset($validated['latitude']) ? $validated['latitude'] : null;
+    $longitudeToUpdate = isset($validated['longitude']) ? $validated['longitude'] : null;
+    
+    // Remover coordenadas del array para evitar problemas con el cast
+    unset($validated['latitude']);
+    unset($validated['longitude']);
+    
+    // Actualizar todo excepto coordenadas
     $cena->update($validated);
+    \Log::info('Otros campos actualizados correctamente');
+    
+    // Actualizar coordenadas con DB directo (SIEMPRE FUNCIONA)
+    if ($latitudeToUpdate !== null && $longitudeToUpdate !== null) {
+        $affected = DB::table('cenas')
+            ->where('id', $cena->id)
+            ->update([
+                'latitude' => $latitudeToUpdate,
+                'longitude' => $longitudeToUpdate
+            ]);
+        
+        \Log::info('Actualización de coordenadas con DB directo:', [
+            'filas_afectadas' => $affected,
+            'latitude_nueva' => $latitudeToUpdate,
+            'longitude_nueva' => $longitudeToUpdate
+        ]);
+    }
+    
+    // LOG 4: Verificar resultado final
+    $cena->refresh();
+    \Log::info('Coordenadas finales después de actualizar:', [
+        'latitude' => $cena->latitude,
+        'longitude' => $cena->longitude,
+        'actualización_exitosa' => ($cena->latitude == $latitudeToUpdate && $cena->longitude == $longitudeToUpdate) ? 'SI' : 'NO'
+    ]);
+    
+    \Log::info('=== FIN UPDATE CENA ===');
 
     return redirect()->route('admin.cenas')
                     ->with('success', 'Cena actualizada exitosamente.');
