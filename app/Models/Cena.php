@@ -35,8 +35,8 @@ class Cena extends Model
     protected $casts = [
         'datetime' => 'datetime',
         'price' => 'decimal:2',
-        'latitude' => 'double',
-        'longitude' => 'double',
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
         'gallery_images' => 'array',
         'is_active' => 'boolean',
         'guests_max' => 'integer',
