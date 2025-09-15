@@ -88,8 +88,24 @@ return redirect()->route('admin.cenas')
         
         return view('admin.cenas.edit', compact('cena', 'chefs'));
     }
-public function update(Request $request, Cena $cena)
+public function update(Request $request, Cena $cena) 
 {
+    // ===== INICIO DEPURACIÓN =====
+    \Log::info('=== DATOS RECIBIDOS EN UPDATE ===');
+    \Log::info('Todos los datos del request:', $request->all());
+    \Log::info('Latitude recibida:', ['value' => $request->input('latitude'), 'type' => gettype($request->input('latitude'))]);
+    \Log::info('Longitude recibida:', ['value' => $request->input('longitude'), 'type' => gettype($request->input('longitude'))]);
+    \Log::info('Valores actuales en BD:', [
+        'latitude' => $cena->latitude,
+        'longitude' => $cena->longitude,
+        'lat_type' => gettype($cena->latitude),
+        'lng_type' => gettype($cena->longitude)
+    ]);
+    
+    // También puedes usar dd() para detener y ver los datos
+    // dd($request->all()); // Descomenta esta línea para ver todos los datos
+    // ===== FIN DEPURACIÓN =====
+    
     $validated = $request->validate([
         'user_id' => 'required|exists:users,id',
         'title' => 'required|string|max:255',
@@ -110,7 +126,6 @@ public function update(Request $request, Cena $cena)
 
     // Handle cover image upload
     if ($request->hasFile('cover_image')) {
-        // Delete old cover image
         if ($cena->cover_image) {
             Storage::disk('public')->delete($cena->cover_image);
         }
@@ -119,7 +134,6 @@ public function update(Request $request, Cena $cena)
 
     // Handle gallery images upload
     if ($request->hasFile('gallery_images')) {
-        // Delete old gallery images
         if ($cena->gallery_images) {
             foreach ($cena->gallery_images as $image) {
                 Storage::disk('public')->delete($image);
@@ -136,7 +150,43 @@ public function update(Request $request, Cena $cena)
     // Set boolean value
     $validated['is_active'] = $request->has('is_active');
 
-    $cena->update($validated);
+    // ===== SOLUCIÓN ROBUSTA PARA COORDENADAS =====
+    // Método 1: Actualizar por separado (más confiable)
+    $cena->user_id = $validated['user_id'];
+    $cena->title = $validated['title'];
+    $cena->datetime = $validated['datetime'];
+    $cena->guests_max = $validated['guests_max'];
+    $cena->price = $validated['price'];
+    $cena->menu = $validated['menu'];
+    $cena->location = $validated['location'];
+    $cena->status = $validated['status'];
+    $cena->is_active = $validated['is_active'];
+    $cena->special_requirements = $validated['special_requirements'] ?? null;
+    $cena->cancellation_policy = $validated['cancellation_policy'] ?? null;
+    
+    // Actualizar imágenes si se subieron nuevas
+    if (isset($validated['cover_image'])) {
+        $cena->cover_image = $validated['cover_image'];
+    }
+    if (isset($validated['gallery_images'])) {
+        $cena->gallery_images = $validated['gallery_images'];
+    }
+    
+    // Actualizar coordenadas específicamente
+    if ($request->filled('latitude')) {
+        $cena->latitude = (float) $request->input('latitude');
+    }
+    if ($request->filled('longitude')) {
+        $cena->longitude = (float) $request->input('longitude');
+    }
+    
+    $cena->save();
+    
+    // ===== VERIFICACIÓN POST-GUARDADO =====
+    \Log::info('Valores después de guardar:', [
+        'latitude' => $cena->latitude,
+        'longitude' => $cena->longitude
+    ]);
 
     return redirect()->route('admin.cenas')
                     ->with('success', 'Cena actualizada exitosamente.');
