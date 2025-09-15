@@ -38,8 +38,9 @@ class AdminCenasController extends Controller
     /**
      * Store a newly created cena in storage.
      */
-    public function store(Request $request)
-    {
+ public function store(Request $request)
+{
+    try {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
@@ -48,41 +49,56 @@ class AdminCenasController extends Controller
             'price' => 'required|numeric|min:0',
             'menu' => 'required|string',
             'location' => 'required|string|max:500',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
+            'latitude' => 'required|numeric|between:-90,90',  // Cambiado a required
+            'longitude' => 'required|numeric|between:-180,180', // Cambiado a required
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'status' => 'required|in:draft,published,cancelled',
-            'is_active' => 'boolean',
             'special_requirements' => 'nullable|string',
             'cancellation_policy' => 'nullable|string'
         ]);
 
-        // Handle cover image upload
+        // Manejar is_active correctamente
+        $validated['is_active'] = $request->has('is_active') ? true : false;
+
+        // Manejar imagen de portada
         if ($request->hasFile('cover_image')) {
             $validated['cover_image'] = $request->file('cover_image')->store('cenas/covers', 'public');
         }
 
-        // Handle gallery images upload
+        // Manejar galería de imágenes
         $galleryImages = [];
         if ($request->hasFile('gallery_images')) {
             foreach ($request->file('gallery_images') as $image) {
                 $galleryImages[] = $image->store('cenas/gallery', 'public');
             }
+            $validated['gallery_images'] = $galleryImages;
+        } else {
+            $validated['gallery_images'] = []; // Array vacío si no hay imágenes
         }
-        $validated['gallery_images'] = $galleryImages;
 
-        // Set default values
+        // Establecer valores por defecto
         $validated['guests_current'] = 0;
-        $validated['is_active'] = 1; // o true, ambos funcionan
 
-
+        // Crear la cena
         $cena = Cena::create($validated);
 
-return redirect()->route('admin.cenas')
-
+        return redirect()->route('admin.cenas')
                         ->with('success', 'Cena creada exitosamente.');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()
+                        ->withErrors($e->validator)
+                        ->withInput();
+    } catch (\Exception $e) {
+        // Log del error para debugging
+        \Log::error('Error creando cena: ' . $e->getMessage());
+        
+        return redirect()->back()
+                        ->with('error', 'Error al crear la cena: ' . $e->getMessage())
+                        ->withInput();
     }
+}
 
     /**
      * Show the form for editing the specified cena.

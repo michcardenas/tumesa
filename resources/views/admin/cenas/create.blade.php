@@ -249,12 +249,88 @@
 </div>
 
 <script>
-let map, marker, autocomplete;
+// Agregar este script al final de tu vista, reemplazando el existente
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadGoogleMaps();
+    
+    // Validación del formulario mejorada
+    document.getElementById('cenaForm').addEventListener('submit', function(e) {
+        let isValid = true;
+        let errors = [];
+
+        // Validar coordenadas
+        const lat = document.getElementById('latitude').value;
+        const lng = document.getElementById('longitude').value;
+        
+        if (!lat || !lng) {
+            isValid = false;
+            errors.push('Por favor, selecciona una ubicación válida en el mapa.');
+        }
+
+        // Validar fecha
+        const datetime = document.getElementById('datetime').value;
+        if (datetime) {
+            const selectedDate = new Date(datetime);
+            const now = new Date();
+            if (selectedDate <= now) {
+                isValid = false;
+                errors.push('La fecha debe ser futura.');
+            }
+        }
+
+        // Validar precio
+        const price = parseFloat(document.getElementById('price').value);
+        if (price < 0) {
+            isValid = false;
+            errors.push('El precio debe ser mayor a 0.');
+        }
+
+        // Validar número máximo de invitados
+        const guestsMax = parseInt(document.getElementById('guests_max').value);
+        if (guestsMax < 1 || guestsMax > 50) {
+            isValid = false;
+            errors.push('El número de invitados debe estar entre 1 y 50.');
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Errores encontrados:\n' + errors.join('\n'));
+            return false;
+        }
+
+        // Mostrar loading
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creando...';
+        submitBtn.disabled = true;
+
+        // Si llega aquí, permitir el envío
+        return true;
+    });
+});
+
+// Función para establecer coordenadas por defecto de Bogotá
+function setDefaultCoordinates() {
+    const defaultLat = 4.7110;  // Bogotá
+    const defaultLng = -74.0721;
+    
+    document.getElementById('latitude').value = defaultLat;
+    document.getElementById('longitude').value = defaultLng;
+    
+    if (typeof map !== 'undefined' && map) {
+        const position = { lat: defaultLat, lng: defaultLng };
+        map.setCenter(position);
+        if (typeof marker !== 'undefined' && marker) {
+            marker.setPosition(position);
+        }
+    }
+}
 
 function initMap() {
-    // Coordenadas por defecto (Buenos Aires)
-    const defaultLat = -34.6037;
-    const defaultLng = -58.3816;
+    // Coordenadas por defecto (Bogotá, Colombia)
+    const defaultLat = 4.7110;
+    const defaultLng = -74.0721;
     
     // Inicializar mapa
     map = new google.maps.Map(document.getElementById('map'), {
@@ -277,12 +353,15 @@ function initMap() {
         title: 'Ubicación de la cena'
     });
 
+    // Establecer coordenadas por defecto
+    updateCoordinates({ lat: () => defaultLat, lng: () => defaultLng });
+
     // Autocomplete para la dirección
     autocomplete = new google.maps.places.Autocomplete(
         document.getElementById('location'),
         {
             types: ['address'],
-            componentRestrictions: { country: 'ar' }
+            componentRestrictions: { country: 'co' } // Colombia
         }
     );
 
@@ -364,25 +443,12 @@ function loadGoogleMaps() {
     script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCuh8GSFyFxvDaiEeWcW7JXs2KIcf89dHY&libraries=places&callback=initMapCallback';
     script.async = true;
     script.defer = true;
+    script.onerror = function() {
+        console.error('Error cargando Google Maps');
+        alert('Error cargando el mapa. Por favor, recarga la página.');
+    };
     document.head.appendChild(script);
 }
-
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    loadGoogleMaps();
-    
-    // Validación del formulario
-    document.getElementById('cenaForm').addEventListener('submit', function(e) {
-        const lat = document.getElementById('latitude').value;
-        const lng = document.getElementById('longitude').value;
-        
-        if (!lat || !lng) {
-            e.preventDefault();
-            alert('Por favor, selecciona una ubicación válida en el mapa.');
-            return false;
-        }
-    });
-});
 </script>
 
 <style>
