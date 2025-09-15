@@ -282,10 +282,20 @@ class ExperienciasController extends Controller
     $foundNeighborhood = null;
     $foundCity = null;
     $streetName = null;
+    $partidoFound = false;
     
-    foreach ($parts as $part) {
-        // Limpiar números de calle y códigos postales
+    foreach ($parts as $index => $part) {
+        // Guardar el original para análisis
         $originalPart = $part;
+        
+        // Detectar si es "Partido de X" ANTES de limpiarlo
+        if (preg_match('/^Partido de (.+)$/i', $originalPart, $matches)) {
+            $foundCity = trim($matches[1]);
+            $partidoFound = true;
+            continue;
+        }
+        
+        // Limpiar números de calle y códigos postales
         $part = preg_replace('/^\d+\s*-?\s*/', '', $part);
         $part = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $part);
         $part = preg_replace('/\s+/', ' ', trim($part));
@@ -310,25 +320,44 @@ class ExperienciasController extends Controller
             $part = 'Buenos Aires';
         }
         
-        // Manejar "Partido de X" o "Municipality of X"
-        $part = preg_replace('/^(Partido de |Municipality of |Municipalidad de )/i', '', $part);
-        
-        // Buscar barrio conocido
-        if (!$foundNeighborhood) {
-            foreach ($knownNeighborhoods as $neighborhood) {
-                if (stripos($part, $neighborhood) !== false) {
-                    $foundNeighborhood = $neighborhood;
-                    break;
+        // Si ya encontramos "Partido de X", no buscar más ciudades
+        if ($partidoFound) {
+            // Solo buscar barrios
+            if (!$foundNeighborhood) {
+                foreach ($knownNeighborhoods as $neighborhood) {
+                    if (stripos($part, $neighborhood) !== false) {
+                        $foundNeighborhood = $neighborhood;
+                        break;
+                    }
                 }
             }
-        }
-        
-        // Buscar ciudad conocida
-        if (!$foundCity) {
-            foreach ($knownCities as $city) {
-                if (stripos($part, $city) !== false) {
-                    $foundCity = $city;
-                    break;
+        } else {
+            // Buscar barrio conocido
+            if (!$foundNeighborhood) {
+                foreach ($knownNeighborhoods as $neighborhood) {
+                    if (stripos($part, $neighborhood) !== false) {
+                        $foundNeighborhood = $neighborhood;
+                        break;
+                    }
+                }
+            }
+            
+            // Buscar ciudad conocida (pero no si es un "Buenos Aires" genérico antes del código postal)
+            if (!$foundCity) {
+                // Verificar si el siguiente elemento es un código postal
+                $nextIsPostalCode = false;
+                if (isset($parts[$index + 1])) {
+                    $nextIsPostalCode = preg_match('/^[A-Z0-9]{4,8}/', trim($parts[$index + 1]));
+                }
+                
+                // No tomar "Buenos Aires" si viene antes de un código postal
+                if (!($part === 'Buenos Aires' && $nextIsPostalCode)) {
+                    foreach ($knownCities as $city) {
+                        if (stripos($part, $city) !== false) {
+                            $foundCity = $city;
+                            break;
+                        }
+                    }
                 }
             }
         }
