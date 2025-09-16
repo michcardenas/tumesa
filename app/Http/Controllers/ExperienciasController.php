@@ -8,7 +8,7 @@ use App\Models\Pagina;
 
 class ExperienciasController extends Controller
 {
-  public function index(Request $request)
+public function index(Request $request)
 {
     // Base: solo experiencias activas, publicadas y futuras
     $base = Cena::query()->active()->published()->upcoming()->with('chef');
@@ -44,17 +44,30 @@ class ExperienciasController extends Controller
         });
     }
 
-    // Filtro de ubicación corregido - solo usar el campo 'location' que existe
+    // ✅ FILTRO DE UBICACIÓN CORREGIDO
     if ($city !== '') {
-        // Primero intentar búsqueda exacta por ubicación
-        $exactMatch = clone $query;
-        $exactMatch->where('location', 'like', "%{$city}%");
-
-        // Si no hay resultados exactos y tenemos coordenadas, buscar por proximidad
-        if ($exactMatch->count() === 0 && $userLat && $userLng) {
+        // Descomponer el filtro seleccionado (ej: "Palermo, Buenos Aires")
+        $cityParts = array_map('trim', explode(',', $city));
+        
+        // Crear una consulta flexible que busque por todas las partes
+        $query->where(function ($locationQuery) use ($cityParts) {
+            // Para cada parte de la ubicación, buscar si está presente en el campo location
+            foreach ($cityParts as $index => $part) {
+                if (!empty($part)) {
+                    if ($index === 0) {
+                        // Primera parte: usar WHERE
+                        $locationQuery->where('location', 'like', "%{$part}%");
+                    } else {
+                        // Partes adicionales: usar AND para ser más restrictivo
+                        $locationQuery->where('location', 'like', "%{$part}%");
+                    }
+                }
+            }
+        });
+        
+        // Filtrar adicionalmente por proximidad si hay coordenadas
+        if ($userLat && $userLng) {
             $query = $this->addProximityFilter($query, $userLat, $userLng, $radius);
-        } else {
-            $query = $exactMatch;
         }
     } elseif ($userLat && $userLng) {
         // Solo filtro por proximidad si no hay filtro de ciudad
@@ -93,11 +106,30 @@ class ExperienciasController extends Controller
             break;
     }
 
+    // ✅ DEBUG: Agregar logs temporales para verificar filtros
+    if ($city !== '') {
+        \Log::info("Filtro de ubicación aplicado", [
+            'city_filter' => $city,
+            'city_parts' => array_map('trim', explode(',', $city)),
+            'total_before_filter' => (clone $base)->count(),
+        ]);
+    }
+
     // Paginación
     $cenas = $query->paginate(12)->appends($request->query());
 
-    // NUEVO: Agregar ubicaciones limpias a cada cena
-    // Esto usa exactamente la misma lógica que el filtro
+    // ✅ DEBUG: Log final results
+    \Log::info("Resultados de filtro", [
+        'total_results' => $cenas->total(),
+        'filters_applied' => array_filter([
+            'q' => $q ?: null,
+            'city' => $city ?: null,
+            'guests' => $gMin ?: null,
+            'price_range' => ($pMin != $minPrice || $pMax != $maxPrice) ? "{$pMin}-{$pMax}" : null,
+        ]),
+    ]);
+
+    // Agregar ubicaciones limpias a cada cena
     foreach ($cenas as $cena) {
         $cena->clean_location = $this->cleanLocationString($cena->location);
     }
@@ -123,301 +155,45 @@ class ExperienciasController extends Controller
         ],
     ]);
 }
-    /**
-     * Agregar filtro de proximidad geográfica
-     */
-    private function addProximityFilter($query, $lat, $lng, $radiusKm)
-    {
-        // Fórmula Haversine para calcular distancia
-        // 6371 es el radio de la Tierra en km
-        $earthRadius = 6371;
-        
-        return $query->whereRaw("
-            (
-                {$earthRadius} * acos(
-                    cos(radians(?)) 
-                    * cos(radians(latitude)) 
-                    * cos(radians(longitude) - radians(?)) 
-                    + sin(radians(?)) 
-                    * sin(radians(latitude))
-                )
-            ) <= ?
-        ", [$lat, $lng, $lat, $radiusKm]);
-    }
 
-    /**
-     * Agregar cálculo de distancia para ordenamiento
-     */
-    private function addDistanceCalculation($query, $lat, $lng)
-    {
-        $earthRadius = 6371;
-        
-        return $query->selectRaw("
-            *,
-            (
-                {$earthRadius} * acos(
-                    cos(radians(?)) 
-                    * cos(radians(latitude)) 
-                    * cos(radians(longitude) - radians(?)) 
-                    + sin(radians(?)) 
-                    * sin(radians(latitude))
-                )
-            ) AS distance
-        ", [$lat, $lng, $lat]);
-    }
 
-    private function cleanLocationString($location)
+
+// ✅ Agregar filtro de proximidad (sin cambios)
+private function addProximityFilter($query, $lat, $lng, $radiusKm)
 {
-    if (empty($location)) return '';
+    $earthRadius = 6371;
     
-    // Normalizar el string
-    $location = str_replace(['  ', '   '], ' ', trim($location));
-    
-    // Dividir por comas
-    $parts = array_map('trim', explode(',', $location));
-    
-    // Provincias de Argentina
-    $provincias = [
-        'Buenos Aires', 'CABA', 'Ciudad Autónoma de Buenos Aires',
-        'Córdoba', 'Santa Fe', 'Mendoza', 'Tucumán', 'Salta',
-        'Entre Ríos', 'Corrientes', 'Misiones', 'Chaco', 'Formosa',
-        'Santiago del Estero', 'San Juan', 'San Luis', 'La Rioja',
-        'Catamarca', 'Jujuy', 'La Pampa', 'Neuquén', 'Río Negro',
-        'Chubut', 'Santa Cruz', 'Tierra del Fuego'
-    ];
-    
-    // Términos a ignorar
-    $ignoreTerms = [
-        'Argentina', 'AR', 'ARG', 'América del Sur', 'South America',
-        'República Argentina', 'Argentine Republic'
-    ];
-    
-    // Variables para almacenar resultados
-    $direccion = null;
-    $barrio = null;
-    $localidad = null;
-    $partido = null;
-    $provincia = null;
-    $cleanedParts = [];
-    
-    // Procesar cada parte
-    foreach ($parts as $index => $part) {
-        $originalPart = $part;
-        
-        // Detectar si es "Partido de X"
-        if (preg_match('/^Partido de (.+)$/i', $originalPart, $matches)) {
-            $partido = trim($matches[1]);
-            continue;
-        }
-        
-        // Detectar si es "Provincia de X" o "X Province"
-        if (preg_match('/^(Provincia de |Province of |)(.+Province)$/i', $originalPart, $matches)) {
-            $provinciaTemp = trim(str_replace('Province', '', $matches[2]));
-            // Normalizar nombres de provincia en inglés
-            if (strcasecmp($provinciaTemp, 'Buenos Aires') === 0) {
-                $provincia = 'Buenos Aires';
-            } else {
-                $provincia = $provinciaTemp;
-            }
-            continue;
-        }
-        
-        // Verificar si debe ser ignorado
-        $shouldIgnore = false;
-        foreach ($ignoreTerms as $ignore) {
-            if (strcasecmp($part, $ignore) === 0 || 
-                stripos($part, $ignore) !== false) {
-                $shouldIgnore = true;
-                break;
-            }
-        }
-        if ($shouldIgnore) continue;
-        
-        // Limpiar números al inicio (direcciones) y códigos postales
-        $cleanPart = preg_replace('/^\d+\s*-?\s*/', '', $part);
-        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $cleanPart); // Códigos postales argentinos
-        $cleanPart = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $cleanPart); // Otros códigos
-        $cleanPart = preg_replace('/\s+/', ' ', trim($cleanPart));
-        
-        if (empty($cleanPart)) continue;
-        
-        // Normalizar CABA
-        if (stripos($cleanPart, 'CABA') !== false || 
-            stripos($cleanPart, 'Ciudad Autónoma') !== false ||
-            stripos($cleanPart, 'C.A.B.A') !== false) {
-            $cleanPart = 'Buenos Aires';
-            $provincia = 'CABA';
-        }
-        
-        // Verificar si es una provincia conocida
-        $isProvince = false;
-        foreach ($provincias as $prov) {
-            if (strcasecmp($cleanPart, $prov) === 0) {
-                if (!$provincia) {
-                    $provincia = $prov;
-                }
-                $isProvince = true;
-                break;
-            }
-        }
-        
-        // Si no es provincia y no está vacío, agregarlo a partes limpias
-        if (!$isProvince && !empty($cleanPart)) {
-            $cleanedParts[] = $cleanPart;
-        }
-    }
-    
-    // Analizar las partes limpias para determinar qué es cada cosa
-    // Generalmente el orden es: Calle, Barrio, Localidad/Ciudad, Provincia, País
-    $numParts = count($cleanedParts);
-    
-    if ($numParts > 0) {
-        // La lógica varía según la cantidad de partes
-        if ($numParts == 1) {
-            // Solo una parte: probablemente sea barrio o localidad
-            $localidad = $cleanedParts[0];
-        } elseif ($numParts == 2) {
-            // Dos partes: probablemente barrio y localidad
-            $barrio = $cleanedParts[0];
-            $localidad = $cleanedParts[1];
-        } elseif ($numParts >= 3) {
-            // Tres o más partes
-            // La primera puede ser calle (la ignoramos si tiene formato de dirección)
-            $startIndex = 0;
-            
-            // Verificar si la primera parte parece una calle
-            if (preg_match('/^[A-Z][a-záéíóú]+(\s+[A-Z][a-záéíóú]+)*$/', $cleanedParts[0]) ||
-                preg_match('/\b(calle|avenida|av\.|boulevard|blvd|pasaje|paseo)/i', $cleanedParts[0])) {
-                $direccion = $cleanedParts[0];
-                $startIndex = 1;
-            }
-            
-            // Asignar el resto
-            $remainingParts = array_slice($cleanedParts, $startIndex);
-            if (count($remainingParts) == 1) {
-                $localidad = $remainingParts[0];
-            } elseif (count($remainingParts) == 2) {
-                $barrio = $remainingParts[0];
-                $localidad = $remainingParts[1];
-            } else {
-                // Tomar los dos últimos elementos más relevantes
-                $barrio = $remainingParts[count($remainingParts) - 2];
-                $localidad = $remainingParts[count($remainingParts) - 1];
-            }
-        }
-    }
-    
-    // Si tenemos partido pero no localidad, usar el partido como localidad
-    if ($partido && !$localidad) {
-        $localidad = $partido;
-    } elseif ($partido && $localidad && strcasecmp($partido, $localidad) !== 0) {
-        // Si el partido es diferente a la localidad, puede ser más específico
-        if (!$barrio) {
-            $barrio = $localidad;
-            $localidad = $partido;
-        }
-    }
-    
-    // Construir el resultado final - SIEMPRE devolver dos partes: localidad/barrio, PROVINCIA
-    $result = [];
-    
-    // Determinar la primera parte (barrio/localidad preferentemente)
-    if ($barrio) {
-        $result[] = ucwords(strtolower($barrio));
-    } elseif ($localidad) {
-        $result[] = ucwords(strtolower($localidad));
-    } elseif ($partido) {
-        $result[] = ucwords(strtolower($partido));
-    }
-    
-    // Determinar la PROVINCIA como segunda parte (SIEMPRE)
-    if (count($result) > 0) {
-        $provinciaFinal = null;
-        
-        if ($provincia) {
-            // Si tenemos provincia explícita
-            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
-                $provinciaFinal = 'Buenos Aires';
-            } else {
-                $provinciaFinal = ucwords(strtolower($provincia));
-            }
-        } else if ($partido) {
-            // Si tenemos partido, es de Buenos Aires
-            $provinciaFinal = 'Buenos Aires';
-        } else {
-            // Por defecto, asumir Buenos Aires
-            $provinciaFinal = 'Buenos Aires';
-        }
-        
-        // Agregar la provincia como segunda parte
-        // Verificar que no sea igual a la primera parte
-        if ($provinciaFinal && strcasecmp($result[0], $provinciaFinal) !== 0) {
-            $result[] = $provinciaFinal;
-        } else if (strcasecmp($result[0], 'Buenos Aires') === 0) {
-            // Si la primera parte ya es "Buenos Aires", usar CABA o Ciudad
-            $result[0] = 'Ciudad de Buenos Aires';
-            $result[] = 'Buenos Aires';
-        } else {
-            // Si son iguales, agregar Buenos Aires por defecto
-            $result[] = 'Buenos Aires';
-        }
-    }
-    
-    // Si no pudimos determinar nada para la primera parte, intentar con lo que tengamos
-    if (count($result) === 0) {
-        if ($provincia) {
-            // Solo tenemos provincia, mostrarla sola
-            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
-                return 'Ciudad de Buenos Aires, Buenos Aires';
-            } else {
-                return ucwords(strtolower($provincia));
-            }
-        }
-        return '';
-    }
-    
-    // Asegurar que siempre tengamos exactamente 2 partes
-    if (count($result) === 1) {
-        $result[] = 'Buenos Aires';
-    }
-    
-    return implode(', ', $result);
+    return $query->whereRaw("
+        (
+            {$earthRadius} * acos(
+                cos(radians(?)) 
+                * cos(radians(latitude)) 
+                * cos(radians(longitude) - radians(?)) 
+                + sin(radians(?)) 
+                * sin(radians(latitude))
+            )
+        ) <= ?
+    ", [$lat, $lng, $lat, $radiusKm]);
 }
 
-/**
- * Método auxiliar para obtener ubicaciones limpias únicas
- */
-private function getCleanLocations($baseQuery)
+// ✅ Agregar cálculo de distancia (sin cambios)
+private function addDistanceCalculation($query, $lat, $lng)
 {
-    $rawLocations = (clone $baseQuery)
-        ->select('location', 'latitude', 'longitude')
-        ->distinct()
-        ->whereNotNull('location')
-        ->where('location', '!=', '')
-        ->get();
-
-    $locations = collect();
-    $addedLocations = []; // Para evitar duplicados
-
-    foreach ($rawLocations as $loc) {
-        $cleanedLocation = $this->cleanLocationString($loc->location);
-        
-        if (!empty(trim($cleanedLocation)) && !in_array($cleanedLocation, $addedLocations)) {
-            $locations->push([
-                'value' => $cleanedLocation,
-                'display' => $cleanedLocation,
-                'lat' => $loc->latitude,
-                'lng' => $loc->longitude,
-            ]);
-            $addedLocations[] = $cleanedLocation;
-        }
-    }
-
-    return $locations->sortBy('display')->values();
+    $earthRadius = 6371;
+    
+    return $query->selectRaw("
+        *,
+        (
+            {$earthRadius} * acos(
+                cos(radians(?)) 
+                * cos(radians(latitude)) 
+                * cos(radians(longitude) - radians(?)) 
+                + sin(radians(?)) 
+                * sin(radians(latitude))
+            )
+        ) AS distance
+    ", [$lat, $lng, $lat]);
 }
-/**
- * Método auxiliar para obtener ubicaciones limpias únicas
- */
 
 
     public function serChef()
