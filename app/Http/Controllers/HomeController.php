@@ -315,7 +315,98 @@ public function showCena(Cena $cena)
         'meta_description' => 'Reserva tu lugar en "' . $cena->title . '" con "' . ($cena->user->name ?? 'nuestro chef'). '" ' . substr($cena->menu, 0, 100) . '...'
     ]);
 }
-
+private function cleanLocationString($location)
+{
+    if (empty($location)) return '';
+    
+    // Normalizar el string
+    $location = str_replace(['  ', '   '], ' ', trim($location));
+    
+    // Dividir por comas
+    $parts = array_map('trim', explode(',', $location));
+    
+    // Provincias de Argentina
+    $provincias = [
+        'Buenos Aires', 'CABA', 'Ciudad Autónoma de Buenos Aires',
+        'Córdoba', 'Santa Fe', 'Mendoza', 'Tucumán', 'Salta',
+        'Entre Ríos', 'Corrientes', 'Misiones', 'Chaco', 'Formosa',
+        'Santiago del Estero', 'San Juan', 'San Luis', 'La Rioja',
+        'Catamarca', 'Jujuy', 'La Pampa', 'Neuquén', 'Río Negro',
+        'Chubut', 'Santa Cruz', 'Tierra del Fuego'
+    ];
+    
+    // Términos a ignorar
+    $ignoreTerms = [
+        'Argentina', 'AR', 'ARG', 'América del Sur', 'South America',
+        'República Argentina', 'Argentine Republic'
+    ];
+    
+    // Variables para almacenar resultados
+    $cleanedParts = [];
+    $provincia = null;
+    
+    // Procesar cada parte
+    foreach ($parts as $part) {
+        // Verificar si debe ser ignorado
+        $shouldIgnore = false;
+        foreach ($ignoreTerms as $ignore) {
+            if (strcasecmp($part, $ignore) === 0 || stripos($part, $ignore) !== false) {
+                $shouldIgnore = true;
+                break;
+            }
+        }
+        if ($shouldIgnore) continue;
+        
+        // Limpiar números al inicio y códigos postales
+        $cleanPart = preg_replace('/^\d+\s*-?\s*/', '', $part);
+        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $cleanPart);
+        $cleanPart = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $cleanPart);
+        $cleanPart = preg_replace('/\s+/', ' ', trim($cleanPart));
+        
+        if (empty($cleanPart)) continue;
+        
+        // Normalizar CABA
+        if (stripos($cleanPart, 'CABA') !== false || 
+            stripos($cleanPart, 'Ciudad Autónoma') !== false) {
+            $cleanPart = 'Buenos Aires';
+            $provincia = 'CABA';
+        }
+        
+        // Verificar si es provincia
+        $isProvince = false;
+        foreach ($provincias as $prov) {
+            if (strcasecmp($cleanPart, $prov) === 0) {
+                if (!$provincia) $provincia = $prov;
+                $isProvince = true;
+                break;
+            }
+        }
+        
+        if (!$isProvince && !empty($cleanPart)) {
+            $cleanedParts[] = $cleanPart;
+        }
+    }
+    
+    // Construir resultado
+    $result = [];
+    
+    if (count($cleanedParts) > 0) {
+        $result[] = ucwords(strtolower($cleanedParts[count($cleanedParts) - 1]));
+    }
+    
+    // Agregar provincia
+    if ($provincia) {
+        if ($provincia === 'CABA') {
+            $result[] = 'Buenos Aires';
+        } else {
+            $result[] = ucwords(strtolower($provincia));
+        }
+    } else {
+        $result[] = 'Buenos Aires';
+    }
+    
+    return implode(', ', array_filter($result));
+}
 public function users()
 {
     $usuarios = User::with('roles')->paginate(15);

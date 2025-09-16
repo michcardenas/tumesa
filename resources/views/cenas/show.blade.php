@@ -27,7 +27,12 @@
                                     <i class="fas fa-calendar-alt"></i>
                                     <span>{{ \Carbon\Carbon::parse($cenaData['datetime'])->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY - HH:mm') }}</span>
                                 </div>
-                               
+                                 @if(!empty($cenaData['clean_location']))
+                                        <div class="info-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{ $cenaData['clean_location'] }}</span>
+                                        </div>
+                                        @endif
                             </div>
                         </div>
                     </div>
