@@ -299,6 +299,8 @@ public function showCena(Cena $cena)
         'days_until' => now()->diffInDays($cena->datetime, false),
         'is_past' => $cena->datetime->isPast(),
         'can_book' => !$cena->datetime->isPast() && ($cena->guests_max - $cena->guests_current) > 0,
+            'clean_location' => $this->cleanLocationString($cena->location), // ✅ AGREGAR ESTA LÍNEA
+
         
         // NUEVOS CAMPOS para control de ubicación
         'user_has_reservation' => $userHasReservation,
