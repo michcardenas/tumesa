@@ -344,70 +344,195 @@ private function cleanLocationString($location)
     ];
     
     // Variables para almacenar resultados
-    $cleanedParts = [];
+    $direccion = null;
+    $barrio = null;
+    $localidad = null;
+    $partido = null;
     $provincia = null;
+    $cleanedParts = [];
     
     // Procesar cada parte
-    foreach ($parts as $part) {
+    foreach ($parts as $index => $part) {
+        $originalPart = $part;
+        
+        // Detectar si es "Partido de X"
+        if (preg_match('/^Partido de (.+)$/i', $originalPart, $matches)) {
+            $partido = trim($matches[1]);
+            continue;
+        }
+        
+        // Detectar si es "Provincia de X" o "X Province"
+        if (preg_match('/^(Provincia de |Province of |)(.+Province)$/i', $originalPart, $matches)) {
+            $provinciaTemp = trim(str_replace('Province', '', $matches[2]));
+            // Normalizar nombres de provincia en inglés
+            if (strcasecmp($provinciaTemp, 'Buenos Aires') === 0) {
+                $provincia = 'Buenos Aires';
+            } else {
+                $provincia = $provinciaTemp;
+            }
+            continue;
+        }
+        
         // Verificar si debe ser ignorado
         $shouldIgnore = false;
         foreach ($ignoreTerms as $ignore) {
-            if (strcasecmp($part, $ignore) === 0 || stripos($part, $ignore) !== false) {
+            if (strcasecmp($part, $ignore) === 0 || 
+                stripos($part, $ignore) !== false) {
                 $shouldIgnore = true;
                 break;
             }
         }
         if ($shouldIgnore) continue;
         
-        // Limpiar números al inicio y códigos postales
+        // Limpiar números al inicio (direcciones) y códigos postales
         $cleanPart = preg_replace('/^\d+\s*-?\s*/', '', $part);
-        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $cleanPart);
-        $cleanPart = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $cleanPart);
+        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $cleanPart); // Códigos postales argentinos
+        $cleanPart = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $cleanPart); // Otros códigos
         $cleanPart = preg_replace('/\s+/', ' ', trim($cleanPart));
         
         if (empty($cleanPart)) continue;
         
         // Normalizar CABA
         if (stripos($cleanPart, 'CABA') !== false || 
-            stripos($cleanPart, 'Ciudad Autónoma') !== false) {
+            stripos($cleanPart, 'Ciudad Autónoma') !== false ||
+            stripos($cleanPart, 'C.A.B.A') !== false) {
             $cleanPart = 'Buenos Aires';
             $provincia = 'CABA';
         }
         
-        // Verificar si es provincia
+        // Verificar si es una provincia conocida
         $isProvince = false;
         foreach ($provincias as $prov) {
             if (strcasecmp($cleanPart, $prov) === 0) {
-                if (!$provincia) $provincia = $prov;
+                if (!$provincia) {
+                    $provincia = $prov;
+                }
                 $isProvince = true;
                 break;
             }
         }
         
+        // Si no es provincia y no está vacío, agregarlo a partes limpias
         if (!$isProvince && !empty($cleanPart)) {
             $cleanedParts[] = $cleanPart;
         }
     }
     
-    // Construir resultado
-    $result = [];
+    // Analizar las partes limpias para determinar qué es cada cosa
+    // Generalmente el orden es: Calle, Barrio, Localidad/Ciudad, Provincia, País
+    $numParts = count($cleanedParts);
     
-    if (count($cleanedParts) > 0) {
-        $result[] = ucwords(strtolower($cleanedParts[count($cleanedParts) - 1]));
+    if ($numParts > 0) {
+        // La lógica varía según la cantidad de partes
+        if ($numParts == 1) {
+            // Solo una parte: probablemente sea barrio o localidad
+            $localidad = $cleanedParts[0];
+        } elseif ($numParts == 2) {
+            // Dos partes: probablemente barrio y localidad
+            $barrio = $cleanedParts[0];
+            $localidad = $cleanedParts[1];
+        } elseif ($numParts >= 3) {
+            // Tres o más partes
+            // La primera puede ser calle (la ignoramos si tiene formato de dirección)
+            $startIndex = 0;
+            
+            // Verificar si la primera parte parece una calle
+            if (preg_match('/^[A-Z][a-záéíóú]+(\s+[A-Z][a-záéíóú]+)*$/', $cleanedParts[0]) ||
+                preg_match('/\b(calle|avenida|av\.|boulevard|blvd|pasaje|paseo)/i', $cleanedParts[0])) {
+                $direccion = $cleanedParts[0];
+                $startIndex = 1;
+            }
+            
+            // Asignar el resto
+            $remainingParts = array_slice($cleanedParts, $startIndex);
+            if (count($remainingParts) == 1) {
+                $localidad = $remainingParts[0];
+            } elseif (count($remainingParts) == 2) {
+                $barrio = $remainingParts[0];
+                $localidad = $remainingParts[1];
+            } else {
+                // Tomar los dos últimos elementos más relevantes
+                $barrio = $remainingParts[count($remainingParts) - 2];
+                $localidad = $remainingParts[count($remainingParts) - 1];
+            }
+        }
     }
     
-    // Agregar provincia
-    if ($provincia) {
-        if ($provincia === 'CABA') {
+    // Si tenemos partido pero no localidad, usar el partido como localidad
+    if ($partido && !$localidad) {
+        $localidad = $partido;
+    } elseif ($partido && $localidad && strcasecmp($partido, $localidad) !== 0) {
+        // Si el partido es diferente a la localidad, puede ser más específico
+        if (!$barrio) {
+            $barrio = $localidad;
+            $localidad = $partido;
+        }
+    }
+    
+    // Construir el resultado final - SIEMPRE devolver dos partes: localidad/barrio, PROVINCIA
+    $result = [];
+    
+    // Determinar la primera parte (barrio/localidad preferentemente)
+    if ($barrio) {
+        $result[] = ucwords(strtolower($barrio));
+    } elseif ($localidad) {
+        $result[] = ucwords(strtolower($localidad));
+    } elseif ($partido) {
+        $result[] = ucwords(strtolower($partido));
+    }
+    
+    // Determinar la PROVINCIA como segunda parte (SIEMPRE)
+    if (count($result) > 0) {
+        $provinciaFinal = null;
+        
+        if ($provincia) {
+            // Si tenemos provincia explícita
+            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
+                $provinciaFinal = 'Buenos Aires';
+            } else {
+                $provinciaFinal = ucwords(strtolower($provincia));
+            }
+        } else if ($partido) {
+            // Si tenemos partido, es de Buenos Aires
+            $provinciaFinal = 'Buenos Aires';
+        } else {
+            // Por defecto, asumir Buenos Aires
+            $provinciaFinal = 'Buenos Aires';
+        }
+        
+        // Agregar la provincia como segunda parte
+        // Verificar que no sea igual a la primera parte
+        if ($provinciaFinal && strcasecmp($result[0], $provinciaFinal) !== 0) {
+            $result[] = $provinciaFinal;
+        } else if (strcasecmp($result[0], 'Buenos Aires') === 0) {
+            // Si la primera parte ya es "Buenos Aires", usar CABA o Ciudad
+            $result[0] = 'Ciudad de Buenos Aires';
             $result[] = 'Buenos Aires';
         } else {
-            $result[] = ucwords(strtolower($provincia));
+            // Si son iguales, agregar Buenos Aires por defecto
+            $result[] = 'Buenos Aires';
         }
-    } else {
+    }
+    
+    // Si no pudimos determinar nada para la primera parte, intentar con lo que tengamos
+    if (count($result) === 0) {
+        if ($provincia) {
+            // Solo tenemos provincia, mostrarla sola
+            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
+                return 'Ciudad de Buenos Aires, Buenos Aires';
+            } else {
+                return ucwords(strtolower($provincia));
+            }
+        }
+        return '';
+    }
+    
+    // Asegurar que siempre tengamos exactamente 2 partes
+    if (count($result) === 1) {
         $result[] = 'Buenos Aires';
     }
     
-    return implode(', ', array_filter($result));
+    return implode(', ', $result);
 }
 public function users()
 {
