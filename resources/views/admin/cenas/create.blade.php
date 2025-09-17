@@ -92,12 +92,12 @@
                             </div>
                         </div>
 
-                        <!-- Menú -->
+                        <!-- Menú con Quill Editor -->
                         <div class="mb-3">
                             <label for="menu" class="form-label">Descripción del Menú <span class="text-danger">*</span></label>
-                            <textarea class="form-control @error('menu') is-invalid @enderror" 
-                                      id="menu" name="menu" rows="4" required 
-                                      placeholder="Describe el menú que ofrecerás...">{{ old('menu') }}</textarea>
+                            <div id="quill-editor" style="height: 200px;"></div>
+                            <textarea class="form-control @error('menu') is-invalid @enderror d-none" 
+                                      id="menu" name="menu" required>{{ old('menu') }}</textarea>
                             @error('menu')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -248,16 +248,35 @@
     </form>
 </div>
 
+<!-- Quill CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
 <script>
-// Agregar este script al final de tu vista, reemplazando el existente
+// Variables globales para mapa
+let map, marker, autocomplete, quill;
 
 document.addEventListener('DOMContentLoaded', function() {
     loadGoogleMaps();
+    initQuillEditor();
     
     // Validación del formulario mejorada
     document.getElementById('cenaForm').addEventListener('submit', function(e) {
+        // Sincronizar contenido de Quill con textarea
+        const menuContent = quill.root.innerHTML;
+        document.getElementById('menu').value = menuContent;
+        
         let isValid = true;
         let errors = [];
+
+        // Validar contenido del menú
+        const menuText = quill.getText().trim();
+        if (menuText.length === 0) {
+            isValid = false;
+            errors.push('La descripción del menú es requerida.');
+        }
 
         // Validar coordenadas
         const lat = document.getElementById('latitude').value;
@@ -310,10 +329,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Función para establecer coordenadas por defecto de Bogotá
+// Inicializar Quill Editor
+function initQuillEditor() {
+    quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'Describe el menú que ofrecerás... Puedes incluir entrantes, platos principales, postres, bebidas, etc.',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'color': [] }, { 'background': [] }],
+                ['link'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Si hay contenido previo (en caso de error de validación)
+    const oldContent = document.getElementById('menu').value;
+    if (oldContent) {
+        quill.root.innerHTML = oldContent;
+    }
+}
+
+// Función para establecer coordenadas por defecto de Buenos Aires
 function setDefaultCoordinates() {
-    const defaultLat = 4.7110;  // Bogotá
-    const defaultLng = -74.0721;
+    const defaultLat = -34.6118;  // Buenos Aires
+    const defaultLng = -58.3960;
     
     document.getElementById('latitude').value = defaultLat;
     document.getElementById('longitude').value = defaultLng;
@@ -328,9 +371,9 @@ function setDefaultCoordinates() {
 }
 
 function initMap() {
-    // Coordenadas por defecto (Bogotá, Colombia)
-    const defaultLat = 4.7110;
-    const defaultLng = -74.0721;
+    // Coordenadas por defecto (Buenos Aires, Argentina)
+    const defaultLat = -34.6118;
+    const defaultLng = -58.3960;
     
     // Inicializar mapa
     map = new google.maps.Map(document.getElementById('map'), {
@@ -356,12 +399,12 @@ function initMap() {
     // Establecer coordenadas por defecto
     updateCoordinates({ lat: () => defaultLat, lng: () => defaultLng });
 
-    // Autocomplete para la dirección
+    // Autocomplete para la dirección (solo Argentina)
     autocomplete = new google.maps.places.Autocomplete(
         document.getElementById('location'),
         {
             types: ['address'],
-            componentRestrictions: { country: 'co' } // Colombia
+            componentRestrictions: { country: 'ar' } // Argentina
         }
     );
 
@@ -487,6 +530,34 @@ function loadGoogleMaps() {
 
 .btn:hover {
     transform: translateY(-1px);
+}
+
+/* Estilos para Quill Editor */
+.ql-editor {
+    min-height: 150px;
+    font-family: inherit;
+}
+
+.ql-toolbar.ql-snow {
+    border: 1px solid #ced4da;
+    border-bottom: none;
+    border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.ql-container.ql-snow {
+    border: 1px solid #ced4da;
+    border-radius: 0 0 0.375rem 0.375rem;
+}
+
+.ql-editor.ql-blank::before {
+    font-style: normal;
+    color: #6c757d;
+}
+
+/* Error state para Quill */
+.is-invalid + .ql-toolbar.ql-snow,
+.is-invalid + .ql-container.ql-snow {
+    border-color: #dc3545;
 }
 </style>
 @endsection
