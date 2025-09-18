@@ -179,7 +179,7 @@ if ($city !== '') {
         ", [$lat, $lng, $lat]);
     }
 
-    private function cleanLocationString($location)
+  private function cleanLocationString($location)
 {
     if (empty($location)) return '';
     
@@ -226,7 +226,6 @@ if ($city !== '') {
         // Detectar si es "Provincia de X" o "X Province"
         if (preg_match('/^(Provincia de |Province of |)(.+Province)$/i', $originalPart, $matches)) {
             $provinciaTemp = trim(str_replace('Province', '', $matches[2]));
-            // Normalizar nombres de provincia en inglés
             if (strcasecmp($provinciaTemp, 'Buenos Aires') === 0) {
                 $provincia = 'Buenos Aires';
             } else {
@@ -248,8 +247,8 @@ if ($city !== '') {
         
         // Limpiar números al inicio (direcciones) y códigos postales
         $cleanPart = preg_replace('/^\d+\s*-?\s*/', '', $part);
-        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $cleanPart); // Códigos postales argentinos
-        $cleanPart = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $cleanPart); // Otros códigos
+        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $cleanPart);
+        $cleanPart = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $cleanPart);
         $cleanPart = preg_replace('/\s+/', ' ', trim($cleanPart));
         
         if (empty($cleanPart)) continue;
@@ -280,42 +279,76 @@ if ($city !== '') {
         }
     }
     
-    // Analizar las partes limpias para determinar qué es cada cosa
-    // Generalmente el orden es: Calle, Barrio, Localidad/Ciudad, Provincia, País
+    // LÓGICA MEJORADA PARA IDENTIFICAR BARRIO VS CALLE
     $numParts = count($cleanedParts);
     
     if ($numParts > 0) {
-        // La lógica varía según la cantidad de partes
-        if ($numParts == 1) {
-            // Solo una parte: probablemente sea barrio o localidad
-            $localidad = $cleanedParts[0];
-        } elseif ($numParts == 2) {
-            // Dos partes: probablemente barrio y localidad
-            $barrio = $cleanedParts[0];
-            $localidad = $cleanedParts[1];
-        } elseif ($numParts >= 3) {
-            // Tres o más partes
-            // La primera puede ser calle (la ignoramos si tiene formato de dirección)
-            $startIndex = 0;
+        // Detectar si la primera parte es una dirección/calle
+        $firstPartIsAddress = false;
+        if ($numParts >= 2) {
+            $firstPart = $cleanedParts[0];
             
-            // Verificar si la primera parte parece una calle
-            if (preg_match('/^[A-Z][a-záéíóú]+(\s+[A-Z][a-záéíóú]+)*$/', $cleanedParts[0]) ||
-                preg_match('/\b(calle|avenida|av\.|boulevard|blvd|pasaje|paseo)/i', $cleanedParts[0])) {
-                $direccion = $cleanedParts[0];
-                $startIndex = 1;
+            // Patrones que indican que es una calle/dirección
+            $addressPatterns = [
+                '/^\d+/', // Empieza con número
+                '/\b\d+\b/', // Contiene números (ej: "Av. Corrientes 1234")
+                '/\b(calle|avenida|av\.?|boulevard|blvd|pasaje|paseo|ruta|camino)/i',
+                '/^[A-Z][a-záéíóú]+\s+\d+/i', // Formato "Nombre Número"
+            ];
+            
+            foreach ($addressPatterns as $pattern) {
+                if (preg_match($pattern, $firstPart)) {
+                    $firstPartIsAddress = true;
+                    $direccion = $firstPart;
+                    break;
+                }
             }
+        }
+        
+        // Asignar barrio y localidad basado en si detectamos una dirección
+        if ($firstPartIsAddress) {
+            // Ignorar la primera parte (es la calle)
+            $remainingParts = array_slice($cleanedParts, 1);
             
-            // Asignar el resto
-            $remainingParts = array_slice($cleanedParts, $startIndex);
             if (count($remainingParts) == 1) {
-                $localidad = $remainingParts[0];
+                // Solo queda una parte: es barrio o localidad
+                // Decidir basado en si parece un barrio conocido
+                $part = $remainingParts[0];
+                if ($this->looksLikeBarrio($part)) {
+                    $barrio = $part;
+                    $localidad = 'Buenos Aires'; // Asumimos Buenos Aires por defecto
+                } else {
+                    $localidad = $part;
+                }
             } elseif (count($remainingParts) == 2) {
+                // Dos partes: barrio y localidad
                 $barrio = $remainingParts[0];
                 $localidad = $remainingParts[1];
-            } else {
-                // Tomar los dos últimos elementos más relevantes
-                $barrio = $remainingParts[count($remainingParts) - 2];
-                $localidad = $remainingParts[count($remainingParts) - 1];
+            } elseif (count($remainingParts) >= 3) {
+                // Tres o más: tomar el segundo como barrio
+                $barrio = $remainingParts[0];
+                $localidad = $remainingParts[1];
+            }
+        } else {
+            // No detectamos dirección, trabajar con todas las partes
+            if ($numParts == 1) {
+                // Solo una parte
+                $part = $cleanedParts[0];
+                if ($this->looksLikeBarrio($part)) {
+                    $barrio = $part;
+                    $localidad = 'Buenos Aires';
+                } else {
+                    $localidad = $part;
+                }
+            } elseif ($numParts == 2) {
+                // Dos partes: probablemente barrio y localidad
+                $barrio = $cleanedParts[0];
+                $localidad = $cleanedParts[1];
+            } elseif ($numParts >= 3) {
+                // Tres o más partes sin dirección detectada
+                // Tomar las dos del medio como más probables para barrio/localidad
+                $barrio = $cleanedParts[0];
+                $localidad = $cleanedParts[1];
             }
         }
     }
@@ -324,77 +357,134 @@ if ($city !== '') {
     if ($partido && !$localidad) {
         $localidad = $partido;
     } elseif ($partido && $localidad && strcasecmp($partido, $localidad) !== 0) {
-        // Si el partido es diferente a la localidad, puede ser más específico
         if (!$barrio) {
             $barrio = $localidad;
             $localidad = $partido;
         }
     }
     
-    // Construir el resultado final - SIEMPRE devolver dos partes: localidad/barrio, PROVINCIA
+    // CONSTRUCCIÓN DEL RESULTADO FINAL: Barrio, Ciudad
     $result = [];
     
-    // Determinar la primera parte (barrio/localidad preferentemente)
-    if ($barrio) {
-        $result[] = ucwords(strtolower($barrio));
-    } elseif ($localidad) {
-        $result[] = ucwords(strtolower($localidad));
-    } elseif ($partido) {
-        $result[] = ucwords(strtolower($partido));
+    // PRIORIDAD 1: Si tenemos barrio, usarlo
+    if ($barrio && !empty(trim($barrio))) {
+        $result[] = $this->formatLocationName($barrio);
+    } 
+    // PRIORIDAD 2: Si no hay barrio pero hay localidad, usarla
+    elseif ($localidad && !empty(trim($localidad))) {
+        // Si la localidad es Buenos Aires, intentar encontrar algo más específico
+        if (strcasecmp($localidad, 'Buenos Aires') === 0 && $partido) {
+            $result[] = $this->formatLocationName($partido);
+        } else {
+            $result[] = $this->formatLocationName($localidad);
+        }
+    }
+    // PRIORIDAD 3: Si hay partido, usarlo
+    elseif ($partido && !empty(trim($partido))) {
+        $result[] = $this->formatLocationName($partido);
     }
     
-    // Determinar la PROVINCIA como segunda parte (SIEMPRE)
+    // Agregar la ciudad/provincia como segunda parte
     if (count($result) > 0) {
-        $provinciaFinal = null;
+        $ciudadFinal = null;
         
-        if ($provincia) {
-            // Si tenemos provincia explícita
+        // Determinar la ciudad basado en el contexto
+        if ($localidad && strcasecmp($localidad, $result[0]) !== 0) {
+            $ciudadFinal = $this->formatLocationName($localidad);
+        } elseif ($provincia) {
             if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
-                $provinciaFinal = 'Buenos Aires';
+                $ciudadFinal = 'Buenos Aires';
             } else {
-                $provinciaFinal = ucwords(strtolower($provincia));
+                $ciudadFinal = $this->formatLocationName($provincia);
             }
-        } else if ($partido) {
-            // Si tenemos partido, es de Buenos Aires
-            $provinciaFinal = 'Buenos Aires';
         } else {
-            // Por defecto, asumir Buenos Aires
-            $provinciaFinal = 'Buenos Aires';
+            // Por defecto Buenos Aires
+            $ciudadFinal = 'Buenos Aires';
         }
         
-        // Agregar la provincia como segunda parte
-        // Verificar que no sea igual a la primera parte
-        if ($provinciaFinal && strcasecmp($result[0], $provinciaFinal) !== 0) {
-            $result[] = $provinciaFinal;
-        } else if (strcasecmp($result[0], 'Buenos Aires') === 0) {
-            // Si la primera parte ya es "Buenos Aires", usar CABA o Ciudad
-            $result[0] = 'Ciudad de Buenos Aires';
-            $result[] = 'Buenos Aires';
-        } else {
-            // Si son iguales, agregar Buenos Aires por defecto
+        // Evitar duplicación
+        if ($ciudadFinal && strcasecmp($result[0], $ciudadFinal) !== 0) {
+            $result[] = $ciudadFinal;
+        } else if (count($result) === 1) {
+            // Si solo tenemos una parte y es igual a la ciudad, agregar Buenos Aires
             $result[] = 'Buenos Aires';
         }
     }
     
-    // Si no pudimos determinar nada para la primera parte, intentar con lo que tengamos
+    // Si no pudimos determinar nada, devolver vacío
     if (count($result) === 0) {
-        if ($provincia) {
-            // Solo tenemos provincia, mostrarla sola
-            if ($provincia === 'CABA' || stripos($provincia, 'Ciudad Autónoma') !== false) {
-                return 'Ciudad de Buenos Aires, Buenos Aires';
-            } else {
-                return ucwords(strtolower($provincia));
-            }
-        }
         return '';
     }
     
-    // Asegurar que siempre tengamos exactamente 2 partes
-    if (count($result) === 1) {
-        $result[] = 'Buenos Aires';
+    // Asegurar que tengamos máximo 2 partes
+    if (count($result) > 2) {
+        $result = array_slice($result, 0, 2);
     }
     
     return implode(', ', $result);
+}
+
+/**
+ * Método auxiliar para determinar si una cadena parece ser un barrio
+ */
+private function looksLikeBarrio($string)
+{
+    // Barrios conocidos de Buenos Aires y otras ciudades
+    $barriosConocidos = [
+        'Palermo', 'Recoleta', 'Belgrano', 'Caballito', 'Flores', 
+        'Villa Crespo', 'San Telmo', 'La Boca', 'Puerto Madero',
+        'Núñez', 'Saavedra', 'Colegiales', 'Almagro', 'Boedo',
+        'Barracas', 'Constitución', 'Monserrat', 'Retiro', 'San Nicolás',
+        'Balvanera', 'San Cristóbal', 'Parque Patricios', 'Nueva Pompeya',
+        'Villa Urquiza', 'Villa Devoto', 'Villa del Parque', 'Villa Lugano',
+        'Mataderos', 'Liniers', 'Villa Luro', 'Vélez Sarsfield',
+        'Villa Soldati', 'Parque Avellaneda', 'Parque Chacabuco',
+        'Puerto Madero', 'Chacarita', 'Paternal', 'Villa Ortúzar',
+        'Agronomía', 'Monte Castro', 'Villa Real', 'Versalles'
+    ];
+    
+    foreach ($barriosConocidos as $barrio) {
+        if (stripos($string, $barrio) !== false) {
+            return true;
+        }
+    }
+    
+    // Patrones que sugieren que es un barrio
+    if (preg_match('/\b(Villa|Barrio|Parque)\s+/i', $string)) {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Método auxiliar para formatear nombres de ubicación
+ */
+private function formatLocationName($name)
+{
+    // Capitalizar correctamente
+    $name = ucwords(strtolower(trim($name)));
+    
+    // Corregir casos especiales
+    $replacements = [
+        'Caba' => 'CABA',
+        'Ii' => 'II',
+        'Iii' => 'III',
+        'De' => 'de',
+        'Del' => 'del',
+        'La' => 'la',
+        'Las' => 'las',
+        'Los' => 'los',
+        'Y' => 'y'
+    ];
+    
+    foreach ($replacements as $search => $replace) {
+        // Solo reemplazar si no es la primera palabra
+        $name = preg_replace('/\s+' . $search . '\s+/i', ' ' . $replace . ' ', $name);
+    }
+    
+    // Asegurar que la primera letra siempre sea mayúscula
+    return ucfirst($name);
 }
 
 /**
