@@ -351,6 +351,12 @@ function initQuillEditor() {
     if (oldContent) {
         quill.root.innerHTML = oldContent;
     }
+
+    // Sincronizar contenido en tiempo real para evitar errores de validación
+    quill.on('text-change', function() {
+        const menuContent = quill.root.innerHTML;
+        document.getElementById('menu').value = menuContent;
+    });
 }
 
 // Función para establecer coordenadas por defecto de Buenos Aires
