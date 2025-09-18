@@ -244,10 +244,7 @@
                             </label>
                         </div>
 
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Política de cancelación:</strong> Generar politicas de cancelacion .
-                        </div>
+                       
                     </div>
                 </div>
 
