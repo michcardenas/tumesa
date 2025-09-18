@@ -200,7 +200,7 @@
                     @if($cena->user->bio)
                     <div class="chef-section">
                         <h5 class="section-title">
-                            <i class="fas fa-quote-left me-2"></i>Sobre el Chef
+                            <i class="fas fa-quote-left me-2"></i>Sobre el Anfitrión
                         </h5>
                         <div class="chef-bio">
                             <p>{{ $cena->user->bio }}</p>
@@ -220,7 +220,7 @@
                             <div class="contact-item">
                                 <i class="fas fa-user-tie text-primary"></i>
                                 <div class="contact-content">
-                                    <strong>Tipo de Chef</strong>
+                                    <strong>Tipo de Anfitrión</strong>
                                     <span>{{ ucfirst($cena->user->especialidad) }}</span>
                                 </div>
                             </div>
