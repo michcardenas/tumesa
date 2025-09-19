@@ -245,12 +245,12 @@ if ($city !== '') {
         }
         if ($shouldIgnore) continue;
         
-        // Limpiar números al inicio (direcciones) y códigos postales
-        $cleanPart = preg_replace('/^\d+\s*-?\s*/', '', $part);
-        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $cleanPart);
+        // NO limpiar números aquí - los necesitamos para detectar direcciones después
+        // Solo limpiar códigos postales y normalizar espacios
+        $cleanPart = preg_replace('/\b[A-Z]\d{4}[A-Z]{3}\b/', '', $part);
         $cleanPart = preg_replace('/\b[A-Z0-9]{4,8}\b/', '', $cleanPart);
         $cleanPart = preg_replace('/\s+/', ' ', trim($cleanPart));
-        
+
         if (empty($cleanPart)) continue;
         
         // Normalizar CABA
