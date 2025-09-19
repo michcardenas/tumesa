@@ -281,74 +281,74 @@ if ($city !== '') {
     
     // LÓGICA MEJORADA PARA IDENTIFICAR BARRIO VS CALLE
     $numParts = count($cleanedParts);
-    
+
     if ($numParts > 0) {
-        // Detectar si la primera parte es una dirección/calle
-        $firstPartIsAddress = false;
-        if ($numParts >= 2) {
-            $firstPart = $cleanedParts[0];
-            
-            // Patrones que indican que es una calle/dirección
-            $addressPatterns = [
-                '/^\d+/', // Empieza con número
-                '/\b\d+\b/', // Contiene números (ej: "Av. Corrientes 1234")
-                '/\b(calle|avenida|av\.?|boulevard|blvd|pasaje|paseo|ruta|camino)/i',
-                '/^[A-Z][a-záéíóú]+\s+\d+/i', // Formato "Nombre Número"
-            ];
-            
-            foreach ($addressPatterns as $pattern) {
-                if (preg_match($pattern, $firstPart)) {
-                    $firstPartIsAddress = true;
-                    $direccion = $firstPart;
-                    break;
+        // Estrategia nueva: buscar el barrio/localidad desde el final hacia atrás
+        // omitiendo las direcciones que normalmente están al principio
+
+        if ($numParts == 1) {
+            // Solo una parte
+            $part = $cleanedParts[0];
+            if ($this->looksLikeBarrio($part)) {
+                $barrio = $part;
+                $localidad = 'Buenos Aires';
+            } else {
+                $localidad = $part;
+            }
+        } elseif ($numParts >= 2) {
+            // Para múltiples partes, analizar desde el final
+            // La estrategia es: la penúltima parte suele ser el barrio y la última la ciudad
+            // pero si hay direcciones, las saltamos
+
+            $potentialParts = [];
+
+            // Filtrar partes que NO son direcciones para encontrar barrio/ciudad
+            foreach ($cleanedParts as $part) {
+                $isAddress = false;
+
+                // Patrones más estrictos para detectar direcciones
+                $addressPatterns = [
+                    '/^\d+\s*-?\s*/', // Empieza con número (ej: "461", "123-125")
+                    '/\b\d{1,5}\s*$/', // Termina con número de 1-5 dígitos
+                    '/^(calle|avenida|av\.?|boulevard|blvd|pasaje|paseo|ruta|camino)\s+/i', // Empieza con indicador de vía
+                    '/\s+(calle|avenida|av\.?|boulevard|blvd|pasaje|paseo|ruta|camino)(\s|$)/i', // Contiene indicador de vía
+                ];
+
+                foreach ($addressPatterns as $pattern) {
+                    if (preg_match($pattern, $part)) {
+                        $isAddress = true;
+                        break;
+                    }
+                }
+
+                // Solo agregar si NO es una dirección
+                if (!$isAddress) {
+                    $potentialParts[] = $part;
                 }
             }
-        }
-        
-        // Asignar barrio y localidad basado en si detectamos una dirección
-        if ($firstPartIsAddress) {
-            // Ignorar la primera parte (es la calle)
-            $remainingParts = array_slice($cleanedParts, 1);
-            
-            if (count($remainingParts) == 1) {
-                // Solo queda una parte: es barrio o localidad
-                // Decidir basado en si parece un barrio conocido
-                $part = $remainingParts[0];
-                if ($this->looksLikeBarrio($part)) {
-                    $barrio = $part;
-                    $localidad = 'Buenos Aires'; // Asumimos Buenos Aires por defecto
-                } else {
-                    $localidad = $part;
+
+            // Ahora trabajar con las partes que no son direcciones
+            $numPotential = count($potentialParts);
+
+            if ($numPotential == 0) {
+                // Todas las partes parecían direcciones, usar las dos últimas partes originales
+                if ($numParts >= 2) {
+                    $barrio = $cleanedParts[$numParts - 2];
+                    $localidad = $cleanedParts[$numParts - 1];
                 }
-            } elseif (count($remainingParts) == 2) {
-                // Dos partes: barrio y localidad
-                $barrio = $remainingParts[0];
-                $localidad = $remainingParts[1];
-            } elseif (count($remainingParts) >= 3) {
-                // Tres o más: tomar el segundo como barrio
-                $barrio = $remainingParts[0];
-                $localidad = $remainingParts[1];
-            }
-        } else {
-            // No detectamos dirección, trabajar con todas las partes
-            if ($numParts == 1) {
-                // Solo una parte
-                $part = $cleanedParts[0];
+            } elseif ($numPotential == 1) {
+                // Solo una parte válida
+                $part = $potentialParts[0];
                 if ($this->looksLikeBarrio($part)) {
                     $barrio = $part;
                     $localidad = 'Buenos Aires';
                 } else {
                     $localidad = $part;
                 }
-            } elseif ($numParts == 2) {
-                // Dos partes: probablemente barrio y localidad
-                $barrio = $cleanedParts[0];
-                $localidad = $cleanedParts[1];
-            } elseif ($numParts >= 3) {
-                // Tres o más partes sin dirección detectada
-                // Tomar las dos del medio como más probables para barrio/localidad
-                $barrio = $cleanedParts[0];
-                $localidad = $cleanedParts[1];
+            } elseif ($numPotential >= 2) {
+                // Múltiples partes válidas: tomar las dos últimas
+                $barrio = $potentialParts[$numPotential - 2];
+                $localidad = $potentialParts[$numPotential - 1];
             }
         }
     }
@@ -429,9 +429,10 @@ if ($city !== '') {
  */
 private function looksLikeBarrio($string)
 {
-    // Barrios conocidos de Buenos Aires y otras ciudades
+    // Barrios conocidos de Buenos Aires y otras ciudades (incluyendo barrios de GBA)
     $barriosConocidos = [
-        'Palermo', 'Recoleta', 'Belgrano', 'Caballito', 'Flores', 
+        // Capital Federal
+        'Palermo', 'Recoleta', 'Belgrano', 'Caballito', 'Flores',
         'Villa Crespo', 'San Telmo', 'La Boca', 'Puerto Madero',
         'Núñez', 'Saavedra', 'Colegiales', 'Almagro', 'Boedo',
         'Barracas', 'Constitución', 'Monserrat', 'Retiro', 'San Nicolás',
@@ -439,21 +440,45 @@ private function looksLikeBarrio($string)
         'Villa Urquiza', 'Villa Devoto', 'Villa del Parque', 'Villa Lugano',
         'Mataderos', 'Liniers', 'Villa Luro', 'Vélez Sarsfield',
         'Villa Soldati', 'Parque Avellaneda', 'Parque Chacabuco',
-        'Puerto Madero', 'Chacarita', 'Paternal', 'Villa Ortúzar',
-        'Agronomía', 'Monte Castro', 'Villa Real', 'Versalles'
+        'Chacarita', 'Paternal', 'Villa Ortúzar',
+        'Agronomía', 'Monte Castro', 'Villa Real', 'Versalles',
+
+        // GBA Norte
+        'Martínez', 'San Isidro', 'Vicente López', 'Olivos', 'La Lucila',
+        'Acassuso', 'Beccar', 'Florida', 'Munro', 'Villa Adelina',
+        'Boulogne', 'San Fernando', 'Tigre', 'Victoria',
+
+        // GBA Sur
+        'Lomas de Zamora', 'Temperley', 'Banfield', 'Llavallol',
+        'Adrogué', 'Burzaco', 'Longchamps', 'Almirante Brown',
+
+        // GBA Oeste
+        'Morón', 'Castelar', 'Ituzaingó', 'Ramos Mejía', 'La Matanza',
+        'San Justo', 'Ciudad Madero', 'Villa Luzuriaga'
     ];
-    
+
+    // Normalizar el string de entrada
+    $normalizedInput = trim($string);
+
+    // Buscar coincidencia exacta o parcial con barrios conocidos
     foreach ($barriosConocidos as $barrio) {
-        if (stripos($string, $barrio) !== false) {
+        if (strcasecmp($normalizedInput, $barrio) === 0 ||
+            stripos($normalizedInput, $barrio) !== false) {
             return true;
         }
     }
-    
+
     // Patrones que sugieren que es un barrio
     if (preg_match('/\b(Villa|Barrio|Parque)\s+/i', $string)) {
         return true;
     }
-    
+
+    // Si no contiene números y no parece dirección, probablemente sea barrio
+    if (!preg_match('/\d/', $string) &&
+        !preg_match('/\b(calle|avenida|av\.?|boulevard|blvd|pasaje|paseo|ruta|camino)/i', $string)) {
+        return true;
+    }
+
     return false;
 }
 
