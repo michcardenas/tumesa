@@ -219,10 +219,15 @@ if ($city !== '') {
     // Procesar cada parte
     foreach ($parts as $index => $part) {
         $originalPart = $part;
+
+        if ($debug) {
+            \Log::info("Procesando parte $index: '$part'");
+        }
         
         // Detectar si es "Partido de X"
         if (preg_match('/^Partido de (.+)$/i', $originalPart, $matches)) {
             $partido = trim($matches[1]);
+            if ($debug) \Log::info("Detectado como partido: '$partido'");
             continue;
         }
         
@@ -234,6 +239,7 @@ if ($city !== '') {
             } else {
                 $provincia = $provinciaTemp;
             }
+            if ($debug) \Log::info("Detectado como provincia: '$provincia'");
             continue;
         }
         
@@ -246,7 +252,10 @@ if ($city !== '') {
                 break;
             }
         }
-        if ($shouldIgnore) continue;
+        if ($shouldIgnore) {
+            if ($debug) \Log::info("Parte ignorada: '$part'");
+            continue;
+        }
         
         // NO limpiar números aquí - los necesitamos para detectar direcciones después
         // Solo limpiar códigos postales y normalizar espacios
@@ -279,6 +288,9 @@ if ($city !== '') {
         // Si no es provincia y no está vacío, agregarlo a partes limpias
         if (!$isProvince && !empty($cleanPart)) {
             $cleanedParts[] = $cleanPart;
+            if ($debug) \Log::info("Agregado a cleanedParts: '$cleanPart'");
+        } else {
+            if ($debug) \Log::info("No agregado - isProvince: " . ($isProvince ? 'true' : 'false') . ", isEmpty: " . (empty($cleanPart) ? 'true' : 'false'));
         }
     }
     
