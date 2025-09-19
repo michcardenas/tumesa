@@ -243,12 +243,12 @@ if ($city !== '') {
             continue;
         }
         
-        // Verificar si debe ser ignorado
+        // Verificar si debe ser ignorado (solo coincidencias exactas)
         $shouldIgnore = false;
         foreach ($ignoreTerms as $ignore) {
-            if (strcasecmp($part, $ignore) === 0 || 
-                stripos($part, $ignore) !== false) {
+            if (strcasecmp($part, $ignore) === 0) {
                 $shouldIgnore = true;
+                if ($debug) \Log::info("Ignorando por coincidencia exacta con: '$ignore'");
                 break;
             }
         }
