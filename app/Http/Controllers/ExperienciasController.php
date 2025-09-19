@@ -182,9 +182,12 @@ if ($city !== '') {
   private function cleanLocationString($location)
 {
     if (empty($location)) return '';
-    
+
     // Normalizar el string
     $location = str_replace(['  ', '   '], ' ', trim($location));
+
+    // DEBUG TEMPORAL - remover después
+    $debug = $location === "Domingo Repetto 461, Martínez, Buenos Aires Province, Argentina";
     
     // Dividir por comas
     $parts = array_map('trim', explode(',', $location));
@@ -306,17 +309,22 @@ if ($city !== '') {
             foreach ($cleanedParts as $part) {
                 $isAddress = false;
 
-                // Patrones más estrictos para detectar direcciones
+                // Patrones para detectar direcciones
                 $addressPatterns = [
                     '/^\d+\s*-?\s*/', // Empieza con número (ej: "461", "123-125")
                     '/\b\d{1,5}\s*$/', // Termina con número de 1-5 dígitos
+                    '/\s+\d{1,5}(\s*[a-z])?$/', // Termina con número y posible letra (ej: "Repetto 461", "Sarmiento 123A")
                     '/^(calle|avenida|av\.?|boulevard|blvd|pasaje|paseo|ruta|camino)\s+/i', // Empieza con indicador de vía
                     '/\s+(calle|avenida|av\.?|boulevard|blvd|pasaje|paseo|ruta|camino)(\s|$)/i', // Contiene indicador de vía
+                    '/^[A-Za-záéíóúñü\s]+\s+\d{1,5}(\s*[a-z])?$/', // Patrón "Nombre de Calle + Número" (ej: "Domingo Repetto 461")
                 ];
 
                 foreach ($addressPatterns as $pattern) {
                     if (preg_match($pattern, $part)) {
                         $isAddress = true;
+                        if ($debug) {
+                            \Log::info("Detectado como dirección: '$part' con patrón: $pattern");
+                        }
                         break;
                     }
                 }
@@ -324,6 +332,9 @@ if ($city !== '') {
                 // Solo agregar si NO es una dirección
                 if (!$isAddress) {
                     $potentialParts[] = $part;
+                    if ($debug) {
+                        \Log::info("Agregado como potencial barrio/ciudad: '$part'");
+                    }
                 }
             }
 
@@ -420,8 +431,17 @@ if ($city !== '') {
     if (count($result) > 2) {
         $result = array_slice($result, 0, 2);
     }
-    
-    return implode(', ', $result);
+
+    $finalResult = implode(', ', $result);
+
+    // DEBUG TEMPORAL
+    if ($debug) {
+        \Log::info("Resultado final para '$location': '$finalResult'");
+        \Log::info("Partes procesadas: " . json_encode($cleanedParts));
+        \Log::info("Partes potenciales: " . json_encode($potentialParts ?? []));
+    }
+
+    return $finalResult;
 }
 
 /**
