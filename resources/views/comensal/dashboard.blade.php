@@ -1204,16 +1204,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-document.querySelectorAll('.btn-outline-primary, .btn-outline-secondary, .btn-outline-success')
+    document.querySelectorAll('.btn-outline-primary, .btn-outline-secondary, .btn-outline-success')
   .forEach(button => {
-      button.addEventListener('click', function(e) {
-          if (this.title) {
-              alert(`Función "${this.title}" próximamente disponible`);
-          } else {
-              alert('Funcionalidad próximamente disponible');
-          }
-      });
+      // No agregar event listener si el botón ya tiene onclick definido
+      if (!button.hasAttribute('onclick')) {
+          button.addEventListener('click', function(e) {
+              if (this.title) {
+                  alert(`Función "${this.title}" próximamente disponible`);
+              } else {
+                  alert('Funcionalidad próximamente disponible');
+              }
+          });
+      }
   });
+
+}); // Cierre del DOMContentLoaded
 
 // Función para reservar cena
 function reservarCena(cenaId) {
