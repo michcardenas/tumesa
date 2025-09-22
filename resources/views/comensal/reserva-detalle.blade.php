@@ -91,20 +91,20 @@
         <div class="location-status-bar mb-3">
             @php
                 $hoursUntilCena = now()->diffInHours($reserva->cena->datetime, false);
-                $canSeeExactLocation = $hoursUntilCena <= 24;
+                $canSeeExactLocation = false; // Siempre false para mostrar rango
             @endphp
-            
-            @if($canSeeExactLocation)
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <strong>Ubicación exacta disponible</strong>
-                    <br><small>Como comensal confirmado, ya puedes ver la ubicación precisa y obtener direcciones.</small>
+
+            @if($hoursUntilCena <= 1)
+                <div class="alert alert-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <strong>Área de la cena</strong>
+                    <br><small>Tu reserva está confirmada. El área mostrada te ayudará a ubicarte cerca del lugar.</small>
                 </div>
             @else
-                <div class="alert alert-warning">
-                    <i class="fas fa-clock"></i>
-                    <strong>Ubicación exacta en {{ ceil($hoursUntilCena - 24) }} horas</strong>
-                    <br><small>Como tienes reserva confirmada, recibirás la ubicación exacta 24 horas antes del evento.</small>
+                <div class="alert alert-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <strong>Área aproximada</strong>
+                    <br><small>Como comensal confirmado, puedes ver el área general donde se realizará la cena.</small>
                 </div>
             @endif
         </div>
@@ -121,15 +121,9 @@
                         <p class="mb-0"><strong>Tu Código de Reserva:</strong> <code>{{ $reserva->codigo_reserva }}</code></p>
                     </div>
                     <div class="col-md-4 text-end">
-                        <button class="btn btn-primary btn-sm" onclick="openReservaDirections()" id="directions-btn">
-                            <i class="fas fa-directions"></i> Cómo llegar
+                        <button class="btn btn-outline-primary btn-sm" onclick="openReservaDirections()" id="directions-btn">
+                            <i class="fas fa-info-circle"></i> Información de Ubicación
                         </button>
-                        
-                        @if($canSeeExactLocation)
-                        <button class="btn btn-success btn-sm mt-1" onclick="shareLocation()">
-                            <i class="fas fa-share-alt"></i> Compartir
-                        </button>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -274,7 +268,7 @@ const reservaData = {
     exactLat: {{ $reserva->cena->latitude }},
     exactLng: {{ $reserva->cena->longitude }},
     hoursUntilCena: {{ now()->diffInHours($reserva->cena->datetime, false) }},
-    canSeeExactLocation: {{ now()->diffInHours($reserva->cena->datetime, false) <= 24 ? 'true' : 'false' }},
+    canSeeExactLocation: false, // Siempre false para mostrar área aproximada
     cenaTitle: @json($reserva->cena->title),
     cenaLocation: @json($reserva->cena->location),
     cenaDateTime: @json($reserva->cena->datetime->format('d/m/Y H:i')),
@@ -292,25 +286,16 @@ function initReservaMap() {
         return;
     }
     
-    let displayLat, displayLng, zoom, showCircle = false;
-    
-    if (reservaData.canSeeExactLocation) {
-        // Mostrar ubicación exacta para comensales 24h antes
-        displayLat = reservaData.exactLat;
-        displayLng = reservaData.exactLng;
-        zoom = 17;
-        showCircle = false;
-    } else {
-        // Mostrar área aproximada para comensales con reserva
-        const offsetRange = 0.002; // Menor offset porque ya tiene reserva (~200m)
-        const randomOffsetLat = (Math.random() - 0.5) * offsetRange;
-        const randomOffsetLng = (Math.random() - 0.5) * offsetRange;
-        
-        displayLat = reservaData.exactLat + randomOffsetLat;
-        displayLng = reservaData.exactLng + randomOffsetLng;
-        zoom = 15;
-        showCircle = true;
-    }
+    let displayLat, displayLng, zoom, showCircle = true;
+
+    // Siempre mostrar área aproximada con offset aleatorio
+    const offsetRange = 0.003; // Offset para crear área aproximada (~300m)
+    const randomOffsetLat = (Math.random() - 0.5) * offsetRange;
+    const randomOffsetLng = (Math.random() - 0.5) * offsetRange;
+
+    displayLat = reservaData.exactLat + randomOffsetLat;
+    displayLng = reservaData.exactLng + randomOffsetLng;
+    zoom = 14; // Zoom más alejado para mostrar área general
     
     // Configurar mapa
     reservaMap = new google.maps.Map(document.getElementById('reserva-map'), {
@@ -325,36 +310,32 @@ function initReservaMap() {
         ]
     });
     
-    // Crear marcador
+    // Crear marcador (siempre estilo área aproximada)
     reservaMarker = new google.maps.Marker({
         position: { lat: displayLat, lng: displayLng },
         map: reservaMap,
-        title: reservaData.cenaTitle,
+        title: reservaData.cenaTitle + ' - Área de comensal',
         icon: {
-            path: reservaData.canSeeExactLocation ? 
-                google.maps.SymbolPath.BACKWARD_CLOSED_ARROW : 
-                google.maps.SymbolPath.CIRCLE,
-            scale: reservaData.canSeeExactLocation ? 10 : 15,
-            fillColor: reservaData.canSeeExactLocation ? '#059669' : '#f59e0b',
-            fillOpacity: 1,
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: '#2563eb', // Azul para comensales confirmados
+            fillOpacity: 0.8,
             strokeColor: '#ffffff',
             strokeWeight: 3
         }
     });
     
-    // Círculo de área aproximada si es necesario
-    if (showCircle) {
-        new google.maps.Circle({
-            strokeColor: '#f59e0b',
-            strokeOpacity: 0.6,
-            strokeWeight: 2,
-            fillColor: '#f59e0b',
-            fillOpacity: 0.15,
-            map: reservaMap,
-            center: { lat: displayLat, lng: displayLng },
-            radius: 300 // Radio más pequeño para comensales (300m)
-        });
-    }
+    // Círculo de área aproximada (siempre visible)
+    new google.maps.Circle({
+        strokeColor: '#2563eb',
+        strokeOpacity: 0.6,
+        strokeWeight: 2,
+        fillColor: '#2563eb',
+        fillOpacity: 0.1,
+        map: reservaMap,
+        center: { lat: displayLat, lng: displayLng },
+        radius: 400 // Radio para área de comensal confirmado (400m)
+    });
     
     // InfoWindow
     const infoWindow = new google.maps.InfoWindow({
@@ -372,19 +353,15 @@ function initReservaMap() {
 }
 
 function createInfoWindowContent() {
-    const statusBadge = reservaData.canSeeExactLocation ? 
-        '<span style="background: #059669; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">UBICACIÓN EXACTA</span>' :
-        '<span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">ÁREA DE COMENSAL</span>';
-        
-    const additionalInfo = reservaData.canSeeExactLocation ?
-        '<div style="margin-top: 8px; padding: 6px; background: #f0fdf4; border-radius: 4px;"><small style="color: #059669; font-weight: 500;"><i class="fas fa-directions"></i> Puedes obtener direcciones exactas</small></div>' :
-        `<div style="margin-top: 8px; padding: 6px; background: #fffbeb; border-radius: 4px;"><small style="color: #92400e; font-weight: 500;"><i class="fas fa-clock"></i> Ubicación exacta en ${Math.ceil(reservaData.hoursUntilCena - 24)}h</small></div>`;
-    
+    const statusBadge = '<span style="background: #2563eb; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">ÁREA DE COMENSAL</span>';
+
+    const additionalInfo = '<div style="margin-top: 8px; padding: 6px; background: #eff6ff; border-radius: 4px;"><small style="color: #1d4ed8; font-weight: 500;"><i class="fas fa-check-circle"></i> Tu reserva está confirmada en esta área</small></div>';
+
     return `
         <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 300px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                 ${statusBadge}
-                <span style="background: #2563eb; color: white; padding: 3px 6px; border-radius: 8px; font-size: 10px; font-weight: 600;">
+                <span style="background: #059669; color: white; padding: 3px 6px; border-radius: 8px; font-size: 10px; font-weight: 600;">
                     ${reservaData.reservaCode}
                 </span>
             </div>
@@ -405,71 +382,45 @@ function createInfoWindowContent() {
 function updateDirectionsButton() {
     const btn = document.getElementById('directions-btn');
     if (!btn) return;
-    
-    if (reservaData.canSeeExactLocation) {
-        btn.innerHTML = '<i class="fas fa-directions"></i> Cómo llegar';
-        btn.className = 'btn btn-success btn-sm';
-        btn.disabled = false;
-    } else {
-        btn.innerHTML = `<i class="fas fa-clock"></i> Disponible en ${Math.ceil(reservaData.hoursUntilCena - 24)}h`;
-        btn.className = 'btn btn-outline-warning btn-sm';
-        btn.disabled = false; // Permitir click para mostrar info
-    }
+
+    // Siempre mostrar botón de información de ubicación
+    btn.innerHTML = '<i class="fas fa-info-circle"></i> Información de Ubicación';
+    btn.className = 'btn btn-outline-primary btn-sm';
+    btn.disabled = false;
 }
 
 function openReservaDirections() {
-    if (reservaData.canSeeExactLocation) {
-        // Abrir direcciones exactas
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${reservaData.exactLat},${reservaData.exactLng}`;
-        window.open(url, '_blank');
-    } else {
-        // Mostrar información para comensales que esperan
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Ubicación exacta pronto',
-                html: `
-                    <div style="text-align: left;">
-                        <p>Como tienes una <strong>reserva confirmada</strong>, la ubicación exacta estará disponible en <strong>${Math.ceil(reservaData.hoursUntilCena - 24)} horas</strong>.</p>
-                        <div style="background: #f0f9ff; padding: 12px; border-radius: 6px; margin: 12px 0;">
-                            <strong>Tu código de reserva:</strong> <code>${reservaData.reservaCode}</code>
-                        </div>
-                        <p><strong>Mientras tanto:</strong></p>
-                        <ul style="text-align: left; padding-left: 20px;">
-                            <li>Tu reserva está confirmada y asegurada</li>
-                            <li>Recibirás la ubicación exacta automáticamente</li>
-                            <li>Puedes ver el área general en el mapa</li>
-                            <li>Contacta al chef si tienes dudas</li>
-                        </ul>
+    // Mostrar información del área para comensales confirmados
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Información de Ubicación',
+            html: `
+                <div style="text-align: left;">
+                    <p>Como comensal confirmado, puedes ver el <strong>área general</strong> donde se realizará la cena.</p>
+                    <div style="background: #eff6ff; padding: 12px; border-radius: 6px; margin: 12px 0;">
+                        <strong>Tu código de reserva:</strong> <code>${reservaData.reservaCode}</code>
                     </div>
-                `,
-                icon: 'info',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#2563eb'
-            });
-        } else {
-            alert(`Ubicación exacta disponible en ${Math.ceil(reservaData.hoursUntilCena - 24)} horas para comensales confirmados.`);
-        }
+                    <p><strong>Información importante:</strong></p>
+                    <ul style="text-align: left; padding-left: 20px;">
+                        <li>El área mostrada te ayuda a ubicarte cerca del lugar</li>
+                        <li>Tu reserva está confirmada y asegurada</li>
+                        <li>El chef te proporcionará detalles específicos si es necesario</li>
+                        <li>Contacta al chef directamente para cualquier duda</li>
+                    </ul>
+                    <div style="background: #f0fdf4; padding: 12px; border-radius: 6px; margin-top: 12px; border-left: 4px solid #059669;">
+                        <small><strong>Nota:</strong> Este sistema protege la privacidad tanto de chefs como de comensales.</small>
+                    </div>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#2563eb'
+        });
+    } else {
+        alert('Como comensal confirmado, puedes ver el área general de la cena en el mapa.');
     }
 }
 
-function shareLocation() {
-    if (!reservaData.canSeeExactLocation) return;
-    
-    const shareData = {
-        title: reservaData.cenaTitle,
-        text: `Ubicación de la cena: ${reservaData.cenaLocation}`,
-        url: `https://www.google.com/maps/dir/?api=1&destination=${reservaData.exactLat},${reservaData.exactLng}`
-    };
-    
-    if (navigator.share) {
-        navigator.share(shareData);
-    } else {
-        // Fallback: copiar al portapapeles
-        navigator.clipboard.writeText(shareData.url).then(() => {
-            alert('Enlace de ubicación copiado al portapapeles');
-        });
-    }
-}
 
 // Cargar Google Maps si no está cargado
 document.addEventListener('DOMContentLoaded', function() {
