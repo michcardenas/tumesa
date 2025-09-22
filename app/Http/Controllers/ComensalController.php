@@ -186,9 +186,19 @@ public function checkout(Cena $cena): View|RedirectResponse
         }
 
         // Verificar que no tenga ya una reserva activa para esta cena
+        // Solo bloquear si tiene una reserva con pago exitoso o pendiente válido
         $reservaExistente = Reserva::where('user_id', $user->id)
             ->where('cena_id', $cena->id)
-            ->whereIn('estado', ['pendiente', 'confirmada', 'pagada'])
+            ->where(function($query) {
+                $query->where(function($subQuery) {
+                    // Reservas confirmadas o pagadas (sin importar estado_pago)
+                    $subQuery->whereIn('estado', ['confirmada', 'pagada', 'completada']);
+                })->orWhere(function($subQuery) {
+                    // Reservas pendientes pero con pago exitoso o pendiente (no fallido)
+                    $subQuery->where('estado', 'pendiente')
+                             ->whereIn('estado_pago', ['pagado', 'pendiente']);
+                });
+            })
             ->first();
 
         if ($reservaExistente) {
@@ -196,9 +206,10 @@ public function checkout(Cena $cena): View|RedirectResponse
                 'user_id' => $user->id,
                 'cena_id' => $cena->id,
                 'reserva_id' => $reservaExistente->id,
-                'estado_actual' => $reservaExistente->estado
+                'estado_actual' => $reservaExistente->estado,
+                'estado_pago' => $reservaExistente->estado_pago
             ]);
-            
+
             return redirect()->route('comensal.dashboard')
                 ->with('error', 'Ya tienes una reserva activa para esta cena.');
         }
