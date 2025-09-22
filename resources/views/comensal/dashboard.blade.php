@@ -1212,7 +1212,6 @@ document.addEventListener('DOMContentLoaded', function() {
               if (this.title) {
                   alert(`Función "${this.title}" próximamente disponible`);
               } else {
-                  alert('Funcionalidad próximamente disponible');
               }
           });
       }
