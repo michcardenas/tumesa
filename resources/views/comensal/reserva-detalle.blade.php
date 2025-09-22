@@ -91,20 +91,35 @@
         <div class="location-status-bar mb-3">
             @php
                 $hoursUntilCena = now()->diffInHours($reserva->cena->datetime, false);
-                $canSeeExactLocation = $hoursUntilCena <= 24;
+                $pagoExitoso = $reserva->estado_pago === 'pagado';
+                $canSeeExactLocation = $pagoExitoso && $hoursUntilCena <= 24;
             @endphp
-            
+
             @if($canSeeExactLocation)
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
                     <strong>Ubicación exacta disponible</strong>
-                    <br><small>Como comensal confirmado, ya puedes ver la ubicación precisa y obtener direcciones.</small>
+                    <br><small>Pago confirmado - Ya puedes ver la ubicación precisa y obtener direcciones.</small>
+                </div>
+            @elseif($pagoExitoso && $hoursUntilCena > 24)
+                <div class="alert alert-info">
+                    <i class="fas fa-clock"></i>
+                    <strong>Ubicación exacta en {{ ceil($hoursUntilCena - 24) }} horas</strong>
+                    <br><small>Pago confirmado - Recibirás la ubicación exacta 24 horas antes del evento.</small>
                 </div>
             @else
                 <div class="alert alert-warning">
-                    <i class="fas fa-clock"></i>
-                    <strong>Ubicación exacta en {{ ceil($hoursUntilCena - 24) }} horas</strong>
-                    <br><small>Como tienes reserva confirmada, recibirás la ubicación exacta 24 horas antes del evento.</small>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Área aproximada</strong>
+                    <br><small>
+                        @if($reserva->estado_pago === 'pendiente')
+                            Completa el pago para acceder a la ubicación exacta.
+                        @elseif($reserva->estado_pago === 'fallido')
+                            El pago falló. Completa el pago para acceder a la ubicación exacta.
+                        @else
+                            Confirma tu pago para acceder a la ubicación exacta.
+                        @endif
+                    </small>
                 </div>
             @endif
         </div>
@@ -121,14 +136,24 @@
                         <p class="mb-0"><strong>Tu Código de Reserva:</strong> <code>{{ $reserva->codigo_reserva }}</code></p>
                     </div>
                     <div class="col-md-4 text-end">
-                        <button class="btn btn-primary btn-sm" onclick="openReservaDirections()" id="directions-btn">
-                            <i class="fas fa-directions"></i> Cómo llegar
-                        </button>
-                        
-                        @if($canSeeExactLocation)
-                        <button class="btn btn-success btn-sm mt-1" onclick="shareLocation()">
-                            <i class="fas fa-share-alt"></i> Compartir
-                        </button>
+                        @if($pagoExitoso)
+                            <button class="btn btn-primary btn-sm" onclick="openReservaDirections()" id="directions-btn">
+                                @if($canSeeExactLocation)
+                                    <i class="fas fa-directions"></i> Cómo llegar
+                                @else
+                                    <i class="fas fa-clock"></i> Disponible pronto
+                                @endif
+                            </button>
+
+                            @if($canSeeExactLocation)
+                            <button class="btn btn-success btn-sm mt-1" onclick="shareLocation()">
+                                <i class="fas fa-share-alt"></i> Compartir
+                            </button>
+                            @endif
+                        @else
+                            <button class="btn btn-outline-warning btn-sm" onclick="openReservaDirections()" id="directions-btn">
+                                <i class="fas fa-exclamation-triangle"></i> Pago requerido
+                            </button>
                         @endif
                     </div>
                 </div>
@@ -281,7 +306,9 @@ const reservaData = {
     exactLat: {{ $reserva->cena->latitude }},
     exactLng: {{ $reserva->cena->longitude }},
     hoursUntilCena: {{ now()->diffInHours($reserva->cena->datetime, false) }},
-    canSeeExactLocation: {{ now()->diffInHours($reserva->cena->datetime, false) <= 24 ? 'true' : 'false' }},
+    pagoExitoso: {{ $reserva->estado_pago === 'pagado' ? 'true' : 'false' }},
+    canSeeExactLocation: {{ ($reserva->estado_pago === 'pagado' && now()->diffInHours($reserva->cena->datetime, false) <= 24) ? 'true' : 'false' }},
+    estadoPago: @json($reserva->estado_pago),
     cenaTitle: @json($reserva->cena->title),
     cenaLocation: @json($reserva->cena->location),
     cenaDateTime: @json($reserva->cena->datetime->format('d/m/Y H:i')),
@@ -379,19 +406,35 @@ function initReservaMap() {
 }
 
 function createInfoWindowContent() {
-    const statusBadge = reservaData.canSeeExactLocation ? 
-        '<span style="background: #059669; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">UBICACIÓN EXACTA</span>' :
-        '<span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">ÁREA DE COMENSAL</span>';
-        
-    const additionalInfo = reservaData.canSeeExactLocation ?
-        '<div style="margin-top: 8px; padding: 6px; background: #f0fdf4; border-radius: 4px;"><small style="color: #059669; font-weight: 500;"><i class="fas fa-directions"></i> Puedes obtener direcciones exactas</small></div>' :
-        `<div style="margin-top: 8px; padding: 6px; background: #fffbeb; border-radius: 4px;"><small style="color: #92400e; font-weight: 500;"><i class="fas fa-clock"></i> Ubicación exacta en ${Math.ceil(reservaData.hoursUntilCena - 24)}h</small></div>`;
-    
+    let statusBadge, additionalInfo;
+
+    if (reservaData.canSeeExactLocation) {
+        statusBadge = '<span style="background: #059669; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">UBICACIÓN EXACTA</span>';
+        additionalInfo = '<div style="margin-top: 8px; padding: 6px; background: #f0fdf4; border-radius: 4px;"><small style="color: #059669; font-weight: 500;"><i class="fas fa-directions"></i> Puedes obtener direcciones exactas</small></div>';
+    } else if (reservaData.pagoExitoso) {
+        statusBadge = '<span style="background: #2563eb; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">ÁREA DE COMENSAL</span>';
+        additionalInfo = `<div style="margin-top: 8px; padding: 6px; background: #eff6ff; border-radius: 4px;"><small style="color: #1d4ed8; font-weight: 500;"><i class="fas fa-clock"></i> Ubicación exacta en ${Math.ceil(reservaData.hoursUntilCena - 24)}h</small></div>`;
+    } else {
+        statusBadge = '<span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">ÁREA APROXIMADA</span>';
+        let pagoMessage = '';
+        switch(reservaData.estadoPago) {
+            case 'pendiente':
+                pagoMessage = 'Completa el pago para acceder a la ubicación exacta';
+                break;
+            case 'fallido':
+                pagoMessage = 'El pago falló. Completa el pago para la ubicación exacta';
+                break;
+            default:
+                pagoMessage = 'Confirma tu pago para acceder a la ubicación exacta';
+        }
+        additionalInfo = `<div style="margin-top: 8px; padding: 6px; background: #fffbeb; border-radius: 4px;"><small style="color: #92400e; font-weight: 500;"><i class="fas fa-exclamation-triangle"></i> ${pagoMessage}</small></div>`;
+    }
+
     return `
         <div style="font-family: Inter, sans-serif; padding: 12px; max-width: 300px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                 ${statusBadge}
-                <span style="background: #2563eb; color: white; padding: 3px 6px; border-radius: 8px; font-size: 10px; font-weight: 600;">
+                <span style="background: ${reservaData.pagoExitoso ? '#059669' : '#dc2626'}; color: white; padding: 3px 6px; border-radius: 8px; font-size: 10px; font-weight: 600;">
                     ${reservaData.reservaCode}
                 </span>
             </div>
@@ -412,15 +455,19 @@ function createInfoWindowContent() {
 function updateDirectionsButton() {
     const btn = document.getElementById('directions-btn');
     if (!btn) return;
-    
+
     if (reservaData.canSeeExactLocation) {
         btn.innerHTML = '<i class="fas fa-directions"></i> Cómo llegar';
         btn.className = 'btn btn-success btn-sm';
         btn.disabled = false;
-    } else {
+    } else if (reservaData.pagoExitoso) {
         btn.innerHTML = `<i class="fas fa-clock"></i> Disponible en ${Math.ceil(reservaData.hoursUntilCena - 24)}h`;
+        btn.className = 'btn btn-outline-primary btn-sm';
+        btn.disabled = false;
+    } else {
+        btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Pago requerido';
         btn.className = 'btn btn-outline-warning btn-sm';
-        btn.disabled = false; // Permitir click para mostrar info
+        btn.disabled = false;
     }
 }
 
@@ -429,22 +476,23 @@ function openReservaDirections() {
         // Abrir direcciones exactas
         const url = `https://www.google.com/maps/dir/?api=1&destination=${reservaData.exactLat},${reservaData.exactLng}`;
         window.open(url, '_blank');
-    } else {
-        // Mostrar información para comensales que esperan
+    } else if (reservaData.pagoExitoso) {
+        // Mostrar información para comensales con pago exitoso pero más de 24h antes
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 title: 'Ubicación exacta pronto',
                 html: `
                     <div style="text-align: left;">
-                        <p>Como tienes una <strong>reserva confirmada</strong>, la ubicación exacta estará disponible en <strong>${Math.ceil(reservaData.hoursUntilCena - 24)} horas</strong>.</p>
+                        <p>Tu pago está <strong>confirmado</strong>. La ubicación exacta estará disponible en <strong>${Math.ceil(reservaData.hoursUntilCena - 24)} horas</strong>.</p>
                         <div style="background: #f0f9ff; padding: 12px; border-radius: 6px; margin: 12px 0;">
-                            <strong>Tu código de reserva:</strong> <code>${reservaData.reservaCode}</code>
+                            <strong>Tu código de reserva:</strong> <code>${reservaData.reservaCode}</code><br>
+                            <strong>Estado de pago:</strong> <span style="color: #059669;">✓ Confirmado</span>
                         </div>
                         <p><strong>Mientras tanto:</strong></p>
                         <ul style="text-align: left; padding-left: 20px;">
                             <li>Tu reserva está confirmada y asegurada</li>
                             <li>Recibirás la ubicación exacta automáticamente</li>
-                            <li>Puedes ver el área general en el mapa</li>
+                            <li>Puedes ver el área de comensal en el mapa</li>
                             <li>Contacta al chef si tienes dudas</li>
                         </ul>
                     </div>
@@ -454,7 +502,72 @@ function openReservaDirections() {
                 confirmButtonColor: '#2563eb'
             });
         } else {
-            alert(`Ubicación exacta disponible en ${Math.ceil(reservaData.hoursUntilCena - 24)} horas para comensales confirmados.`);
+            alert(`Ubicación exacta disponible en ${Math.ceil(reservaData.hoursUntilCena - 24)} horas para comensales con pago confirmado.`);
+        }
+    } else {
+        // Mostrar información para comensales sin pago exitoso
+        let titulo, mensaje, icono;
+
+        if (reservaData.estadoPago === 'pendiente') {
+            titulo = 'Pago pendiente';
+            mensaje = `
+                <div style="text-align: left;">
+                    <p>Para acceder a la ubicación exacta, necesitas <strong>completar el pago</strong> de tu reserva.</p>
+                    <div style="background: #fffbeb; padding: 12px; border-radius: 6px; margin: 12px 0; border-left: 4px solid #f59e0b;">
+                        <strong>Tu código de reserva:</strong> <code>${reservaData.reservaCode}</code><br>
+                        <strong>Estado de pago:</strong> <span style="color: #f59e0b;">⏳ Pendiente</span>
+                    </div>
+                    <p><strong>Puedes:</strong></p>
+                    <ul style="text-align: left; padding-left: 20px;">
+                        <li>Completar el pago usando el botón "Completar Pago"</li>
+                        <li>Ver el área aproximada en el mapa actual</li>
+                        <li>Contactar al chef para dudas</li>
+                    </ul>
+                </div>
+            `;
+            icono = 'warning';
+        } else if (reservaData.estadoPago === 'fallido') {
+            titulo = 'Pago falló';
+            mensaje = `
+                <div style="text-align: left;">
+                    <p>Tu pago no se pudo procesar. <strong>Completa el pago</strong> para acceder a la ubicación exacta.</p>
+                    <div style="background: #fef2f2; padding: 12px; border-radius: 6px; margin: 12px 0; border-left: 4px solid #dc2626;">
+                        <strong>Tu código de reserva:</strong> <code>${reservaData.reservaCode}</code><br>
+                        <strong>Estado de pago:</strong> <span style="color: #dc2626;">❌ Falló</span>
+                    </div>
+                    <p><strong>Acción requerida:</strong></p>
+                    <ul style="text-align: left; padding-left: 20px;">
+                        <li>Usa el botón "Completar Pago" para intentar nuevamente</li>
+                        <li>Verifica tu método de pago</li>
+                        <li>Contacta soporte si el problema persiste</li>
+                    </ul>
+                </div>
+            `;
+            icono = 'error';
+        } else {
+            titulo = 'Confirma tu pago';
+            mensaje = `
+                <div style="text-align: left;">
+                    <p>Para acceder a la ubicación exacta, necesitas <strong>confirmar tu pago</strong>.</p>
+                    <div style="background: #f9fafb; padding: 12px; border-radius: 6px; margin: 12px 0;">
+                        <strong>Tu código de reserva:</strong> <code>${reservaData.reservaCode}</code>
+                    </div>
+                    <p>Completa el proceso de pago para asegurar tu lugar en la cena.</p>
+                </div>
+            `;
+            icono = 'info';
+        }
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: titulo,
+                html: mensaje,
+                icon: icono,
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#2563eb'
+            });
+        } else {
+            alert(titulo + ': ' + mensaje.replace(/<[^>]*>/g, '').trim());
         }
     }
 }
