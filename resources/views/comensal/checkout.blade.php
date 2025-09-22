@@ -10,8 +10,14 @@
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
             <div>
-                <h2 class="mb-0">Confirmar Reserva</h2>
-                <p class="text-muted mb-0">Completa los datos para reservar tu lugar</p>
+                @if(isset($reserva))
+                    <h2 class="mb-0">Completar Pago</h2>
+                    <p class="text-muted mb-0">Completa el pago de tu reserva existente</p>
+                    <small class="badge bg-warning text-dark">Reserva: {{ $reserva->codigo_reserva }}</small>
+                @else
+                    <h2 class="mb-0">Confirmar Reserva</h2>
+                    <p class="text-muted mb-0">Completa los datos para reservar tu lugar</p>
+                @endif
             </div>
         </div>
     </div>
@@ -22,6 +28,9 @@
             <form id="reservaForm" action="{{ route('comensal.procesar-reserva') }}" method="POST">
                 @csrf
                 <input type="hidden" name="cena_id" value="{{ $cena->id }}">
+                @if(isset($reserva))
+                    <input type="hidden" name="reserva_id" value="{{ $reserva->id }}">
+                @endif
 
                 <!-- Paso 1: Información de la Cena -->
                 <div class="checkout-section">
@@ -97,14 +106,14 @@
                                     <button type="button" class="btn btn-outline-secondary" onclick="decrementGuests()">
                                         <i class="fas fa-minus"></i>
                                     </button>
-                                    <input type="number" 
-                                           id="cantidad_comensales" 
-                                           name="cantidad_comensales" 
-                                           class="form-control text-center" 
-                                           value="1" 
-                                           min="1" 
+                                    <input type="number"
+                                           id="cantidad_comensales"
+                                           name="cantidad_comensales"
+                                           class="form-control text-center"
+                                           value="{{ isset($reserva) ? $reserva->cantidad_comensales : 1 }}"
+                                           min="1"
                                            max="{{ $cena->available_spots }}"
-                                           readonly>
+                                           {{ isset($reserva) ? 'readonly' : 'readonly' }}>
                                     <button type="button" class="btn btn-outline-secondary" onclick="incrementGuests()">
                                         <i class="fas fa-plus"></i>
                                     </button>
@@ -145,22 +154,22 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="nombre_contacto" class="form-label">Nombre completo *</label>
-                                <input type="text" 
-                                       class="form-control" 
-                                       id="nombre_contacto" 
-                                       name="nombre_contacto" 
-                                       value="{{ $user->name }}" 
+                                <input type="text"
+                                       class="form-control"
+                                       id="nombre_contacto"
+                                       name="nombre_contacto"
+                                       value="{{ isset($reserva) ? $reserva->nombre_contacto : $user->name }}"
                                        required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="email_contacto" class="form-label">Email *</label>
-                                <input type="email" 
-                                       class="form-control" 
-                                       id="email_contacto" 
-                                       name="email_contacto" 
-                                       value="{{ $user->email }}" 
+                                <input type="email"
+                                       class="form-control"
+                                       id="email_contacto"
+                                       name="email_contacto"
+                                       value="{{ isset($reserva) ? $reserva->email_contacto : $user->email }}"
                                        required>
                             </div>
                         </div>
@@ -170,11 +179,12 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="telefono_contacto" class="form-label">Teléfono *</label>
-                                <input type="tel" 
-                                       class="form-control" 
-                                       id="telefono_contacto" 
-                                       name="telefono_contacto" 
-                                       placeholder="+54 300 123 4567" 
+                                <input type="tel"
+                                       class="form-control"
+                                       id="telefono_contacto"
+                                       name="telefono_contacto"
+                                       value="{{ isset($reserva) ? $reserva->telefono_contacto : '' }}"
+                                       placeholder="+54 300 123 4567"
                                        required>
                             </div>
                         </div>
@@ -192,11 +202,11 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="restricciones_alimentarias" class="form-label">Restricciones alimentarias</label>
-                                <textarea class="form-control" 
-                                          id="restricciones_alimentarias" 
-                                          name="restricciones_alimentarias" 
-                                          rows="3" 
-                                          placeholder="Alergias, vegetariano, vegano, etc."></textarea>
+                                <textarea class="form-control"
+                                          id="restricciones_alimentarias"
+                                          name="restricciones_alimentarias"
+                                          rows="3"
+                                          placeholder="Alergias, vegetariano, vegano, etc.">{{ isset($reserva) ? $reserva->restricciones_alimentarias : '' }}</textarea>
                                 <small class="text-muted">El chef necesita conocer estas restricciones con anticipación</small>
                             </div>
                         </div>
@@ -215,11 +225,11 @@
 
                     <div class="mb-3">
                         <label for="comentarios_especiales" class="form-label">Comentarios para el chef</label>
-                        <textarea class="form-control" 
-                                  id="comentarios_especiales" 
-                                  name="comentarios_especiales" 
-                                  rows="2" 
-                                  placeholder="Cualquier comentario adicional que quieras compartir con el chef"></textarea>
+                        <textarea class="form-control"
+                                  id="comentarios_especiales"
+                                  name="comentarios_especiales"
+                                  rows="2"
+                                  placeholder="Cualquier comentario adicional que quieras compartir con el chef">{{ isset($reserva) ? $reserva->comentarios_especiales : '' }}</textarea>
                     </div>
                 </div>
 

@@ -104,6 +104,7 @@ Route::middleware(['auth'])->prefix('chef')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/comensal/dashboard', [App\Http\Controllers\ComensalController::class, 'dashboard'])->name('comensal.dashboard');
     Route::get('/comensal/checkout/{cena}', [App\Http\Controllers\ComensalController::class, 'checkout'])->name('comensal.checkout');
+    Route::get('/comensal/completar-pago/{reserva}', [App\Http\Controllers\ComensalController::class, 'completarPago'])->name('comensal.completar-pago');
     Route::post('/comensal/procesar-reserva', [App\Http\Controllers\ComensalController::class, 'procesarReserva'])->name('comensal.procesar-reserva');
 
 

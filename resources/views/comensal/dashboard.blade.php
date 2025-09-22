@@ -1220,5 +1220,11 @@ function reservarCena(cenaId) {
     // Redirigir directamente al checkout
     window.location.href = `/comensal/checkout/${cenaId}`;
 }
+
+// Función para completar pago de una reserva existente
+function completarPago(reservaId) {
+    // Redirigir al checkout con la reserva existente
+    window.location.href = `/comensal/completar-pago/${reservaId}`;
+}
 </script>
 @endsection

@@ -225,6 +225,88 @@ public function checkout(Cena $cena): View|RedirectResponse
 /**
  * Process dinner reservation and redirect to payment gateway.
  */
+/**
+ * Completar pago de una reserva existente.
+ */
+public function completarPago(Reserva $reserva): View|RedirectResponse
+{
+    $user = Auth::user();
+
+    Log::info('=== ACCESO A COMPLETAR PAGO ===');
+    Log::info('Completando pago de reserva:', [
+        'comensal_id' => $user->id,
+        'reserva_id' => $reserva->id,
+        'reserva_codigo' => $reserva->codigo_reserva,
+        'estado_actual' => $reserva->estado,
+        'estado_pago_actual' => $reserva->estado_pago
+    ]);
+
+    // Verificar que la reserva pertenece al usuario autenticado
+    if ($reserva->user_id !== $user->id) {
+        Log::warning('Usuario intenta completar pago de reserva que no le pertenece:', [
+            'user_id' => $user->id,
+            'reserva_id' => $reserva->id,
+            'reserva_user_id' => $reserva->user_id
+        ]);
+
+        return redirect()->route('comensal.dashboard')
+            ->with('error', 'No tienes permiso para acceder a esta reserva.');
+    }
+
+    // Verificar que la reserva requiera pago
+    if ($reserva->estado_pago === 'pagado') {
+        Log::info('Reserva ya está pagada, redirigiendo al dashboard:', [
+            'reserva_id' => $reserva->id,
+            'estado_pago' => $reserva->estado_pago
+        ]);
+
+        return redirect()->route('comensal.dashboard')
+            ->with('success', 'Esta reserva ya está pagada.');
+    }
+
+    if (!in_array($reserva->estado_pago, ['pendiente', 'fallido'])) {
+        Log::warning('Intento de completar pago en reserva con estado incorrecto:', [
+            'reserva_id' => $reserva->id,
+            'estado_pago' => $reserva->estado_pago
+        ]);
+
+        return redirect()->route('comensal.dashboard')
+            ->with('error', 'Esta reserva no puede ser pagada en su estado actual.');
+    }
+
+    // Cargar la cena relacionada
+    $cena = $reserva->cena;
+
+    // Verificar que la cena siga disponible
+    if (!$cena->is_active || $cena->status !== 'published') {
+        Log::warning('Intento de pagar reserva para cena no disponible:', [
+            'cena_id' => $cena->id,
+            'is_active' => $cena->is_active,
+            'status' => $cena->status
+        ]);
+
+        return redirect()->route('comensal.dashboard')
+            ->with('error', 'Esta cena ya no está disponible.');
+    }
+
+    // Verificar que la cena no haya pasado
+    if ($cena->datetime <= now()) {
+        Log::warning('Intento de pagar reserva para cena que ya pasó:', [
+            'cena_id' => $cena->id,
+            'datetime' => $cena->datetime,
+            'now' => now()
+        ]);
+
+        return redirect()->route('comensal.dashboard')
+            ->with('error', 'Esta cena ya pasó. No se puede completar el pago.');
+    }
+
+    Log::info('Completar pago validado correctamente - Mostrando formulario de pago');
+
+    // Retornar la vista de checkout pero con la información de la reserva existente
+    return view('comensal.checkout', compact('cena', 'user', 'reserva'));
+}
+
 public function procesarReserva(Request $request): RedirectResponse
 {
     $user = Auth::user();
@@ -235,12 +317,13 @@ public function procesarReserva(Request $request): RedirectResponse
     // Validar datos del formulario
     $validatedData = $request->validate([
         'cena_id' => 'required|exists:cenas,id',
+        'reserva_id' => 'nullable|exists:reservas,id', // Para completar pago de reserva existente
         'cantidad_comensales' => 'required|integer|min:1|max:20',
         'nombre_contacto' => 'required|string|max:255',
         'telefono_contacto' => 'required|string|max:20',
         'email_contacto' => 'required|email|max:255',
         'restricciones_alimentarias' => 'nullable|string|max:1000',
-        'solicitudes_especiales' => 'nullable|string|max:1000', 
+        'solicitudes_especiales' => 'nullable|string|max:1000',
         'comentarios_especiales' => 'nullable|string|max:1000',
         'acepta_terminos' => 'required',
         'acepta_politica_cancelacion' => 'required'
@@ -269,25 +352,62 @@ public function procesarReserva(Request $request): RedirectResponse
         $aceptaTerminos = $request->has('acepta_terminos') && $request->acepta_terminos == 'on';
         $aceptaPolitica = $request->has('acepta_politica_cancelacion') && $request->acepta_politica_cancelacion == 'on';
 
-        // Crear la reserva en la base de datos
-        $reserva = Reserva::create([
-            'cena_id' => $cena->id,
-            'user_id' => $user->id,
-            'cantidad_comensales' => $validatedData['cantidad_comensales'],
-            'precio_por_persona' => $precioPorPersona,
-            'precio_total' => $precioTotal,
-            'estado' => 'pendiente',
-            'estado_pago' => 'pendiente',
-            'nombre_contacto' => $validatedData['nombre_contacto'],
-            'telefono_contacto' => $validatedData['telefono_contacto'],
-            'email_contacto' => $validatedData['email_contacto'],
-            'restricciones_alimentarias' => $validatedData['restricciones_alimentarias'],
-            'solicitudes_especiales' => $validatedData['solicitudes_especiales'],
-            'comentarios_especiales' => $validatedData['comentarios_especiales'],
-            'acepta_terminos' => $aceptaTerminos,
-            'acepta_politica_cancelacion' => $aceptaPolitica,
-            'fecha_reserva' => now()
-        ]);
+        // Determinar si es completar pago de reserva existente o crear nueva
+        if (isset($validatedData['reserva_id']) && !empty($validatedData['reserva_id'])) {
+            // Completar pago de reserva existente
+            $reserva = Reserva::findOrFail($validatedData['reserva_id']);
+
+            // Verificar que la reserva pertenece al usuario
+            if ($reserva->user_id !== $user->id) {
+                throw new \Exception('No tienes permiso para modificar esta reserva.');
+            }
+
+            // Actualizar la reserva con los nuevos datos
+            $reserva->update([
+                'cantidad_comensales' => $validatedData['cantidad_comensales'],
+                'precio_por_persona' => $precioPorPersona,
+                'precio_total' => $precioTotal,
+                'nombre_contacto' => $validatedData['nombre_contacto'],
+                'telefono_contacto' => $validatedData['telefono_contacto'],
+                'email_contacto' => $validatedData['email_contacto'],
+                'restricciones_alimentarias' => $validatedData['restricciones_alimentarias'],
+                'solicitudes_especiales' => $validatedData['solicitudes_especiales'],
+                'comentarios_especiales' => $validatedData['comentarios_especiales'],
+                'acepta_terminos' => $aceptaTerminos,
+                'acepta_politica_cancelacion' => $aceptaPolitica,
+                'estado_pago' => 'pendiente' // Resetear a pendiente para el nuevo intento de pago
+            ]);
+
+            Log::info('Reserva existente actualizada para completar pago:', [
+                'reserva_id' => $reserva->id,
+                'codigo_reserva' => $reserva->codigo_reserva
+            ]);
+        } else {
+            // Crear nueva reserva
+            $reserva = Reserva::create([
+                'cena_id' => $cena->id,
+                'user_id' => $user->id,
+                'cantidad_comensales' => $validatedData['cantidad_comensales'],
+                'precio_por_persona' => $precioPorPersona,
+                'precio_total' => $precioTotal,
+                'estado' => 'pendiente',
+                'estado_pago' => 'pendiente',
+                'nombre_contacto' => $validatedData['nombre_contacto'],
+                'telefono_contacto' => $validatedData['telefono_contacto'],
+                'email_contacto' => $validatedData['email_contacto'],
+                'restricciones_alimentarias' => $validatedData['restricciones_alimentarias'],
+                'solicitudes_especiales' => $validatedData['solicitudes_especiales'],
+                'comentarios_especiales' => $validatedData['comentarios_especiales'],
+                'acepta_terminos' => $aceptaTerminos,
+                'acepta_politica_cancelacion' => $aceptaPolitica,
+                'fecha_reserva' => now()
+            ]);
+
+            Log::info('Nueva reserva creada:', [
+                'reserva_id' => $reserva->id,
+                'codigo_reserva' => $reserva->codigo_reserva
+            ]);
+        }
 
         Log::info('Reserva creada exitosamente:', [
             'reserva_id' => $reserva->id,
