@@ -238,7 +238,7 @@
                     <i class="fas fa-search" style="color: #6b7280; margin-right: 4px;"></i>
                     Buscar
                 </label>
-                <input class="input" type="text" id="q" name="q" placeholder="Ciudad, chef, tipo de cocina..."
+                <input class="input" type="text" id="q" name="q" placeholder="Ciudad, Anfitrión, tipo de cocina..."
                        value="{{ $filters['q'] ?? '' }}">
             </div>
 

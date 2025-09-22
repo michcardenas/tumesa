@@ -57,7 +57,7 @@
                                     <h5>{{ $cena->title }}</h5>
                                     <div class="chef-info mb-2">
                                         <i class="fas fa-user-tie text-primary"></i>
-                                        <strong>Chef: {{ $cena->chef->name }}</strong>
+                                        <strong>Anfitrión: {{ $cena->chef->name }}</strong>
                                     </div>
                                     <div class="cena-meta">
                                         <div class="meta-item">
@@ -207,7 +207,7 @@
                                           name="restricciones_alimentarias"
                                           rows="3"
                                           placeholder="Alergias, vegetariano, vegano, etc.">{{ isset($reserva) ? $reserva->restricciones_alimentarias : '' }}</textarea>
-                                <small class="text-muted">El chef necesita conocer estas restricciones con anticipación</small>
+                                <small class="text-muted">El Anfitrión necesita conocer estas restricciones con anticipación</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -224,12 +224,12 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="comentarios_especiales" class="form-label">Comentarios para el chef</label>
+                        <label for="comentarios_especiales" class="form-label">Comentarios para el Anfitrión</label>
                         <textarea class="form-control"
                                   id="comentarios_especiales"
                                   name="comentarios_especiales"
                                   rows="2"
-                                  placeholder="Cualquier comentario adicional que quieras compartir con el chef">{{ isset($reserva) ? $reserva->comentarios_especiales : '' }}</textarea>
+                                  placeholder="Cualquier comentario adicional que quieras compartir con el Anfitrión">{{ isset($reserva) ? $reserva->comentarios_especiales : '' }}</textarea>
                     </div>
                 </div>
 
@@ -352,10 +352,10 @@
                 <p>TuMesa conecta comensales con chefs anfitriones para experiencias gastronómicas únicas.</p>
                 
                 <h6>2. Reservas</h6>
-                <p>Las reservas están sujetas a confirmación del chef. El pago se procesa inmediatamente.</p>
+                <p>Las reservas están sujetas a confirmación del Anfitrión. El pago se procesa inmediatamente.</p>
                 
                 <h6>3. Responsabilidades</h6>
-                <p>Los chefs son responsables de la calidad de la comida y el servicio. TuMesa facilita la conexión.</p>
+                <p>Los Anfitriones son responsables de la calidad de la comida y el servicio. TuMesa facilita la conexión.</p>
                 
                 <h6>4. Políticas</h6>
                 <p>Debes informar restricciones alimentarias al momento de la reserva.</p>
